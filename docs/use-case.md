@@ -1,5 +1,5 @@
 ```mermaid
-flowchart LR
+flowchart TD
   client{{клієнт}}
   hasher{{хешер}}
   server{{сервер}}
