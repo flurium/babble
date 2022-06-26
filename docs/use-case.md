@@ -3,6 +3,7 @@ flowchart LR
   client{{клієнт}}
   hasher{{хешер}}
   server{{сервер}}
+  bd{{база данних}}
 
 
   rcc[видаляє/змінює контакти]
@@ -13,20 +14,22 @@ flowchart LR
   повідомлення-.-csd
   файли-.-csd
 
+  hasher---hp[хешує пароль]
+  client---hasher
+
   client---csd
   client---c1[реєструється]
   client---c2[відсилає запрос на дружбу]
   client---rcc
   client---mg
+  client---c4[логін]
  
-  
-  server---s1[отримує данні від клієнта]
   server---s2[відправляє данні на різні клієнти]
-  server---sau[добавляє користувачів]
+  server---sau[добавляє/видаляє користувачів]
   server---mg
   server---rcc
+  server---s1[отримує данні від клієнта]
 
-
-  hasher---hp[хешує пароль]  
+  bd---server
 
 ```
