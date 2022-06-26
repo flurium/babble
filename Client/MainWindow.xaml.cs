@@ -20,6 +20,8 @@ namespace Client
   /// </summary>
   public partial class MainWindow : Window
   {
+    int SomeFun { get; set; }
+    int someFun;
     public MainWindow()
     {
       InitializeComponent();
