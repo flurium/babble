@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Server.Models;
 
-namespace Server.DatabaseService
+namespace Server.Data
 {
   public class BabbleContext : DbContext
   {
@@ -14,5 +14,17 @@ namespace Server.DatabaseService
     public DbSet<Group> Groups { get; set; }
     public DbSet<UserGroup> UserGroups { get; set; }
     public DbSet<Contact> Contacts { get; set; }
+
+
+    public string DbPath { get; }
+    public BabbleContext()
+    {
+      var folder = Environment.SpecialFolder.LocalApplicationData;
+      var path = Environment.GetFolderPath(folder);
+      DbPath = Path.Join(path, "babble.db");
+    }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder options)
+        => options.UseSqlite($"Data Source={DbPath}");
   }
 }
