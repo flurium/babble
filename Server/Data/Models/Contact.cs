@@ -8,6 +8,7 @@ namespace Server.Models
 {
   public class Contact
   {
+    public int Id { get; set; }
     public int UserFromId { get; set; }
     public User UserFrom { get; set; }
     public int UserToId { get; set; }
