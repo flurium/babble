@@ -9,19 +9,20 @@ namespace Server
     {
       DatabaseService dbService = new DatabaseService();
 
+     
+      //dbService.AddUser("admin", "admin");
       /*
-      dbService.AddUser("admin", "admin");
-      dbService.AddUser("aboba", "aboba");
+       dbService.AddUser("aboba", "aboba");
 
-      dbService.AddGroup("admin", "Admin Group");
-      dbService.AddUserToGroup("aboba", "Admin Group");
+       dbService.AddGroup("admin", "Admin Group");
+       dbService.AddUserToGroup("aboba", "Admin Group");
 
-      var g = dbService.GetUserGroups("admin");
-      foreach(var group in g)
-      {
-        Console.WriteLine(group.Name);
-      }
-      */
+       var g = dbService.GetUserGroups("admin");
+       foreach(var group in g)
+       {
+         Console.WriteLine(group.Name);
+       }
+       */
       //dbService.AddUserToGroup("aboba", "Admin Group");
 
 
@@ -32,7 +33,7 @@ namespace Server
 
     static void Main(string[] args)
     {
-      
+      Test();
     }
   }
 }

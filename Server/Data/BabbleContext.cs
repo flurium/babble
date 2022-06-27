@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Server.Models;
+using System.IO;
 
 namespace Server.Data
 {
@@ -19,12 +20,30 @@ namespace Server.Data
     public string DbPath { get; }
     public BabbleContext()
     {
-      var folder = Environment.SpecialFolder.LocalApplicationData;
-      var path = Environment.GetFolderPath(folder);
-      DbPath = Path.Join(path, "babble.db");
+      DbPath = Path.Join(GetRelativePath(), "babble.db");
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder options)
         => options.UseSqlite($"Data Source={DbPath}");
+
+    private string GetRelativePath()
+    {
+      // for example 
+      // C:\Users\roman\Git\flurium\babble\Server\bin\Debug\net6.0
+      // should become
+      // C:\Users\roman\Git\flurium\babble\Server
+
+      string current = Directory.GetCurrentDirectory();
+
+      string search = "Server";
+      int serverFolderIndex = current.IndexOf(search);
+
+      if (serverFolderIndex == -1)
+      {
+        return Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+      }
+
+      return current.Substring(0, serverFolderIndex + search.Length);
+    }
   }
 }
