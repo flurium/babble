@@ -16,6 +16,8 @@ namespace Server.DbService
     void AddGroup(int uid, string groupName);
     void AddGroup(string uname, string groupName);
 
+    void RenameGroup(string groupName, string newName);
+
     bool AddUserToGroup(string uname, string groupName);
     bool AddUserToGroup(int uid, string groupName);
 
@@ -31,6 +33,16 @@ namespace Server.DbService
     BabbleContext db;
 
     public GroupService(BabbleContext db) => this.db = db;
+
+    public void RenameGroup(string groupName, string newName)
+    {
+      Group? group = db.Groups.FirstOrDefault(g => g.Name == groupName);
+      if(group != null)
+      {
+        group.Name = newName;
+        db.SaveChangesAsync();
+      }
+    }
 
     public void AddGroup(int uid, string groupName)
     {

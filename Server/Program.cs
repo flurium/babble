@@ -9,12 +9,13 @@ namespace Server
     {
       DatabaseService dbService = new DatabaseService();
 
-     
+      //dbService.AddGroup("admin", "A");
+      //dbService.RenameGroup("A", "B");
       //dbService.AddUser("admin", "admin");
       /*
        dbService.AddUser("aboba", "aboba");
 
-       dbService.AddGroup("admin", "Admin Group");
+       
        dbService.AddUserToGroup("aboba", "Admin Group");
 
        var g = dbService.GetUserGroups("admin");
