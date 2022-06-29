@@ -21,6 +21,7 @@ namespace Server.Data
     public BabbleContext()
     {
       DbPath = Path.Join(GetRelativePath(), "babble.db");
+      Console.WriteLine(DbPath);
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder options)
