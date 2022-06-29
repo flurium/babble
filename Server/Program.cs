@@ -7,14 +7,27 @@ namespace Server
 
     static void Test()
     {
-      DatabaseService dbService = new DatabaseService();
+      DatabaseService db = new DatabaseService();
 
-     
+      try
+      {
+        db.AddUser("a", "a");
+      }
+      catch (Exception ex)
+      {
+        // beacause add existing name
+        Console.WriteLine(ex.Message);
+      }
+      
+      
+      //db.AddUser("a", "b");
+      //dbService.AddGroup("admin", "A");
+      //dbService.RenameGroup("A", "B");
       //dbService.AddUser("admin", "admin");
       /*
        dbService.AddUser("aboba", "aboba");
 
-       dbService.AddGroup("admin", "Admin Group");
+       
        dbService.AddUserToGroup("aboba", "Admin Group");
 
        var g = dbService.GetUserGroups("admin");

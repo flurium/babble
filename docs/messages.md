@@ -1,3 +1,0 @@
-Registration:
-
-true|register
