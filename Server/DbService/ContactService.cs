@@ -11,8 +11,8 @@ namespace Server.DbService
 
   public interface IContactService
   {
-    public void SendInvite(string unameFrom, string unameTo);
-    public void AcceptInvite(string unameFrom, string unameTo);
+    public Task SendInviteAsync(string unameFrom, string unameTo);
+    public Task AcceptInviteAsync(string unameFrom, string unameTo);
     public IEnumerable<Contact> GetInvites(string uname);
     public IEnumerable<Contact> GetContacts(string uname);
   }
@@ -22,6 +22,7 @@ namespace Server.DbService
     BabbleContext db;
     public ContactService(BabbleContext db) => this.db = db;
 
+    // todo: rewrite
     // get invites, sended to the person
     public IEnumerable<Contact> GetInvites(string uname)
     {
@@ -39,35 +40,37 @@ namespace Server.DbService
     }
 
     // accept invite
-    public void AcceptInvite(string unameFrom, string unameTo)
+    public async Task AcceptInviteAsync(string unameFrom, string unameTo)
     {
       User? userFrom = db.Users.FirstOrDefault(u => u.Name == unameFrom);
       User? userTo = db.Users.FirstOrDefault(u => u.Name == unameTo);
 
       if (userFrom != null && userTo != null)
       {
-        AcceptInvite(userFrom, userTo);
+        await AcceptInviteAsync(userFrom, userTo);
       }
     }
-    private void AcceptInvite(User userFrom, User userTo)
+    private async Task AcceptInviteAsync(User userFrom, User userTo)
     {
       Contact? contact = db.Contacts.FirstOrDefault(c => c.UserFromId == userFrom.Id && c.UserToId == userTo.Id);
       if (contact != null)
       {
         contact.isAccepted = true;
-        db.SaveChangesAsync();
+        contact.NameAtUserFrom = userTo.Name;
+        contact.NameAtUserTo = userFrom.Name;
+        await db.SaveChangesAsync();
       }
     }
 
     // send invite
-    public void SendInvite(string unameFrom, string unameTo)
+    public async Task SendInviteAsync(string unameFrom, string unameTo)
     {
       User? userFrom = db.Users.FirstOrDefault(u => u.Name == unameFrom);
       User? userTo = db.Users.FirstOrDefault(u => u.Name == unameTo);
       if (userTo != null && userFrom != null)
       {
-        db.Contacts.AddAsync(new Contact { UserFrom = userFrom, UserTo = userTo, isAccepted = false });
-        db.SaveChangesAsync();
+        db.Contacts.Add(new Contact { UserFrom = userFrom, UserTo = userTo, isAccepted = false });
+        await db.SaveChangesAsync();
       }
     }
   }

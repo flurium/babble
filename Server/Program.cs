@@ -1,4 +1,5 @@
 ﻿using Server.DbService;
+using Server.Services;
 
 namespace Server
 {
@@ -11,19 +12,27 @@ namespace Server
 
       try
       {
-        db.AddUser("a", "a");
+        //db.AddUser("a", "a");
       }
       catch (Exception ex)
       {
         // beacause add existing name
         Console.WriteLine(ex.Message);
       }
-      
-      
+
+
       //db.AddUser("a", "b");
       //dbService.AddGroup("admin", "A");
       //dbService.RenameGroup("A", "B");
-      //dbService.AddUser("admin", "admin");
+      //db.AddUser("b", "b");
+      //db.SendInviteAsync("a", "b"); 
+
+      //db.AcceptInviteAsync("a", "b");
+
+      var contacts = db.GetContacts("a");
+      contacts.ToList().ForEach((contact) => Console.WriteLine(contact.NameAtUserFrom));
+
+
       /*
        dbService.AddUser("aboba", "aboba");
 
@@ -46,7 +55,11 @@ namespace Server
 
     static void Main(string[] args)
     {
+      CommunicationService cs = new CommunicationService();
+
+      cs.Run();      
       Test();
+
     }
   }
 }

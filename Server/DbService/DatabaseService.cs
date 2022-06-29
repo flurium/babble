@@ -19,24 +19,26 @@ namespace Server.DbService
     }
 
     // work with users
-    public void AddUser(string name, string password) => userService.AddUser(name, password);
-    public void RemoveUser(string name) => userService.RemoveUser(name);
-    public void RemoveUser(int id) => userService.RemoveUser(id);
+    public Task AddUserAsync(string name, string password) => userService.AddUserAsync(name, password);
+    //public void RemoveUserAsync(string name) => userService.RemoveUserAsync(name);
+    public Task RemoveUserAsync(int id) => userService.RemoveUserAsync(id);
 
     // work with groups
-    public bool AddUserToGroup(string uname, string groupName) => groupService.AddUserToGroup(uname, groupName);
-    public bool AddUserToGroup(int uid, string groupName) => groupService.AddUserToGroup(uid, groupName);
-    public void RenameGroup(string groupName, string newName) => groupService.RenameGroup(groupName, newName);
+    //public bool AddUserToGroupAsync(string uname, string groupName) => groupService.AddUserToGroupAsync(uname, groupName);
+    public Task<bool> AddUserToGroupAsync(int uid, string groupName) => groupService.AddUserToGroupAsync(uid, groupName);
+    //public void RenameGroup(string groupName, string newName) => groupService.RenameGroup(groupName, newName);
+    public Task RenameGroupAsync(int id, string newName) => groupService.RenameGroupAsync(id, newName);
+
     public IEnumerable<Group> GetUserGroups(int uid) => groupService.GetUserGroups(uid);
-    public IEnumerable<Group> GetUserGroups(string uname) => groupService.GetUserGroups(uname);
-    public void RemoveUserFromGroup(int uid, string groupName) => groupService.RemoveUserFromGroup(uid, groupName);
-    public void RemoveUserFromGroup(string uname, string groupName) => groupService.RemoveUserFromGroup(uname, groupName);
-    public void AddGroup(int uid, string groupName) => groupService.AddGroup(uid, groupName);
-    public void AddGroup(string uname, string groupName) => groupService.AddGroup(uname, groupName);
+    //public IEnumerable<Group> GetUserGroups(string uname) => groupService.GetUserGroups(uname);
+    public Task RemoveUserFromGroupAsync(int uid, string groupName) => groupService.RemoveUserFromGroupAsync(uid, groupName);
+    //public void RemoveUserFromGroup(string uname, string groupName) => groupService.RemoveUserFromGroup(uname, groupName);
+    public Task AddGroupAsync(int uid, string groupName) => groupService.AddGroupAsync(uid, groupName);
+    //public void AddGroup(string uname, string groupName) => groupService.AddGroup(uname, groupName);
 
     // work with contacts
-    public void SendInvite(string unameFrom, string unameTo) => contactService.SendInvite(unameFrom, unameTo);
-    public void AcceptInvite(string unameFrom, string unameTo) => contactService.AcceptInvite(unameFrom, unameTo);
+    public Task SendInviteAsync(string unameFrom, string unameTo) => contactService.SendInviteAsync(unameFrom, unameTo);
+    public Task AcceptInviteAsync(string unameFrom, string unameTo) => contactService.AcceptInviteAsync(unameFrom, unameTo);
     public IEnumerable<Contact> GetInvites(string uname) => contactService.GetInvites(uname);
     public IEnumerable<Contact> GetContacts(string uname) => contactService.GetContacts(uname);
   }
