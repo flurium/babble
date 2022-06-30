@@ -1,4 +1,5 @@
-﻿using Server.Services;
+﻿using Newtonsoft.Json;
+using Server.Services;
 using System.Text;
 
 namespace Server
@@ -19,7 +20,15 @@ namespace Server
         //}
 
         // вот так использовать
-        await db.SendInviteAsync(1, 3);
+        //await db.SendInviteAsync(1, 3);
+        //await db.AddUserAsync("a", "a");
+
+        var ser = JsonConvert.SerializeObject(db.GetUser("a"));
+        Console.WriteLine(ser);
+
+        var obj = JsonConvert.DeserializeObject<dynamic>(ser);
+        if(obj != null)
+          Console.WriteLine(obj.Name);
 
         //foreach(var g in db.GetUserGroups(1))
         //{

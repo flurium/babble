@@ -16,4 +16,8 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\HashLibrary\HashLibrary.csproj" />
+  </ItemGroup>
+
 </Project>
