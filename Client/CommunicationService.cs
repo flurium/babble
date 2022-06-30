@@ -14,26 +14,52 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using HashLibrary;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Client
 {
+
+    public struct Request
+    {
+        public string Command { get; set; }
+        public dynamic Data { get; set; }
+    }
+
     public class CommunicationService
     {
-        int remotePort;
-        int localPort;
-        string remoteIp;
-        bool run = false;
-        Socket listeningSocket;
-
+        private int remotePort=5001;
+        private int localPort;
+        private string remoteIp = "127.0.0.1";
+        private bool run = false;
+        private Socket listeningSocket;
         Random rnd = new Random();
-        Task listenongTask;
+        private Task listenongTask;
 
-        private void Authentication(string name, string password) 
+
+
+        public void SignIn(string name, string password)
         {
-            bool passСheck = HashService.Verify(password, "ser");
-            if (passСheck)
+            do
             {
-
+                localPort = rnd.Next(2000, 49000);
+            } while (localPort == 5001); // 5001 - server port
+            
+            try
+            { 
+            Request sing = new Request();
+            string data = string.Format("{'Name':{0},'Password':{1}", name, password);
+            sing.Command = "signin";
+            sing.Data = JObject.Parse(data);
+            SendData(sing, remoteIp, remotePort);
+            run = true;
+            listeningSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            Task listenongTask = new Task(Listen);
+            }
+              catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
             }
         }
 
@@ -54,13 +80,14 @@ namespace Client
 
 
 
-        private void SendData(string message, string ip, int port)
+        private void SendData(Request message, string ip, int port)
         {
             try
             {
                 // where to send
                 IPEndPoint remotePoint = new IPEndPoint(IPAddress.Parse(ip), port);
-                byte[] data = Encoding.Unicode.GetBytes(message); // message in bytes
+                string requestStr = JsonConvert.SerializeObject(message);
+                byte[] data = Encoding.Unicode.GetBytes(requestStr);
                 listeningSocket.SendTo(data, remotePoint);
             }
             catch (Exception ex)
@@ -69,20 +96,7 @@ namespace Client
             }
         }
 
-        private void Start()
-        {
-            run = true;
-            try
-            {
-                listeningSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-                listenongTask = new Task(Listen);
-                listenongTask.Start();
-            }
-            catch (Exception ex)
-            { 
-                MessageBox.Show(ex.Message);
-            }
-        }
+       
 
 
         /// <summary>
