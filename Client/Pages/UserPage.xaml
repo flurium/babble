@@ -1,0 +1,97 @@
+﻿<Page x:Class="Client.Pages.UserPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      mc:Ignorable="d"
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="UserPage">
+
+  <Grid Background="AliceBlue">
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition x:Name="Contacts">
+      </ColumnDefinition>
+      <ColumnDefinition x:Name="Chating" Width="3*">
+      </ColumnDefinition>
+    </Grid.ColumnDefinitions>
+    <Grid Grid.Column="0">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="50"></RowDefinition>
+        <RowDefinition></RowDefinition>
+      </Grid.RowDefinitions>
+
+      <Grid Grid.Row="0" VerticalAlignment="Top" Height="50">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition></ColumnDefinition>
+          <ColumnDefinition></ColumnDefinition>
+          <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Button Grid.Column="0" Content="UserContacts" Foreground="AliceBlue" Background="Blue" BorderThickness="0"></Button>
+        <Button Grid.Column="1" Content="Groups" Foreground="AliceBlue" Background="Blue" BorderThickness="0"></Button>
+        <Button Grid.Column="2" Content="Invights" Foreground="AliceBlue" Background="Blue" BorderThickness="0"></Button>
+      </Grid>
+
+      <ListBox Grid.Row="1"  x:Name="ContactsList" Background="LightBlue" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+        <ListBox.ItemContainerStyle>
+          <Style TargetType="ListBoxItem">
+            <Setter Property="Background" Value="#09C0FA" />
+            <Setter Property="Margin" Value="5" />
+            <Setter Property="Padding" Value="5" />
+          </Style>
+        </ListBox.ItemContainerStyle>
+        <ListBox.ItemTemplate>
+          <DataTemplate>
+            <TextBlock Text="{Binding Path=Text}" TextWrapping="Wrap" Foreground="WhiteSmoke" />
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+    </Grid>
+    <Grid Grid.Column="1"  Background="PowderBlue">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="50">
+        </RowDefinition>
+        <RowDefinition>
+        </RowDefinition>
+        <RowDefinition Height="30">
+        </RowDefinition>
+      </Grid.RowDefinitions>
+
+      <Grid  Grid.Row="0"  Height="50" VerticalAlignment="Top" Background="Blue">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition>
+          </ColumnDefinition>
+          <ColumnDefinition>
+          </ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Label Name="interlocutor" Grid.Column="0" Content="interlocutor" FontSize="15" Width="Auto" VerticalAlignment="Top" FontStyle="Normal" Foreground="AliceBlue" BorderThickness="0" ></Label>
+        <Button Grid.Column="1" x:Name="Exit" HorizontalAlignment="Right" Content="Exit"  Foreground="AliceBlue" Background="Blue" BorderThickness="0" Click="Exit_Click" FontSize="15"></Button>
+      </Grid>
+
+      <ListBox Grid.Row="1"  x:Name="MessageList" Background="LightBlue" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+        <ListBox.ItemContainerStyle>
+          <Style TargetType="ListBoxItem">
+            <Setter Property="Background" Value="#09C0FA" />
+            <Setter Property="Margin" Value="5" />
+            <Setter Property="Padding" Value="5" />
+          </Style>
+        </ListBox.ItemContainerStyle>
+        <ListBox.ItemTemplate>
+          <DataTemplate>
+            <TextBlock Text="{Binding Path=Text}" TextWrapping="Wrap" Foreground="WhiteSmoke"></TextBlock>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+
+      <Grid Grid.Row="2"  VerticalAlignment="Bottom" Background="DeepSkyBlue" Height="30">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="19*">
+          </ColumnDefinition>
+          <ColumnDefinition Width="1*">
+          </ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <TextBox Grid.Column="0" x:Name="MessageWrite" TextAlignment="Center" Background="DeepSkyBlue" Foreground="WhiteSmoke" BorderThickness="0"></TextBox>
+        <Button Grid.Column="1" x:Name="MessageSend" HorizontalAlignment="Right" Content="Send" Foreground="AliceBlue" Background="DeepSkyBlue" BorderThickness="0"></Button>
+      </Grid>
+    </Grid>
+  </Grid>
+</Page>

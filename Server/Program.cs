@@ -27,7 +27,7 @@ namespace Server
         Console.WriteLine(ser);
 
         var obj = JsonConvert.DeserializeObject<dynamic>(ser);
-        if(obj != null)
+        if (obj != null)
           Console.WriteLine(obj.Name);
 
         //foreach(var g in db.GetUserGroups(1))

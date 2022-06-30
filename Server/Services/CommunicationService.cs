@@ -1,17 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HashLibrary;
-
-namespace Server.Services
+﻿namespace Server.Services
 {
-
-  struct Response
+  internal struct Response
   {
-    string Status;
-    dynamic Data;
+    private string Status;
+    private dynamic Data;
   }
 
   public class CommunicationService
