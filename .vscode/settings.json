@@ -1,0 +1,10 @@
+{
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "driver": "SQLite",
+      "name": "babble",
+      "database": "${workspaceFolder:babble}/Server/babble.db"
+    }
+  ]
+}
