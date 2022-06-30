@@ -1,0 +1,20 @@
+﻿<Page x:Class="Client.SignInPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:Client"
+      mc:Ignorable="d"      
+      Title="SignInPage">
+
+    <Grid Background="Aqua">
+
+        <TextBox x:Name="SignInName" BorderThickness="0" Foreground="DarkBlue" HorizontalAlignment="Center" Height="20" Margin="0,102,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="184"/>
+        <Button Content="Sign In" Background="Aquamarine" Foreground="DarkBlue" HorizontalAlignment="Center"  VerticalAlignment="Bottom" Height="30" Width="114" Click="SignIn_Click"/>
+        <Button Content="Dont have acc? Sign Up"  Background="Aquamarine" Foreground="DarkBlue" HorizontalAlignment="Left"  VerticalAlignment="Bottom" Height="30" Width="149" Click="SignUp"/>
+        <Label  Content="Name" HorizontalAlignment="Center" Foreground="DarkBlue" Margin="0,55,0,0" VerticalAlignment="Top" Height="23" Width="92"/>
+        <Label  Content="Password" HorizontalAlignment="Center" Foreground="DarkBlue" Margin="0,160,0,0" VerticalAlignment="Top" Height="23" Width="92"/>
+        <PasswordBox x:Name="SignInPassword" HorizontalAlignment="Center" Foreground="DarkBlue" Margin="0,215,0,0" VerticalAlignment="Top" Width="120"/>
+
+    </Grid>
+</Page>

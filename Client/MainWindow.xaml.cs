@@ -15,14 +15,37 @@ using System.Windows.Shapes;
 
 namespace Client
 {
-  /// <summary>
-  /// Interaction logic for MainWindow.xaml
-  /// </summary>
-  public partial class MainWindow : Window
-  {
-    public MainWindow()
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+
+    public partial class MainWindow : Window
     {
-      InitializeComponent();
+      
+
+
+
+            static public UserPage userChat;
+            static public SignInPage signIn;
+            static public SignUpPage signUp;
+
+        public MainWindow(){
+            InitializeComponent();
+            userChat = new UserPage();
+            signIn = new SignInPage();
+            signUp = new SignUpPage();
+            this.MinWidth = 400;
+            MainFrame.Content= signIn;
+           
+         
+        }
+
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+           
+        }
+
     }
-  }
 }
+
