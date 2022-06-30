@@ -6,7 +6,27 @@
       mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="UserPage">
-
+  <Page.Resources>
+    <Style x:Key="_ListBoxItemStyle" TargetType="ListBoxItem">
+      <Setter Property="Height" Value="30"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="ListBoxItem">
+            <Border Name="_Back">
+              <ContentPresenter/>
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="true">
+                <Setter TargetName="_Back" Property="Background" Value="#f4f4f6"/>
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+  </Page.Resources>
+    
   <Grid Background="AliceBlue">
     <Grid.ColumnDefinitions>
       <ColumnDefinition x:Name="Contacts">
@@ -31,17 +51,10 @@
         <Button Grid.Column="2" Content="Invights" Foreground="AliceBlue" Background="Blue" BorderThickness="0"></Button>
       </Grid>
 
-      <ListBox Grid.Row="1"  x:Name="ContactsList" Background="LightBlue" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-        <ListBox.ItemContainerStyle>
-          <Style TargetType="ListBoxItem">
-            <Setter Property="Background" Value="#09C0FA" />
-            <Setter Property="Margin" Value="5" />
-            <Setter Property="Padding" Value="5" />
-          </Style>
-        </ListBox.ItemContainerStyle>
+      <ListBox Grid.Row="1"  x:Name="ContactsList" Background="White" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemContainerStyle="{DynamicResource _ListBoxItemStyle}">
         <ListBox.ItemTemplate>
           <DataTemplate>
-            <TextBlock Text="{Binding Path=Text}" TextWrapping="Wrap" Foreground="WhiteSmoke" />
+            <TextBlock Text="{Binding Path=Text}" TextWrapping="Wrap" />
           </DataTemplate>
         </ListBox.ItemTemplate>
       </ListBox>
