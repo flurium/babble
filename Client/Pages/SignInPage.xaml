@@ -10,17 +10,17 @@
   <Page.Resources>
     <Style x:Key="Base" TargetType="Control">
       <Setter Property="BorderThickness" Value="0"/>
-      <Setter Property="Width" Value="200"/>
-      <Setter Property="Height" Value="25"/>
+      <Setter Property="Width" Value="250"/>
+      <Setter Property="Height" Value="40"/>
       <Setter Property="VerticalContentAlignment" Value="Center"/>
-      <Setter Property="Padding" Value="5,0,5,0"/>
+      <Setter Property="Padding" Value="15,0,15,0"/>
+      <Setter Property="Margin" Value="0,0,0,15"/>
     </Style>
     <Style x:Key="Input" TargetType="Control" BasedOn="{StaticResource Base}">
       <Setter Property="Background" Value="#f4f4f6"/>
     </Style>
     <Style TargetType="Button" BasedOn="{StaticResource Base}">
       <Setter Property="Background" Value="#0bbffa"/>
-      <Setter Property="Margin" Value="0,10,0,0"/>
     </Style>
   </Page.Resources>
 
@@ -43,7 +43,7 @@
       <PasswordBox x:Name="SignInPassword" Style="{StaticResource Input}" Grid.Column="1" Grid.Row="3"/>
 
       <Button Content="Sign In"  Grid.Column="1" Grid.Row="4" Click="SignIn_Click"/>
-      <Button Content="Dont have acc? Sign Up"  Grid.Row="5" Grid.Column="1" Click="SignUp" />
+      <Button Content="Don't have an account yet?  Sign Up"  Grid.Row="5" Grid.Column="1" Click="SignUp" />
 
     </Grid>
 
