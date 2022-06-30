@@ -14,6 +14,8 @@ namespace Server.DbService
     //Task SendInviteAsync(string unameFrom, string unameTo);
     Task SendInviteAsync(int uidFrom, int uidTo);
 
+    Task RemoveContactAsync(int id);
+
     Task AcceptInviteAsync(string unameFrom, string unameTo);
     IEnumerable<dynamic> GetInvites(int uid);
     //public IEnumerable<Contact> GetInvites(string uname);
@@ -93,6 +95,15 @@ namespace Server.DbService
 
       db.Contacts.Add(new Contact { UserFrom = userFrom, UserTo = userTo, isAccepted = false });
       
+      await db.SaveChangesAsync();
+    }
+
+    public async Task RemoveContactAsync(int id)
+    {
+      Contact? contact = db.Contacts.Find(id);
+      if (contact == null) throw new Exception("ContactNotFound");
+     
+      db.Contacts.Remove(contact);
       await db.SaveChangesAsync();
     }
 

@@ -44,7 +44,8 @@ namespace Server.Data
         return Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
       }
 
-      return current.Substring(0, serverFolderIndex + search.Length);
+      
+      return current.Substring(0, serverFolderIndex + search.Length) + "\\Database";
     }
   }
 }

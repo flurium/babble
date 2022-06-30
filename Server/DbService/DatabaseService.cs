@@ -45,5 +45,7 @@ namespace Server.DbService
     //public IEnumerable<Contact> GetInvites(string uname) => contactService.GetInvites(uname);
     //public IEnumerable<Contact> GetContacts(string uname) => contactService.GetContacts(uname);
     public IEnumerable<dynamic> GetContacts(int uid) => contactService.GetContacts(uid);
+
+    public Task RemoveContactAsync(int id) => contactService.RemoveContactAsync(id);
   }
 }
