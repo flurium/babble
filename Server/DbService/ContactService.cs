@@ -11,7 +11,9 @@ namespace Server.DbService
 
   public interface IContactService
   {
-    Task SendInviteAsync(string unameFrom, string unameTo);
+    //Task SendInviteAsync(string unameFrom, string unameTo);
+    Task SendInviteAsync(int uidFrom, int uidTo);
+
     Task AcceptInviteAsync(string unameFrom, string unameTo);
     IEnumerable<dynamic> GetInvites(int uid);
     //public IEnumerable<Contact> GetInvites(string uname);
@@ -49,26 +51,9 @@ namespace Server.DbService
 
     public IEnumerable<dynamic> GetContacts(int uid)
     {
-      //var contacts = (from c in db.Contacts
-      //               where c.UserFromId == uid || c.UserToId == uid
-      //               select c).ToList();
-
-
       return db.Contacts
          .Where(c => c.UserFromId == uid || c.UserToId == uid)
          .Select(c => c.UserFromId == uid ? new { c.Id, Name = c.NameAtUserFrom } : new { c.Id, Name = c.NameAtUserTo });
-
-      //contacts.ForEach(c =>
-      //{
-      //  if(c.UserFromId == uid)
-      //  {
-      //    res.Add( new {c.Id, Name = c.NameAtUserFrom});
-      //  }
-      //  else
-      //  {
-      //    res.Add( new {c.Id, Name = c.NameAtUserTo});
-      //  }
-      //});
     }
 
     // accept invite
@@ -95,15 +80,32 @@ namespace Server.DbService
     }
 
     // send invite
-    public async Task SendInviteAsync(string unameFrom, string unameTo)
+    public async Task SendInviteAsync(int uidFrom, int uidTo)
     {
-      User? userFrom = db.Users.FirstOrDefault(u => u.Name == unameFrom);
-      User? userTo = db.Users.FirstOrDefault(u => u.Name == unameTo);
-      if (userTo != null && userFrom != null)
-      {
-        db.Contacts.Add(new Contact { UserFrom = userFrom, UserTo = userTo, isAccepted = false });
-        await db.SaveChangesAsync();
-      }
+      User? userFrom = db.Users.Find(uidFrom);
+      if(userFrom == null) throw new Exception("UserFromNotFound"); // user, who send invite, doesn't exist
+
+      User? userTo = db.Users.Find(uidTo);
+      if (userTo == null) throw new Exception("UserToNotFound"); // user, who should accept invite, doesn't exist
+
+      if (db.Contacts.Any(c => (c.UserFromId == userFrom.Id && c.UserToId == userTo.Id) || (c.UserFromId == userTo.Id && c.UserToId == userFrom.Id)))
+        throw new Exception("InviteAlreadyExist");
+
+      db.Contacts.Add(new Contact { UserFrom = userFrom, UserTo = userTo, isAccepted = false });
+      
+      await db.SaveChangesAsync();
     }
+
+
+    //public async Task SendInviteAsync(string unameFrom, string unameTo)
+    //{
+    //  User? userFrom = db.Users.FirstOrDefault(u => u.Name == unameFrom);
+    //  User? userTo = db.Users.FirstOrDefault(u => u.Name == unameTo);
+    //  if (userTo != null && userFrom != null)
+    //  {
+    //    db.Contacts.Add(new Contact { UserFrom = userFrom, UserTo = userTo, isAccepted = false });
+    //    await db.SaveChangesAsync();
+    //  }
+    //}
   }
 }

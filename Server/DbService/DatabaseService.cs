@@ -38,7 +38,8 @@ namespace Server.DbService
     //public void AddGroup(string uname, string groupName) => groupService.AddGroup(uname, groupName);
 
     // work with contacts
-    public Task SendInviteAsync(string unameFrom, string unameTo) => contactService.SendInviteAsync(unameFrom, unameTo);
+    //public Task SendInviteAsync(string unameFrom, string unameTo) => contactService.SendInviteAsync(unameFrom, unameTo);
+    public Task SendInviteAsync(int uidFrom, int uidTo) => contactService.SendInviteAsync(uidFrom, uidTo);
     public Task AcceptInviteAsync(string unameFrom, string unameTo) => contactService.AcceptInviteAsync(unameFrom, unameTo);
     public IEnumerable<dynamic> GetInvites(int uid) => contactService.GetInvites(uid);
     //public IEnumerable<Contact> GetInvites(string uname) => contactService.GetInvites(uname);

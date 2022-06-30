@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,50 +13,52 @@ namespace Client
         private const int SaltSize = 16;
         private const int HashSize = 20;
 
-        /// <summary>
-        /// Creates a hash from a password.
-        /// </summary>
-        /// <param name="password">The password.</param>
-        /// <param name="iterations">Number of iterations.</param>
-        /// <returns>The hash.</returns>
-        public static string Hash(string password, int iterations)
+    /// <summary>
+    /// Creates a hash from a password. 
+    /// </summary>
+    /// <param name="password">The password.</param>
+    /// <param name="iterations">Number of iterations.</param>
+    /// <returns>The hash.</returns>
+
+    public static string Hash(string password, int iterations)
+    {
+      using (var rng = new RNGCryptoServiceProvider())
+      {
+        byte[] salt;
+        rng.GetBytes(salt = new byte[SaltSize]);
+        using (var pbkdf2 = new Rfc2898DeriveBytes(password, salt, iterations))
         {
-            using (var rng = new RNGCryptoServiceProvider())
-            {
-                byte[] salt;
-                rng.GetBytes(salt = new byte[SaltSize]);
-                using (var pbkdf2 = new Rfc2898DeriveBytes(password, salt, iterations))
-                {
-                    var hash = pbkdf2.GetBytes(HashSize);
-                    var hashBytes = new byte[SaltSize + HashSize];
-                    Array.Copy(salt, 0, hashBytes, 0, SaltSize);
-                    Array.Copy(hash, 0, hashBytes, SaltSize, HashSize);
-                    // Convert to base64
-                    var base64Hash = Convert.ToBase64String(hashBytes);
+          var hash = pbkdf2.GetBytes(HashSize);
+          var hashBytes = new byte[SaltSize + HashSize];
+          Array.Copy(salt, 0, hashBytes, 0, SaltSize);
+          Array.Copy(hash, 0, hashBytes, SaltSize, HashSize);
+          // Convert to base64
+          var base64Hash = Convert.ToBase64String(hashBytes);
 
-                    // Format hash with extra information
-                    return $"$HASsssH|V111243${iterations}${base64Hash}";
-                }
-            }
-
+          // Format hash with extra information
+          return $"$HASsssH|V111243${iterations}${base64Hash}";
         }
+      }
 
-        /// <summary>
-        /// Creates a hash from a password with 10000 iterations
-        /// </summary>
-        /// <param name="password">The password.</param>
-        /// <returns>The hash.</returns>
-        public static string Hash(string password)
-        {
-            return Hash(password, 10000);
-        }
+    }
 
-        /// <summary>
-        /// Checks if hash is supported.
-        /// </summary>
-        /// <param name="hashString">The hash.</param>
-        /// <returns>Is supported?</returns>
-        public static bool IsHashSupported(string hashString)
+    /// <summary>
+    /// Creates a hash from a password with 10000 iterations
+    /// </summary>
+    /// <param name="password">The password.</param>
+    /// <returns>The hash.</returns>
+
+    public static string Hash(string password)
+    {
+      return Hash(password, 10000);
+    }
+
+    /// <summary>
+    /// Checks if hash is supported.
+    /// </summary>
+    /// <param name="hashString">The hash.</param>
+    /// <returns>Is supported?</returns>
+    public static bool IsHashSupported(string hashString)
         {
             return hashString.Contains("HASsssH|V111243$");
         }

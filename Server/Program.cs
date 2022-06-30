@@ -7,7 +7,7 @@ namespace Server
   public class Program
   {
 
-    static void Test()
+    static async void Test()
     {
       DatabaseService db = new DatabaseService();
 
@@ -15,15 +15,18 @@ namespace Server
       {
         //db.SendInviteAsync("z", "a");
 
-        //foreach(var c in db.GetContacts(1))
-        // {
-        //   Console.WriteLine(c.Name);
-        // }
+        //foreach (var c in db.GetContacts(3))
+        //{
+        //  Console.WriteLine(c.Name);
+        //}
 
-        foreach(var g in db.GetUserGroups(1))
-        {
-          Console.WriteLine(g.Name);
-        }
+        // вот так использовать
+        await db.SendInviteAsync(1, 3);
+        
+        //foreach(var g in db.GetUserGroups(1))
+        //{
+        //  Console.WriteLine(g.Name);
+        //}
 
         //db.AddUser("a", "a");
 
@@ -33,8 +36,10 @@ namespace Server
       }
       catch (Exception ex)
       {
+        // тут обрабативать исключения основиваясь на месседже исключения
         // beacause add existing name
         Console.WriteLine(ex.Message);
+        Console.Write("aaaaaaaaaaaaaaaaaaaaaaaaaaaa");
       }
 
 
