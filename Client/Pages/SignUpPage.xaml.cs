@@ -18,11 +18,13 @@ namespace Client.Pages
     {
       // sign up code
       NavigationService.Navigate(MainWindow.userChat);
+      NavigationService.RemoveBackEntry();
     }
 
     private void SignIn(object sender, RoutedEventArgs e)
     {
-      NavigationService.Content = MainWindow.signIn;
+      NavigationService.Navigate(MainWindow.signIn);
+      NavigationService.RemoveBackEntry();
     }
   }
 }

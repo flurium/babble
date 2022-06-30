@@ -9,34 +9,34 @@
 
   <Page.Resources>
     <Style TargetType="Label">
-      <Setter Property="Background" Value="#f4f4f6"/>
-      <Setter Property="VerticalContentAlignment" Value="Center"/>
-      <Setter Property="Padding" Value="20,0,0,0"/>
+      <Setter Property="Background" Value="#f4f4f6" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+      <Setter Property="Padding" Value="20,0,0,0" />
     </Style>
     <Style x:Key="Base" TargetType="Control">
       <Setter Property="BorderThickness" Value="0" />
       <Setter Property="VerticalContentAlignment" Value="Center" />
-      <!--<Setter Property="Padding" Value="15,0,15,0" />-->
     </Style>
     <Style x:Key="Input" TargetType="Control" BasedOn="{StaticResource Base}">
       <Setter Property="Background" Value="#f4f4f6" />
+      <Setter Property="Padding" Value="15,0,0,0" />
     </Style>
     <Style TargetType="Button" BasedOn="{StaticResource Base}">
-      <Setter Property="Background" Value="#0bbffa"/>
+      <Setter Property="Background" Value="#0bbffa" />
     </Style>
   </Page.Resources>
-  <Grid>
-    <Grid.ColumnDefinitions>
-      <ColumnDefinition x:Name="Contacts"/>
-      <ColumnDefinition x:Name="Chating" Width="3*"/>
-    </Grid.ColumnDefinitions>
 
+  <Grid Background="White">
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition x:Name="Contacts" />
+      <ColumnDefinition x:Name="Chating" Width="3*" />
+    </Grid.ColumnDefinitions>
 
     <Grid Grid.Column="0">
       <Grid.ColumnDefinitions>
-        <ColumnDefinition/>
-        <ColumnDefinition/>
-        <ColumnDefinition/>
+        <ColumnDefinition />
+        <ColumnDefinition />
+        <ColumnDefinition />
       </Grid.ColumnDefinitions>
       <Grid.RowDefinitions>
         <RowDefinition Height="50"></RowDefinition>
@@ -46,9 +46,8 @@
       <Button Grid.Column="0" Grid.Row="0">Contacts</Button>
       <Button Grid.Column="1" Grid.Row="0">Groups</Button>
       <Button Grid.Column="2" Grid.Row="0" >Invites</Button>
-     
 
-      <ListBox Grid.Row="1"  Grid.ColumnSpan="3" x:Name="ContactsList"  Background="White"  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+      <ListBox Grid.Row="1"  Grid.ColumnSpan="3" x:Name="ContactsList"  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
         <ListBox.ItemContainerStyle>
           <Style TargetType="ListBoxItem">
             <Setter Property="Background" Value="#f4f4f6" />
@@ -63,22 +62,22 @@
         </ListBox.ItemTemplate>
       </ListBox>
     </Grid>
-    
+
     <Grid Grid.Column="1">
       <Grid.ColumnDefinitions>
-        <ColumnDefinition/>
-        <ColumnDefinition Width="auto"/>
+        <ColumnDefinition />
+        <ColumnDefinition Width="50" />
       </Grid.ColumnDefinitions>
       <Grid.RowDefinitions>
-        <RowDefinition Height="50"/>
-        <RowDefinition/>
-        <RowDefinition Height="40"/>
+        <RowDefinition Height="50" />
+        <RowDefinition />
+        <RowDefinition Height="40" />
       </Grid.RowDefinitions>
 
-      <Label Name="interlocutor" Grid.Column="0" Grid.Row="0" Content="interlocutor"/>
+      <Label Name="interlocutor" Grid.Column="0" Grid.Row="0" Content="interlocutor" />
       <Button Grid.Column="1" Grid.Row="0" x:Name="Exit" Click="Exit_Click">Exit</Button>
 
-      <ListBox Grid.Row="1" Grid.ColumnSpan="3" x:Name="MessageList" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+      <ListBox Grid.Row="1" Grid.ColumnSpan="3" x:Name="MessageList" ScrollViewer.VerticalScrollBarVisibility="Auto"  ScrollViewer.HorizontalScrollBarVisibility="Disabled" BorderThickness="0">
         <ListBox.ItemContainerStyle>
           <Style TargetType="ListBoxItem">
             <Setter Property="Background" Value="#f4f4f6" />
@@ -93,8 +92,8 @@
         </ListBox.ItemTemplate>
       </ListBox>
 
-      <TextBox Grid.Column="0" Grid.Row="2" x:Name="MessageWrite" TextAlignment="Center" Background="#f4f4f6"  BorderThickness="0"></TextBox>
-      <Button Grid.Column="1"  Grid.Row="2" x:Name="MessageSend"  Content="Send"  Background="DeepSkyBlue" FontSize="15" BorderThickness="0"></Button>
+      <TextBox Grid.Column="0" Grid.Row="2" x:Name="MessageWrite" Style="{StaticResource Input}"></TextBox>
+      <Button Grid.Column="1" Grid.Row="2" x:Name="MessageSend">Send</Button>
     </Grid>
   </Grid>
 </Page>

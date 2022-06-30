@@ -16,12 +16,14 @@ namespace Client.Pages
 
     private void SignUp(object sender, RoutedEventArgs e)
     {
-      NavigationService.Content = MainWindow.signUp;
+      NavigationService.Navigate(MainWindow.signUp);
+      NavigationService.RemoveBackEntry();
     }
 
     private void SignIn_Click(object sender, RoutedEventArgs e)
     {
-      NavigationService.Content = MainWindow.userChat;
+      NavigationService.Navigate(MainWindow.userChat);
+      NavigationService.RemoveBackEntry();
     }
   }
 }

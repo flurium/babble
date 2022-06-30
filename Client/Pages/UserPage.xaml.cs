@@ -117,6 +117,7 @@ namespace Client
     private void Exit_Click(object sender, RoutedEventArgs e)
     {
       NavigationService.GoBack();
+      NavigationService.RemoveBackEntry();
     }
   }
 }
