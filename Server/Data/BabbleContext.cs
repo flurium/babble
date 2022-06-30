@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Server.Models;
-using System.IO;
 
 namespace Server.Data
 {
@@ -16,8 +10,8 @@ namespace Server.Data
     public DbSet<UserGroup> UserGroups { get; set; }
     public DbSet<Contact> Contacts { get; set; }
 
-
     public string DbPath { get; }
+
     public BabbleContext()
     {
       DbPath = Path.Join(GetRelativePath(), "babble.db");
@@ -29,7 +23,7 @@ namespace Server.Data
 
     private string GetRelativePath()
     {
-      // for example 
+      // for example
       // C:\Users\roman\Git\flurium\babble\Server\bin\Debug\net6.0
       // should become
       // C:\Users\roman\Git\flurium\babble\Server
@@ -44,7 +38,7 @@ namespace Server.Data
         return Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
       }
 
-      return current.Substring(0, serverFolderIndex + search.Length);
+      return current.Substring(0, serverFolderIndex + search.Length) + "\\Database";
     }
   }
 }

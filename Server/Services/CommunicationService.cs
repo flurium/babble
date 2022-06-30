@@ -1,4 +1,5 @@
-﻿using System;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -8,6 +9,13 @@ using System.Threading.Tasks;
 
 namespace Server.Services
 {
+
+    internal struct Response
+    {
+        private string Status;
+        private dynamic Data;
+    }
+
     public class CommunicationService
     {
         int localPort = 5001;

@@ -4,31 +4,31 @@
 
 namespace Server.Migrations
 {
-    public partial class RemoveCombinationOfUserFromIdAndUserToIdAreUnique : Migration
+  public partial class RemoveCombinationOfUserFromIdAndUserToIdAreUnique : Migration
+  {
+    protected override void Up(MigrationBuilder migrationBuilder)
     {
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.DropIndex(
-                name: "IX_Contacts_UserFromId_UserToId",
-                table: "Contacts");
+      migrationBuilder.DropIndex(
+          name: "IX_Contacts_UserFromId_UserToId",
+          table: "Contacts");
 
-            migrationBuilder.CreateIndex(
-                name: "IX_Contacts_UserFromId",
-                table: "Contacts",
-                column: "UserFromId");
-        }
-
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.DropIndex(
-                name: "IX_Contacts_UserFromId",
-                table: "Contacts");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Contacts_UserFromId_UserToId",
-                table: "Contacts",
-                columns: new[] { "UserFromId", "UserToId" },
-                unique: true);
-        }
+      migrationBuilder.CreateIndex(
+          name: "IX_Contacts_UserFromId",
+          table: "Contacts",
+          column: "UserFromId");
     }
+
+    protected override void Down(MigrationBuilder migrationBuilder)
+    {
+      migrationBuilder.DropIndex(
+          name: "IX_Contacts_UserFromId",
+          table: "Contacts");
+
+      migrationBuilder.CreateIndex(
+          name: "IX_Contacts_UserFromId_UserToId",
+          table: "Contacts",
+          columns: new[] { "UserFromId", "UserToId" },
+          unique: true);
+    }
+  }
 }
