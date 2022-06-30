@@ -1,108 +1,141 @@
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Server.Services
 {
+  public struct Response
+  {
+    public string Status { get; set; }
+    public dynamic Data { get; set; }
+  }
 
-    internal struct Response
+  public class CommunicationService
+  {
+    private DatabaseService db = new DatabaseService();
+    private int localPort = 5001;
+    private string localIp = "127.0.0.1";
+    private bool run = false;
+    private Socket listeningSocket;
+    private Dictionary<IPEndPoint, DateTime> clients = new Dictionary<IPEndPoint, DateTime>();
+
+    public void Run()
     {
-        private string Status;
-        private dynamic Data;
+      // запуск
+      run = true;
+      listeningSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+      Task listenongTask = new Task(Listen);
     }
 
-    public class CommunicationService
+    private void Listen()
     {
-        int localPort = 5001;
-        string localIp = "127.0.0.1";
-        bool run = false;
-        Socket listeningSocket;
-        Dictionary<IPEndPoint, DateTime> clients = new Dictionary<IPEndPoint, DateTime>();
-
-        public void Run()
+      IPAddress ip;
+      if (IPAddress.TryParse(localIp, out ip))
+      {
+        IPEndPoint localIp = new IPEndPoint(ip, localPort);
+        listeningSocket.Bind(localIp);
+        try
         {
-            // запуск
-            run = true;
-            listeningSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            Task listenongTask = new Task(Listen);
-        }
+          while (run)
+          {
+            StringBuilder builder = new StringBuilder();
+            int bytes = 0;
+            byte[] data = new byte[1024];
+            EndPoint clientIp = new IPEndPoint(IPAddress.Any, 0);
 
-        private void Listen()
-        {
-            IPAddress ip;
-            if (IPAddress.TryParse(localIp, out ip))
+            do
             {
-                IPEndPoint localIp = new IPEndPoint(ip, localPort);
-                listeningSocket.Bind(localIp);
-                try
-                {
-                    while (run)
-                    {
-                        StringBuilder builder = new StringBuilder();
-                        int bytes = 0;
-                        byte[] data = new byte[1024];
-                        EndPoint clientIp = new IPEndPoint(IPAddress.Any, 0);
+              bytes = listeningSocket.ReceiveFrom(data, ref clientIp);
+              builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
+            } while (listeningSocket.Available > 0);
+            IPEndPoint clientFullIp = (IPEndPoint)clientIp;
 
-                        do
-                        {
-                            bytes = listeningSocket.ReceiveFrom(data, ref clientIp);
-                            builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
+            string request = builder.ToString();
+            WorkData(request, clientFullIp.Port);
 
-                        } while (listeningSocket.Available > 0);
-                        IPEndPoint clientFullIp = (IPEndPoint)clientIp;
-                        string message = builder.ToString();
 
-                        Console.WriteLine(string.Format("{0}:{1} - {2}", clientFullIp.Address.ToString(), clientFullIp.Port, message));
+            //Console.WriteLine(string.Format("{0}:{1} - {2}", clientFullIp.Address.ToString(), clientFullIp.Port, request));
 
-                        clients.Add(clientFullIp, DateTime.Now);
+            clients.Add(clientFullIp, DateTime.Now);
 
-                        SendData(builder.ToString(), clientFullIp.Port);
-
-                    }
-                }
-                catch (SocketException socketEx)
-                {
-                    if (socketEx.ErrorCode != 10004)
-                        Console.WriteLine(socketEx.Message + socketEx.ErrorCode);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
-                finally
-                {
-                    CloseConnection();
-                }
-            }
+            //SendData(builder.ToString(), clientFullIp.Port);
+          }
         }
-
-        private void SendData(string message, int port)
+        catch (SocketException socketEx)
         {
-            byte[] data = Encoding.Unicode.GetBytes(message);
-
-            foreach (var client in clients)
-            {
-                if (client.Key.Port == port) // send only to one who asked
-                {
-                    listeningSocket.SendTo(data, client.Key);
-                    clients[client.Key] = DateTime.Now; // update time
-                }
-            }
+          if (socketEx.ErrorCode != 10004)
+            Console.WriteLine(socketEx.Message + socketEx.ErrorCode);
         }
-
-        private void CloseConnection()
+        catch (Exception ex)
         {
-            if (listeningSocket != null)
-            {
-                listeningSocket.Shutdown(SocketShutdown.Both);
-                listeningSocket.Close();
-                listeningSocket = null;
-            }
+          Console.WriteLine(ex.Message);
         }
+        finally
+        {
+          CloseConnection();
+        }
+      }
     }
+
+    private void WorkData(string request, int port)
+    {
+      // allways: Command, Data
+      dynamic? obj = JsonConvert.DeserializeObject(request);
+      if (obj != null)
+      {
+        try
+        {
+          if (obj.Command == "signin")
+          {
+            // get user
+            SendData(
+              new Response
+              {
+                Status = "ok",
+                Data = new
+                {
+                  User = db.GetUser("a"),
+                  Groups = db.GetUserGroups(1)
+                }
+              }, port);
+          }
+        } catch (Exception ex)
+        {
+          SendData(
+              new Response
+              {
+                Status = "exception",
+                Data = ex.Message
+              }, port);
+        }
+      }
+    }
+
+    private void SendData(Response response, int port)
+    {
+
+      string responseStr = JsonConvert.SerializeObject(response);
+      byte[] data = Encoding.Unicode.GetBytes(responseStr);
+
+      foreach (var client in clients)
+      {
+        if (client.Key.Port == port) // send only to one who asked
+        {
+          listeningSocket.SendTo(data, client.Key);
+          clients[client.Key] = DateTime.Now; // update time
+        }
+      }
+    }
+
+    private void CloseConnection()
+    {
+      if (listeningSocket != null)
+      {
+        listeningSocket.Shutdown(SocketShutdown.Both);
+        listeningSocket.Close();
+        listeningSocket = null;
+      }
+    }
+  }
 }

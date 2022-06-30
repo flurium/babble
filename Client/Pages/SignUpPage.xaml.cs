@@ -16,7 +16,8 @@ namespace Client.Pages
 
     private void SignUpNewAcc(object sender, RoutedEventArgs e)
     {
-      NavigationService.Content = MainWindow.userChat;
+      // sign up code
+      NavigationService.Navigate(MainWindow.userChat);
     }
 
     private void SignIn(object sender, RoutedEventArgs e)

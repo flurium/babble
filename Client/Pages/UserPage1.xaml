@@ -8,17 +8,17 @@
       Title="UserPage">
   <Page.Resources>
     <Style x:Key="_ListBoxItemStyle" TargetType="ListBoxItem">
-      <Setter Property="Height" Value="30"/>
-      <Setter Property="VerticalContentAlignment" Value="Center"/>
+      <Setter Property="Height" Value="30" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
       <Setter Property="Template">
         <Setter.Value>
           <ControlTemplate TargetType="ListBoxItem">
             <Border Name="_Back">
-              <ContentPresenter/>
+              <ContentPresenter />
             </Border>
             <ControlTemplate.Triggers>
               <Trigger Property="IsMouseOver" Value="true">
-                <Setter TargetName="_Back" Property="Background" Value="#f4f4f6"/>
+                <Setter TargetName="_Back" Property="Background" Value="#f4f4f6" />
               </Trigger>
             </ControlTemplate.Triggers>
           </ControlTemplate>
@@ -26,7 +26,7 @@
       </Setter>
     </Style>
   </Page.Resources>
-    
+
   <Grid Background="AliceBlue">
     <Grid.ColumnDefinitions>
       <ColumnDefinition x:Name="Contacts">
