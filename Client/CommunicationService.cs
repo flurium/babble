@@ -30,11 +30,7 @@ namespace Client
 
         private void Authentication(string name, string password) 
         {
-            bool passСheck = HashService.Verify(password, "ser");
-            if (passСheck)
-            {
-
-            }
+            
         }
 
 
