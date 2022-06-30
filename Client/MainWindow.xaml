@@ -4,8 +4,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="Babble">
+        Title="Babble" Foreground="#181c27">
   <Grid>
-    <Frame x:Name="MainFrame" Background="BlueViolet" />
+    <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden" />
   </Grid>
 </Window>
