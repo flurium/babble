@@ -24,14 +24,91 @@ namespace Client
         {
             InitializeComponent();
             var lbi = new TextBlock();
-            lbi.Background = Brushes.DarkSlateBlue;
-            lbi.Foreground = Brushes.AliceBlue;
+         
             lbi.Text = "Liber";
-            lbi.Height = 30;
+           
             ContactsList.Items.Add(lbi);
 
+            lbi = new TextBlock();
 
+            lbi.Text = "Aria";
+
+            ContactsList.Items.Add(lbi);
+            lbi = new TextBlock();
+
+            lbi.Text = "Koscher";
+
+            ContactsList.Items.Add(lbi);
+            lbi = new TextBlock();
+
+            lbi.Text = "Crockator";
+
+            ContactsList.Items.Add(lbi);
              lbi = new TextBlock();
+
+            lbi.Text = "Liber";
+
+            ContactsList.Items.Add(lbi);
+
+            lbi = new TextBlock();
+
+            lbi.Text = "Aria";
+
+            ContactsList.Items.Add(lbi);
+            lbi = new TextBlock();
+
+            lbi.Text = "Koscher";
+
+            ContactsList.Items.Add(lbi);
+            lbi = new TextBlock();
+
+            lbi.Text = "Crockator";
+
+            ContactsList.Items.Add(lbi); 
+            lbi = new TextBlock();
+
+            lbi.Text = "Liber";
+
+            ContactsList.Items.Add(lbi);
+
+            lbi = new TextBlock();
+
+            lbi.Text = "Aria";
+
+            ContactsList.Items.Add(lbi);
+            lbi = new TextBlock();
+
+            lbi.Text = "Koscher";
+
+            ContactsList.Items.Add(lbi);
+            lbi = new TextBlock();
+
+            lbi.Text = "Crockator";
+
+            ContactsList.Items.Add(lbi);
+            lbi = new TextBlock();
+
+            lbi.Text = "Liber";
+
+            ContactsList.Items.Add(lbi);
+
+            lbi = new TextBlock();
+
+            lbi.Text = "Aria";
+
+            ContactsList.Items.Add(lbi);
+            lbi = new TextBlock();
+
+            lbi.Text = "Koscher";
+
+            ContactsList.Items.Add(lbi);
+            lbi = new TextBlock();
+
+            lbi.Text = "Crockator";
+
+            ContactsList.Items.Add(lbi);
+
+            lbi = new TextBlock();
              lbi.Text = " Hi Liber,afhagsfkhgaskgfkahsgfhagsfhgaagsjhfgajhsgfjhagsjfhgajhsfgjahgsfjhagsjfhgasjfhgajhsgfjhahfbznbcmnzbxmcbzmnxbcznbxcmabhsfahsjfhgashfgkasfkjaksjfkajsfkjaskfjgaksfghasgfhgahsfgjhgasfjhagsjf";
             
             MessageList.Items.Add(lbi);
