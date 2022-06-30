@@ -15,7 +15,6 @@ namespace Client
     public MainWindow()
     {
       InitializeComponent();
-      this.MinWidth = 400;
       MainFrame.Content = signIn;
     }
   }
