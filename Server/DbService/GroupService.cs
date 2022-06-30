@@ -22,7 +22,7 @@ namespace Server.DbService
     //bool AddUserToGroupAsync(string uname, string groupName);
     Task<bool> AddUserToGroupAsync(int uid, string groupName);
 
-    IEnumerable<Group> GetUserGroups(int uid);
+    IEnumerable<dynamic> GetUserGroups(int uid);
     //IEnumerable<Group> GetUserGroups(string uname);
 
     Task RemoveUserFromGroupAsync(int uid, string groupName);
@@ -111,12 +111,12 @@ namespace Server.DbService
       return false;
     }
 
-    // maybe change to only group names
-    public IEnumerable<Group> GetUserGroups(int uid)
+    // return example [ {Id = 1, Name = "aboba"}, {Id = 4, Name = "adasd"} ]
+    public IEnumerable<dynamic> GetUserGroups(int uid)
     {
       return from ug in db.UserGroups
-             where ug.UserId == uid
-             select ug.Group;
+              where ug.UserId == uid
+              select new { ug.Group.Id, ug.Group.Name };
     }
 
     // throw exeption "UserNotFound" if user with this name is not found

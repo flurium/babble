@@ -19,6 +19,7 @@ namespace Server.DbService
     }
 
     // work with users
+    public User? GetUser(string name) => userService.GetUser(name);
     public Task AddUserAsync(string name, string password) => userService.AddUserAsync(name, password);
     //public void RemoveUserAsync(string name) => userService.RemoveUserAsync(name);
     public Task RemoveUserAsync(int id) => userService.RemoveUserAsync(id);
@@ -29,7 +30,7 @@ namespace Server.DbService
     //public void RenameGroup(string groupName, string newName) => groupService.RenameGroup(groupName, newName);
     public Task RenameGroupAsync(int id, string newName) => groupService.RenameGroupAsync(id, newName);
 
-    public IEnumerable<Group> GetUserGroups(int uid) => groupService.GetUserGroups(uid);
+    public IEnumerable<dynamic> GetUserGroups(int uid) => groupService.GetUserGroups(uid);
     //public IEnumerable<Group> GetUserGroups(string uname) => groupService.GetUserGroups(uname);
     public Task RemoveUserFromGroupAsync(int uid, string groupName) => groupService.RemoveUserFromGroupAsync(uid, groupName);
     //public void RemoveUserFromGroup(string uname, string groupName) => groupService.RemoveUserFromGroup(uname, groupName);
@@ -39,7 +40,9 @@ namespace Server.DbService
     // work with contacts
     public Task SendInviteAsync(string unameFrom, string unameTo) => contactService.SendInviteAsync(unameFrom, unameTo);
     public Task AcceptInviteAsync(string unameFrom, string unameTo) => contactService.AcceptInviteAsync(unameFrom, unameTo);
-    public IEnumerable<Contact> GetInvites(string uname) => contactService.GetInvites(uname);
-    public IEnumerable<Contact> GetContacts(string uname) => contactService.GetContacts(uname);
+    public IEnumerable<dynamic> GetInvites(int uid) => contactService.GetInvites(uid);
+    //public IEnumerable<Contact> GetInvites(string uname) => contactService.GetInvites(uname);
+    //public IEnumerable<Contact> GetContacts(string uname) => contactService.GetContacts(uname);
+    public IEnumerable<dynamic> GetContacts(int uid) => contactService.GetContacts(uid);
   }
 }

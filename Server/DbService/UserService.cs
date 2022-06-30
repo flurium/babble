@@ -10,8 +10,9 @@ namespace Server.DbService
 {
   interface IUserService
   {
-    public Task AddUserAsync(string name, string password);
-    public Task RemoveUserAsync(int id);
+    Task AddUserAsync(string name, string password);
+    Task RemoveUserAsync(int id);
+    User? GetUser(string name);
 
     //public Task RemoveUserAsync(string name);
   }
@@ -24,7 +25,7 @@ namespace Server.DbService
     // pasword should be hashed
     public async Task AddUserAsync(string name, string password)
     {
-      db.Users.Add(new User{ Name = name, Password = password });
+      db.Users.Add(new User { Name = name, Password = password });
       await db.SaveChangesAsync();
     }
 
@@ -36,6 +37,11 @@ namespace Server.DbService
         db.Users.Remove(user);
         await db.SaveChangesAsync();
       }
+    }
+
+    public User? GetUser(string name)
+    {
+      return db.Users.FirstOrDefault(u =>  u.Name == name);
     }
 
     //public async Task RemoveUserAsync(string name)

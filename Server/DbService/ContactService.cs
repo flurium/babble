@@ -11,10 +11,12 @@ namespace Server.DbService
 
   public interface IContactService
   {
-    public Task SendInviteAsync(string unameFrom, string unameTo);
-    public Task AcceptInviteAsync(string unameFrom, string unameTo);
-    public IEnumerable<Contact> GetInvites(string uname);
-    public IEnumerable<Contact> GetContacts(string uname);
+    Task SendInviteAsync(string unameFrom, string unameTo);
+    Task AcceptInviteAsync(string unameFrom, string unameTo);
+    IEnumerable<dynamic> GetInvites(int uid);
+    //public IEnumerable<Contact> GetInvites(string uname);
+    IEnumerable<dynamic> GetContacts(int uid);
+    //public IEnumerable<Contact> GetContacts(string uname);
   }
 
   public class ContactService : IContactService
@@ -24,19 +26,49 @@ namespace Server.DbService
 
     // todo: rewrite
     // get invites, sended to the person
-    public IEnumerable<Contact> GetInvites(string uname)
+    public IEnumerable<dynamic> GetInvites(int uid)
     {
       return from c in db.Contacts
-             where c.UserTo.Name == uname && !c.isAccepted
-             select c;
+             where c.UserToId == uid && !c.isAccepted
+             select new { c.Id, Name = c.UserFrom.Name };
     }
+    //public IEnumerable<Contact> GetInvites(string uname)
+    //{
+    //  return from c in db.Contacts
+    //         where c.UserTo.Name == uname && !c.isAccepted
+    //         select c;
+    //}
 
     // get accepted contacts
-    public IEnumerable<Contact> GetContacts(string uname)
+    //public IEnumerable<Contact> GetContacts(string uname)
+    //{
+    //  return from c in db.Contacts
+    //         where c.isAccepted && (c.UserFrom.Name == uname || c.UserTo.Name == uname)
+    //         select c;
+    //}
+
+    public IEnumerable<dynamic> GetContacts(int uid)
     {
-      return from c in db.Contacts
-             where c.isAccepted && (c.UserFrom.Name == uname || c.UserTo.Name == uname)
-             select c;
+      //var contacts = (from c in db.Contacts
+      //               where c.UserFromId == uid || c.UserToId == uid
+      //               select c).ToList();
+
+
+      return db.Contacts
+         .Where(c => c.UserFromId == uid || c.UserToId == uid)
+         .Select(c => c.UserFromId == uid ? new { c.Id, Name = c.NameAtUserFrom } : new { c.Id, Name = c.NameAtUserTo });
+
+      //contacts.ForEach(c =>
+      //{
+      //  if(c.UserFromId == uid)
+      //  {
+      //    res.Add( new {c.Id, Name = c.NameAtUserFrom});
+      //  }
+      //  else
+      //  {
+      //    res.Add( new {c.Id, Name = c.NameAtUserTo});
+      //  }
+      //});
     }
 
     // accept invite

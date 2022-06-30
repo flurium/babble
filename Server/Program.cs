@@ -1,5 +1,6 @@
 ﻿using Server.DbService;
 using Server.Services;
+using System.Text;
 
 namespace Server
 {
@@ -12,7 +13,23 @@ namespace Server
 
       try
       {
+        //db.SendInviteAsync("z", "a");
+
+        //foreach(var c in db.GetContacts(1))
+        // {
+        //   Console.WriteLine(c.Name);
+        // }
+
+        foreach(var g in db.GetUserGroups(1))
+        {
+          Console.WriteLine(g.Name);
+        }
+
         //db.AddUser("a", "a");
+
+        //db.AddGroupAsync(1, "масленок");
+        //db.AddUserToGroupAsync(2, "масленок");
+        //db.AddUserAsync("z", "z");
       }
       catch (Exception ex)
       {
@@ -29,8 +46,8 @@ namespace Server
 
       //db.AcceptInviteAsync("a", "b");
 
-      var contacts = db.GetContacts("a");
-      contacts.ToList().ForEach((contact) => Console.WriteLine(contact.NameAtUserFrom));
+      //var contacts = db.GetContacts("a");
+      //contacts.ToList().ForEach((contact) => Console.WriteLine(contact.NameAtUserFrom));
 
 
       /*
@@ -55,9 +72,12 @@ namespace Server
 
     static void Main(string[] args)
     {
+      Console.Title ="Babble server";
+      Console.OutputEncoding = Encoding.UTF8; 
+
       CommunicationService cs = new CommunicationService();
 
-      cs.Run();      
+      //cs.Run();      
       Test();
 
     }
