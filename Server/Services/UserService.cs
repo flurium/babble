@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Server.Data;
 using Server.Models;
 
-namespace Server.DbService
+namespace Server.Services
 {
   interface IUserService
   {
@@ -41,7 +41,7 @@ namespace Server.DbService
 
     public User? GetUser(string name)
     {
-      return db.Users.FirstOrDefault(u =>  u.Name == name);
+      return db.Users.FirstOrDefault(u => u.Name == name);
     }
 
     //public async Task RemoveUserAsync(string name)

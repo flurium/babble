@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Server.Data;
 using Server.Models;
 
-namespace Server.DbService
+namespace Server.Services
 {
 
   // prefix 'u' means 'user'
@@ -26,7 +26,7 @@ namespace Server.DbService
     //IEnumerable<Group> GetUserGroups(string uname);
 
     Task RemoveUserFromGroupAsync(int uid, string groupName);
-   // void RemoveUserFromGroup(string uname, string groupName);
+    // void RemoveUserFromGroup(string uname, string groupName);
   }
 
   public class GroupService : IGroupService
@@ -115,8 +115,8 @@ namespace Server.DbService
     public IEnumerable<dynamic> GetUserGroups(int uid)
     {
       return from ug in db.UserGroups
-              where ug.UserId == uid
-              select new { ug.Group.Id, ug.Group.Name };
+             where ug.UserId == uid
+             select new { ug.Group.Id, ug.Group.Name };
     }
 
     // throw exeption "UserNotFound" if user with this name is not found
@@ -139,7 +139,7 @@ namespace Server.DbService
       if (group != null)
       {
         UserGroup? userGroup = db.UserGroups.FirstOrDefault(ug => ug.GroupId == group.Id && ug.UserId == uid);
-        if(userGroup != null)
+        if (userGroup != null)
         {
           db.UserGroups.Remove(userGroup);
 

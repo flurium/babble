@@ -1,7 +1,7 @@
 ﻿using Server.Data;
 using Server.Models;
 
-namespace Server.DbService
+namespace Server.Services
 {
   public class DatabaseService : IUserService, IGroupService, IContactService
   {

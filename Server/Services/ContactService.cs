@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Server.DbService
+namespace Server.Services
 {
 
   public interface IContactService
@@ -34,7 +34,7 @@ namespace Server.DbService
     {
       return from c in db.Contacts
              where c.UserToId == uid && !c.isAccepted
-             select new { c.Id, Name = c.UserFrom.Name };
+             select new { c.Id, c.UserFrom.Name };
     }
     //public IEnumerable<Contact> GetInvites(string uname)
     //{
@@ -85,16 +85,16 @@ namespace Server.DbService
     public async Task SendInviteAsync(int uidFrom, int uidTo)
     {
       User? userFrom = db.Users.Find(uidFrom);
-      if(userFrom == null) throw new Exception("UserFromNotFound"); // user, who send invite, doesn't exist
+      if (userFrom == null) throw new Exception("UserFromNotFound"); // user, who send invite, doesn't exist
 
       User? userTo = db.Users.Find(uidTo);
       if (userTo == null) throw new Exception("UserToNotFound"); // user, who should accept invite, doesn't exist
 
-      if (db.Contacts.Any(c => (c.UserFromId == userFrom.Id && c.UserToId == userTo.Id) || (c.UserFromId == userTo.Id && c.UserToId == userFrom.Id)))
+      if (db.Contacts.Any(c => c.UserFromId == userFrom.Id && c.UserToId == userTo.Id || c.UserFromId == userTo.Id && c.UserToId == userFrom.Id))
         throw new Exception("InviteAlreadyExist");
 
       db.Contacts.Add(new Contact { UserFrom = userFrom, UserTo = userTo, isAccepted = false });
-      
+
       await db.SaveChangesAsync();
     }
 
@@ -102,7 +102,7 @@ namespace Server.DbService
     {
       Contact? contact = db.Contacts.Find(id);
       if (contact == null) throw new Exception("ContactNotFound");
-     
+
       db.Contacts.Remove(contact);
       await db.SaveChangesAsync();
     }
