@@ -15,4 +15,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\HashLibrary\HashLibrary.csproj" />
+  </ItemGroup>
+
 </Project>
