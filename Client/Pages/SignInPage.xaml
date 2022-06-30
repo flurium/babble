@@ -6,15 +6,46 @@
       xmlns:local="clr-namespace:Client.Pages"
       mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="SignInPage">
+      Title="SignInPage" Foreground="#181c27">
+  <Page.Resources>
+    <Style x:Key="Base" TargetType="Control">
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Width" Value="200"/>
+      <Setter Property="Height" Value="25"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
+      <Setter Property="Padding" Value="5,0,5,0"/>
+    </Style>
+    <Style x:Key="Input" TargetType="Control" BasedOn="{StaticResource Base}">
+      <Setter Property="Background" Value="#f4f4f6"/>
+    </Style>
+    <Style TargetType="Button" BasedOn="{StaticResource Base}">
+      <Setter Property="Background" Value="#0bbffa"/>
+      <Setter Property="Margin" Value="0,10,0,0"/>
+    </Style>
+  </Page.Resources>
 
-  <Grid Background="Aqua">
+  <Grid Background="White">
 
-    <TextBox x:Name="SignInName" BorderThickness="0" Foreground="DarkBlue" HorizontalAlignment="Center" Height="20" Margin="0,102,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="184" />
-    <Button Content="Sign In" Background="Aquamarine" Foreground="DarkBlue" HorizontalAlignment="Center"  VerticalAlignment="Bottom" Height="30" Width="114" Click="SignIn_Click" />
-    <Button Content="Dont have acc? Sign Up"  Background="Aquamarine" Foreground="DarkBlue" HorizontalAlignment="Left"  VerticalAlignment="Bottom" Height="30" Width="149" Click="SignUp" />
-    <Label  Content="Name" HorizontalAlignment="Center" Foreground="DarkBlue" Margin="0,55,0,0" VerticalAlignment="Top" Height="23" Width="92" />
-    <Label  Content="Password" HorizontalAlignment="Center" Foreground="DarkBlue" Margin="0,160,0,0" VerticalAlignment="Top" Height="23" Width="92" />
-    <PasswordBox x:Name="SignInPassword" HorizontalAlignment="Center" Foreground="DarkBlue" Margin="0,215,0,0" VerticalAlignment="Top" Width="120" />
+    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+      <Grid.RowDefinitions>
+        <RowDefinition/>
+        <RowDefinition/>
+        <RowDefinition/>
+        <RowDefinition/>
+        <RowDefinition/>
+        <RowDefinition/>
+      </Grid.RowDefinitions>
+
+      <Label  Content="Name"  Grid.Column="1" Grid.Row="0"/>
+
+      <TextBox x:Name="SignInName" Style="{StaticResource Input}" Grid.Column="1" Grid.Row="1" Text="afadsf"/>
+      <Label  Content="Password"  Grid.Column="1" Grid.Row="2"/>
+      <PasswordBox x:Name="SignInPassword" Style="{StaticResource Input}" Grid.Column="1" Grid.Row="3"/>
+
+      <Button Content="Sign In"  Grid.Column="1" Grid.Row="4" Click="SignIn_Click"/>
+      <Button Content="Dont have acc? Sign Up"  Grid.Row="5" Grid.Column="1" Click="SignUp" />
+
+    </Grid>
+
   </Grid>
 </Page>
