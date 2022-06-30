@@ -1,30 +1,33 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using HashLibrary;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Windows.Threading;
 
 namespace Client
 {
 
-    public struct Request
+    public class Request
     {
         public string Command { get; set; }
         public dynamic Data { get; set; }
+    }
+
+    public class Response
+    {
+        public string Status { get; set; }
+        public string Command { get; set; }
+        public dynamic Data { get; set; }
+    }
+
+    public struct Parameter
+    {
+        public string Name { get; set; }
+        public int Id { get; set; }
     }
 
     public class CommunicationService
@@ -49,9 +52,14 @@ namespace Client
             try
             { 
             Request sing = new Request();
-            string data = string.Format("{'Name':{0},'Password':{1}", name, password);
-            sing.Command = "signin";
-            sing.Data = JObject.Parse(data);
+                sing.Command = "signin";
+                sing.Data = new
+                {
+                    Name = name,
+                    Password = password
+                };
+
+
             SendData(sing, remoteIp, remotePort);
             run = true;
             listeningSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
@@ -127,10 +135,10 @@ namespace Client
 
                     IPEndPoint remoteFullIp = (IPEndPoint)remoteIp;
 
-
+                    
                     // output
-                    AddToOutput(builder.ToString());
-                    //return builder.ToString();
+                   // AddToOutput(builder.ToString());
+                   
                 }
             }
             catch (SocketException socketEx)
@@ -149,12 +157,47 @@ namespace Client
         }
 
 
-
-        private string AddToOutput(string message)
+        private void Treatment(string message)
         {
-            return message;
+            Response lable =JsonConvert.DeserializeObject<Response>(message);
+            if (lable.Status== "ok")
+            {
+                if (lable.Command== "signin")
+                {
+                    List <Parameter> group=new List<Parameter>();
+                   foreach (var item in lable.Data.Groups)
+                    {
+                        group.Add(new Parameter { Name = item.Name, Id = item.Id });
+                    }
+                    List<Parameter> contact = new List<Parameter>();
+                    foreach (var item in lable.Data.Contacts)
+                    {
+                        contact.Add(new Parameter { Name = item.Name, Id = item.Id });
+                    }
+                }
+                else if(lable.Command== "")
+                {
+
+                }
+                else
+                {
+
+                }
+            }
+            
         }
 
+
+        /*
+        private void AddToOutput(string message)
+        {
+            Dispatcher.BeginInvoke(() =>
+            {
+                //messageTextBlock.Text += Environment.NewLine;
+                outputTextBox.Text += string.Format("{0}\n", message);
+            }, null);
+        }
+      */
 
 
         private void CloseConnection()
