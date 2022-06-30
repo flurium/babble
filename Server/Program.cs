@@ -5,8 +5,7 @@ namespace Server
 {
   public class Program
   {
-
-    static async void Test()
+    private static async void Test()
     {
       DatabaseService db = new DatabaseService();
 
@@ -21,7 +20,7 @@ namespace Server
 
         // вот так использовать
         await db.SendInviteAsync(1, 3);
-        
+
         //foreach(var g in db.GetUserGroups(1))
         //{
         //  Console.WriteLine(g.Name);
@@ -41,23 +40,20 @@ namespace Server
         Console.Write("aaaaaaaaaaaaaaaaaaaaaaaaaaaa");
       }
 
-
       //db.AddUser("a", "b");
       //dbService.AddGroup("admin", "A");
       //dbService.RenameGroup("A", "B");
       //db.AddUser("b", "b");
-      //db.SendInviteAsync("a", "b"); 
+      //db.SendInviteAsync("a", "b");
 
       //db.AcceptInviteAsync("a", "b");
 
       //var contacts = db.GetContacts("a");
       //contacts.ToList().ForEach((contact) => Console.WriteLine(contact.NameAtUserFrom));
 
-
       /*
        dbService.AddUser("aboba", "aboba");
 
-       
        dbService.AddUserToGroup("aboba", "Admin Group");
 
        var g = dbService.GetUserGroups("admin");
@@ -68,22 +64,20 @@ namespace Server
        */
       //dbService.AddUserToGroup("aboba", "Admin Group");
 
-
       //dbService.RemoveUser("aboba");
 
       //dbService.RemoveUserFromGroup("aboba", "Admin Group");
     }
 
-    static void Main(string[] args)
+    private static void Main(string[] args)
     {
-      Console.Title ="Babble server";
-      Console.OutputEncoding = Encoding.UTF8; 
+      Console.Title = "Babble server";
+      Console.OutputEncoding = Encoding.UTF8;
 
       CommunicationService cs = new CommunicationService();
 
-      //cs.Run();      
+      //cs.Run();
       Test();
-
     }
   }
 }

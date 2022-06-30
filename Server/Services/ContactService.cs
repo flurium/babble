@@ -1,14 +1,8 @@
 ﻿using Server.Data;
 using Server.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Server.Services
 {
-
   public interface IContactService
   {
     //Task SendInviteAsync(string unameFrom, string unameTo);
@@ -17,15 +11,19 @@ namespace Server.Services
     Task RemoveContactAsync(int id);
 
     Task AcceptInviteAsync(string unameFrom, string unameTo);
+
     IEnumerable<dynamic> GetInvites(int uid);
+
     //public IEnumerable<Contact> GetInvites(string uname);
     IEnumerable<dynamic> GetContacts(int uid);
+
     //public IEnumerable<Contact> GetContacts(string uname);
   }
 
   public class ContactService : IContactService
   {
-    BabbleContext db;
+    private BabbleContext db;
+
     public ContactService(BabbleContext db) => this.db = db;
 
     // todo: rewrite
@@ -36,6 +34,7 @@ namespace Server.Services
              where c.UserToId == uid && !c.isAccepted
              select new { c.Id, c.UserFrom.Name };
     }
+
     //public IEnumerable<Contact> GetInvites(string uname)
     //{
     //  return from c in db.Contacts
@@ -69,6 +68,7 @@ namespace Server.Services
         await AcceptInviteAsync(userFrom, userTo);
       }
     }
+
     private async Task AcceptInviteAsync(User userFrom, User userTo)
     {
       Contact? contact = db.Contacts.FirstOrDefault(c => c.UserFromId == userFrom.Id && c.UserToId == userTo.Id);
@@ -106,7 +106,6 @@ namespace Server.Services
       db.Contacts.Remove(contact);
       await db.SaveChangesAsync();
     }
-
 
     //public async Task SendInviteAsync(string unameFrom, string unameTo)
     //{

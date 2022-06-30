@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Server.Data;
+﻿using Server.Data;
 using Server.Models;
 
 namespace Server.Services
 {
-  interface IUserService
+  internal interface IUserService
   {
     Task AddUserAsync(string name, string password);
+
     Task RemoveUserAsync(int id);
+
     User? GetUser(string name);
 
     //public Task RemoveUserAsync(string name);
@@ -19,7 +16,8 @@ namespace Server.Services
 
   public class UserService : IUserService
   {
-    BabbleContext db;
+    private BabbleContext db;
+
     public UserService(BabbleContext db) => this.db = db;
 
     // pasword should be hashed
