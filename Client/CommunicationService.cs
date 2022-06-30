@@ -172,7 +172,7 @@ namespace Client
                     List<Parameter> contact = new List<Parameter>();
                     foreach (var item in lable.Data.Contacts)
                     {
-                        contact.Add(new Parameter { Name = item.Name, Id = item.Id });
+                        group.Add(new Parameter { Name = item.Name, Id = item.Id });
                     }
                 }
                 else if(lable.Command== "")
