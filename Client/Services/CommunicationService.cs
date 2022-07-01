@@ -1,6 +1,7 @@
 ﻿using CrossLibrary;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Net;
 using System.Net.Sockets;
@@ -20,18 +21,12 @@ namespace Client.Services
     private Random rnd = new Random();
     private Task listenongTask;
 
+    private Dictionary<Command, Action<Response>> handlers = new Dictionary<Command, Action<Response>>();
+
+    public Prop User { get; set; }
     public ObservableCollection<Prop> Contacts { get; set; } = new ObservableCollection<Prop>();
     public ObservableCollection<Prop> Groups { get; set; } = new ObservableCollection<Prop>();
     public ObservableCollection<Prop> Invites { get; set; } = new ObservableCollection<Prop>();
-
-    public CommunicationService()
-    {
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-
-      // to erplace
-      //Groups.Clear();
-      Groups.Add(new Prop { Id = 1, Name = "dfasd" });
-    }
 
     public void SignIn(string name, string password)
     {
@@ -105,6 +100,8 @@ namespace Client.Services
 
           IPEndPoint remoteFullIp = (IPEndPoint)remoteIp;
 
+          Handle(builder.ToString());
+
           // output
           // AddToOutput(builder.ToString());
         }
@@ -124,47 +121,35 @@ namespace Client.Services
       }
     }
 
-    private void Treatment(string message)
-    {
-      Response lable = JsonConvert.DeserializeObject<Response>(message);
-      if (lable.Status == Status.OK)
-      {
-        if (lable.Command == Command.SignIn)
-        {
-          foreach (var item in lable.Data.Groups)
-          {
-            Groups.Add(item);
-          }
-
-          foreach (var item in lable.Data.Contacts)
-          {
-            Contacts.Add(item);
-          }
-
-          foreach (var item in lable.Data.Invites)
-          {
-            Invites.Add(item);
-          }
-        }
-        else if (lable.Command == Command.SignUp)
-        {
-        }
-        else
-        {
-        }
-      }
-    }
-
     /*
-    private void AddToOutput(string message)
+      Should be in MainWindow  
+      private void AddToOutput(string message)
+      {
+          Dispatcher.BeginInvoke(() =>
+          {
+              //messageTextBlock.Text += Environment.NewLine;
+              outputTextBox.Text += string.Format("{0}\n", message);
+          }, null);
+      }
+    */
+
+
+    public CommunicationService()
     {
-        Dispatcher.BeginInvoke(() =>
-        {
-            //messageTextBlock.Text += Environment.NewLine;
-            outputTextBox.Text += string.Format("{0}\n", message);
-        }, null);
+      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
+
+      // to erplace
+      //Groups.Clear();
+      Groups.Add(new Prop { Id = 1, Name = "dfasd" });
+
+
+      // Init handlers
+      handlers.Add(Command.SignIn, SignInHandle);
+      handlers.Add(Command.SignUp, SignUpHandle);
+      handlers.Add(Command.SendInvite, SendInviteHandle);
+      handlers.Add(Command.GetInvite, GetInviteHandle);
+      handlers.Add(Command.GetContact, GetContactHandle);
     }
-  */
 
     private void CloseConnection()
     {
@@ -176,10 +161,46 @@ namespace Client.Services
       }
     }
 
+    // Treatment
+    private void Handle(string resStr)
+    {
+      Response res = JsonConvert.DeserializeObject<Response>(resStr);
+      if (res.Status == Status.OK)
+      {
+        try
+        {
+          handlers[res.Command](res);
+        }
+        catch (Exception ex)
+        {
+          // Show error
+        }
+      }
+      else if (res.Status == Status.Bad)
+      {
+        // Show exeption message
+        // res.Data = message
+      }
+    }
+
+    private void SignInHandle(Response res)
+    {
+      User = res.Data.User;
+      foreach (var group in res.Data.Groups) Groups.Add(group);
+      foreach (var invite in res.Data.Invites) Groups.Add(invite);
+      foreach (var contact in res.Data.Contacts) Groups.Add(contact);
+    }
+
+    private void SignUpHandle(Response res) => User = res.Data;
+
+    private void SendInviteHandle(Response res) { }
+    private void GetInviteHandle(Response res) { }
+    private void GetContactHandle(Response res) { }
+
     public void Disconnect()
     {
       // Send disconnect request
-
+      
     }
   }
 }

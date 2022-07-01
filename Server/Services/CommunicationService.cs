@@ -76,17 +76,14 @@ namespace Server.Services
     private void Handle(string reqStr, IPEndPoint ip)
     {
       // allways: Command, Data
-      dynamic? req = JsonConvert.DeserializeObject(reqStr);
-      if (req != null)
+      Request req = JsonConvert.DeserializeObject<Request>(reqStr);
+      try
       {
-        try
-        {
-          handlers[req.Command](req, ip);
-        }
-        catch (Exception ex)
-        {
-          SendData(new Response { Command = req.Command, Status = Status.Bad, Data = ex.Message }, ip);
-        }
+        handlers[req.Command](req, ip);
+      }
+      catch (Exception ex)
+      {
+        SendData(new Response { Command = req.Command, Status = Status.Bad, Data = ex.Message }, ip);
       }
     }
 
@@ -194,7 +191,11 @@ namespace Server.Services
         SendData(new Response { Command = Command.SendInvite, Status = Status.OK, Data = "Invite is sent successfully" }, ip);
 
         // to who will get invite
-        SendData(new Response { Command = Command.GetInvite, Status = Status.OK, Data = contact }, ip);
+        IPEndPoint toIp;
+        if(clients.TryGetValue(req.Data.To, out toIp))
+        {
+          SendData(new Response { Command = Command.GetInvite, Status = Status.OK, Data = contact }, toIp);
+        }
       }
       catch (Exception ex)
       {
