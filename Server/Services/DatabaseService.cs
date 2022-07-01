@@ -1,4 +1,5 @@
-﻿using Server.Data;
+﻿using CrossLibrary;
+using Server.Data;
 using Server.Models;
 
 namespace Server.Services
@@ -50,11 +51,11 @@ namespace Server.Services
 
     public Task AcceptInviteAsync(string unameFrom, string unameTo) => contactService.AcceptInviteAsync(unameFrom, unameTo);
 
-    public IEnumerable<dynamic> GetInvites(int uid) => contactService.GetInvites(uid);
+    public IEnumerable<Prop> GetInvites(int uid) => contactService.GetInvites(uid);
 
     //public IEnumerable<Contact> GetInvites(string uname) => contactService.GetInvites(uname);
     //public IEnumerable<Contact> GetContacts(string uname) => contactService.GetContacts(uname);
-    public IEnumerable<dynamic> GetContacts(int uid) => contactService.GetContacts(uid);
+    public IEnumerable<Prop> GetContacts(int uid) => contactService.GetContacts(uid);
 
     public Task RemoveContactAsync(int id) => contactService.RemoveContactAsync(id);
   }

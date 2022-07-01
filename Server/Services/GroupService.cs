@@ -1,4 +1,5 @@
-﻿using Server.Data;
+﻿using CrossLibrary;
+using Server.Data;
 using Server.Models;
 
 namespace Server.Services
@@ -18,6 +19,7 @@ namespace Server.Services
     Task<bool> AddUserToGroupAsync(int uid, string groupName);
 
     IEnumerable<dynamic> GetUserGroups(int uid);
+
 
     //IEnumerable<Group> GetUserGroups(string uname);
 
@@ -109,11 +111,9 @@ namespace Server.Services
     }
 
     // return example [ {Id = 1, Name = "aboba"}, {Id = 4, Name = "adasd"} ]
-    public IEnumerable<dynamic> GetUserGroups(int uid)
+    public IEnumerable<Prop> GetUserGroups(int uid)
     {
-      return from ug in db.UserGroups
-             where ug.UserId == uid
-             select new { ug.Group.Id, ug.Group.Name };
+      return db.UserGroups.Where(ug => ug.UserId == uid).Select(ug => new Prop { Id = ug.GroupId, Name = ug.Group.Name });
     }
 
     // throw exeption "UserNotFound" if user with this name is not found
