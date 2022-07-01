@@ -5,7 +5,8 @@ namespace Server.Services
 {
   internal interface IUserService
   {
-    Task AddUserAsync(string name, string password);
+    //Task AddUserAsync(string name, string password);
+    User AddUser(string name, string password);
 
     Task RemoveUserAsync(int id);
 
@@ -21,10 +22,11 @@ namespace Server.Services
     public UserService(BabbleContext db) => this.db = db;
 
     // pasword should be hashed
-    public async Task AddUserAsync(string name, string password)
+    public User AddUser(string name, string password)
     {
-      db.Users.Add(new User { Name = name, Password = password });
-      await db.SaveChangesAsync();
+      var user = db.Users.Add(new User { Name = name, Password = password });
+      db.SaveChanges();
+      return user.Entity;
     }
 
     public async Task RemoveUserAsync(int id)

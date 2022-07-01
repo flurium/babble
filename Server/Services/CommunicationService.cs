@@ -132,7 +132,7 @@ namespace Server.Services
                         //try catch block???
                         if (!(db.GetUser(obj.Data.User.Name)))
                         {
-                            db.AddUserAsync(obj.Data.User.Name, obj.Data.User.Password);
+                            User user = db.AddUser(obj.Data.User.Name, obj.Data.User.Password);
                             SendData(
                               new Response
                               {
@@ -140,7 +140,7 @@ namespace Server.Services
                                   Status = "ok",
                                   Data = new
                                   {
-                                      User = db.GetUser(obj.Data.User.Name)
+                                      User = user
                                   }
                               }, port);
                         }
