@@ -8,7 +8,16 @@
 enum Command {
   SingIn,
   SingUp,
-  ...
+  SendMessageToContact,
+  SendMessageToGroup,
+  Invite,
+  AcceptInvite,
+  RenameContact,
+  RemoveContact,
+  AddGroup,
+  LeaveGroup,
+  RenameGroup
+  // RemoveGroup не нужен, так как група автоматически удаляется если ее покнут все учасники
 }
 ```
 

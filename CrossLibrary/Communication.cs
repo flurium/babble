@@ -32,12 +32,17 @@ namespace CrossLibrary
 
   public enum Command
   {
-    SignIn,
-    SignUp,
-    SendToContact,
-    SendToGroup,
+    SingIn,
+    SingUp,
+    SendMessageToContact,
+    SendMessageToGroup,
     Invite,
-    AcceptInvite
+    AcceptInvite,
+    RenameContact,
+    RemoveContact,
+    AddGroup,
+    LeaveGroup,
+    RenameGroup
   }
 
 
