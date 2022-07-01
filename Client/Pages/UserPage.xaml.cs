@@ -17,11 +17,17 @@ namespace Client
       InitializeComponent();
       this.cs = cs;
       DataContext = cs;
+      
+      AddMessage("Nunc pulvinar imperdiet neque, ac interdum lacus interdum ut. Ut id blandit metus, id pulvinar mauris. Nulla sapien velit, euismod eu imperdiet vitae, imperdiet eu augue.");
+      AddMessage("Phasellus vitae quam arcu. Sed ac nunc metus. Nulla tellus mi, ornare vitae metus in, accumsan fringilla ex. Proin felis ligula, euismod non tellus sed, rhoncus hendrerit erat.");
+    }
 
-      var lbi = new TextBlock();
-      lbi.Text = " Hi Liber,afhagsfkhgaskgfkahsgfhagsfhgaagsjhfgajhsgfjhagsjfhgajhsfgjahgsfjhagsjfhgasjfhgajhsgfjhahfbznbcmnzbxmcbzmnxbcznbxcmabhsfahsjfhgashfgkasfkjaksjfkajsfkjaskfjgaksfghasgfhgahsfgjhgasfjhagsjf";
-
-      MessageList.Items.Add(lbi);
+    private void AddMessage(string message)
+    {
+      Dispatcher.BeginInvoke(() =>
+      {
+        MessageList.Items.Add(message);
+      }, null);
     }
 
     private void Exit_Click(object sender, RoutedEventArgs e)

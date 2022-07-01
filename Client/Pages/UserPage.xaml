@@ -142,7 +142,7 @@
         </ListBox.ItemContainerStyle>
         <ListBox.ItemTemplate>
           <DataTemplate>
-            <TextBlock Text="{Binding Path=Text}" TextWrapping="Wrap"></TextBlock>
+            <TextBlock Text="{Binding}" TextWrapping="Wrap"></TextBlock>
           </DataTemplate>
         </ListBox.ItemTemplate>
       </ListBox>

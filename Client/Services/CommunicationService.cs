@@ -121,19 +121,6 @@ namespace Client.Services
       }
     }
 
-    /*
-      Should be in MainWindow  
-      private void AddToOutput(string message)
-      {
-          Dispatcher.BeginInvoke(() =>
-          {
-              //messageTextBlock.Text += Environment.NewLine;
-              outputTextBox.Text += string.Format("{0}\n", message);
-          }, null);
-      }
-    */
-
-
     public CommunicationService()
     {
       Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
