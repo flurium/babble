@@ -36,14 +36,15 @@ namespace CrossLibrary
     SingUp,
     SendMessageToContact,
     SendMessageToGroup,
-    Invite,
+    GetMessageFromContact,
+    GetMessageFromGroup,
+    SendInvite,
+    GetInvite,
     AcceptInvite,
+    GetContact,
     RenameContact,
     RemoveContact,
     AddGroup,
-    LeaveGroup,
-    RenameGroup
+    LeaveGroup
   }
-
-
 }
