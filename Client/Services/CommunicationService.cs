@@ -30,10 +30,12 @@ namespace Client.Services
 
     public void SignIn(string name, string password)
     {
+      // TODO: remove to constructor
       do
       {
         localPort = rnd.Next(2000, 49000);
       } while (localPort == 5001); // 5001 - server port
+      //
 
       try
       {
@@ -56,6 +58,7 @@ namespace Client.Services
       }
     }
 
+    // ip and port same all time
     private void SendData(Request message, string ip, int port)
     {
       try
