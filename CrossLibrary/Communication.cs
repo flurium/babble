@@ -6,6 +6,12 @@ using System.Threading.Tasks;
 
 namespace CrossLibrary
 {
+  public struct Prop
+  {
+    public int Id { get; set; }
+    public string Name { get; set; }
+  }
+
   public struct Request
   {
     public Command Command { get; set; }
@@ -14,8 +20,8 @@ namespace CrossLibrary
 
   public struct Response
   {
-    public Status Status;
-    public Command Command;
+    public Status Status { get; set; }
+    public Command Command { get; set; }
     public dynamic Data { get; set; }
   }
 
@@ -33,4 +39,6 @@ namespace CrossLibrary
     Invite,
     AcceptInvite
   }
+
+
 }

@@ -21,7 +21,8 @@ namespace Server.Services
     // work with users
     public User? GetUser(string name) => userService.GetUser(name);
 
-    public Task AddUserAsync(string name, string password) => userService.AddUserAsync(name, password);
+    //public Task AddUserAsync(string name, string password) => userService.AddUserAsync(name, password);
+    public User AddUser(string name, string password) => userService.AddUser(name, password);
 
     //public void RemoveUserAsync(string name) => userService.RemoveUserAsync(name);
     public Task RemoveUserAsync(int id) => userService.RemoveUserAsync(id);
