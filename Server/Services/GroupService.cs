@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Server.Data;
+﻿using Server.Data;
 using Server.Models;
 
-namespace Server.DbService
+namespace Server.Services
 {
-
   // prefix 'u' means 'user'
 
   public interface IGroupService
   {
     Task AddGroupAsync(int uid, string groupName);
+
     //void AddGroup(string uname, string groupName);
 
     //void RenameGroup(string groupName, string newName);
@@ -22,16 +17,18 @@ namespace Server.DbService
     //bool AddUserToGroupAsync(string uname, string groupName);
     Task<bool> AddUserToGroupAsync(int uid, string groupName);
 
-    IEnumerable<Group> GetUserGroups(int uid);
+    IEnumerable<dynamic> GetUserGroups(int uid);
+
     //IEnumerable<Group> GetUserGroups(string uname);
 
     Task RemoveUserFromGroupAsync(int uid, string groupName);
-   // void RemoveUserFromGroup(string uname, string groupName);
+
+    // void RemoveUserFromGroup(string uname, string groupName);
   }
 
   public class GroupService : IGroupService
   {
-    BabbleContext db;
+    private BabbleContext db;
 
     public GroupService(BabbleContext db) => this.db = db;
 
@@ -111,12 +108,12 @@ namespace Server.DbService
       return false;
     }
 
-    // maybe change to only group names
-    public IEnumerable<Group> GetUserGroups(int uid)
+    // return example [ {Id = 1, Name = "aboba"}, {Id = 4, Name = "adasd"} ]
+    public IEnumerable<dynamic> GetUserGroups(int uid)
     {
       return from ug in db.UserGroups
              where ug.UserId == uid
-             select ug.Group;
+             select new { ug.Group.Id, ug.Group.Name };
     }
 
     // throw exeption "UserNotFound" if user with this name is not found
@@ -139,7 +136,7 @@ namespace Server.DbService
       if (group != null)
       {
         UserGroup? userGroup = db.UserGroups.FirstOrDefault(ug => ug.GroupId == group.Id && ug.UserId == uid);
-        if(userGroup != null)
+        if (userGroup != null)
         {
           db.UserGroups.Remove(userGroup);
 
@@ -152,7 +149,6 @@ namespace Server.DbService
         }
       }
     }
-
 
     //public void RemoveUserFromGroup(string uname, string groupName)
     //{
