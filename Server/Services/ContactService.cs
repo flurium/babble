@@ -1,5 +1,6 @@
 ﻿using Server.Data;
 using Server.Models;
+using CrossLibrary;
 
 namespace Server.Services
 {
@@ -12,10 +13,10 @@ namespace Server.Services
 
     Task AcceptInviteAsync(string unameFrom, string unameTo);
 
-    IEnumerable<dynamic> GetInvites(int uid);
+    IEnumerable<Prop> GetInvites(int uid);
 
     //public IEnumerable<Contact> GetInvites(string uname);
-    IEnumerable<dynamic> GetContacts(int uid);
+    IEnumerable<Prop> GetContacts(int uid);
 
     //public IEnumerable<Contact> GetContacts(string uname);
   }
@@ -28,11 +29,9 @@ namespace Server.Services
 
     // todo: rewrite
     // get invites, sended to the person
-    public IEnumerable<dynamic> GetInvites(int uid)
+    public IEnumerable<Prop> GetInvites(int uid)
     {
-      return from c in db.Contacts
-             where c.UserToId == uid && !c.isAccepted
-             select new { c.Id, c.UserFrom.Name };
+      return db.Contacts.Where(c => c.UserToId == uid && !c.isAccepted).Select(c => new Prop { Id = c.Id, Name = c.UserFrom.Name });
     }
 
     //public IEnumerable<Contact> GetInvites(string uname)
@@ -50,12 +49,16 @@ namespace Server.Services
     //         select c;
     //}
 
-    public IEnumerable<dynamic> GetContacts(int uid)
+    public IEnumerable<Prop> GetContacts(int uid)
     {
       return db.Contacts
          .Where(c => c.UserFromId == uid || c.UserToId == uid)
-         .Select(c => c.UserFromId == uid ? new { c.Id, Name = c.NameAtUserFrom } : new { c.Id, Name = c.NameAtUserTo });
+         .Select(c => c.UserFromId == uid ?
+         new Prop { Id = c.UserToId, Name = c.NameAtUserFrom } 
+         : new Prop { Id = c.UserFromId, Name = c.NameAtUserTo });
     }
+
+
 
     // accept invite
     public async Task AcceptInviteAsync(string unameFrom, string unameTo)
