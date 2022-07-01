@@ -2,7 +2,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using Newtonsoft.Json;
-using CrossLibrary;
+using HashLibrary;
 using Server.Models;
 
 namespace Server.Services
@@ -132,7 +132,7 @@ namespace Server.Services
                         //try catch block???
                         if (!(db.GetUser(obj.Data.User.Name)))
                         {
-                            User user = db.AddUser(obj.Data.User.Name, obj.Data.User.Password);
+                            db.AddUserAsync(obj.Data.User.Name, obj.Data.User.Password);
                             SendData(
                               new Response
                               {
@@ -140,7 +140,7 @@ namespace Server.Services
                                   Status = "ok",
                                   Data = new
                                   {
-                                      User = user
+                                      User = db.GetUser(obj.Data.User.Name)
                                   }
                               }, port);
                         }
