@@ -19,7 +19,18 @@ namespace Server
         //}
 
         // вот так использовать
-        await db.SendInviteAsync(1, 3);
+        //await db.SendInviteAsync(1, 3);
+        //await db.AddUserAsync("a", "a");
+
+        //var user = db.AddUser("g", "g");
+        //Console.WriteLine(user.Id);
+
+        //var ser = JsonConvert.SerializeObject(db.GetUser("a"));
+        //Console.WriteLine(ser);
+
+        //var obj = JsonConvert.DeserializeObject<dynamic>(ser);
+        //if (obj != null)
+        //  Console.WriteLine(obj.Name);
 
         //foreach(var g in db.GetUserGroups(1))
         //{
