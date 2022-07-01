@@ -6,10 +6,7 @@ namespace Server.Services
 {
   public interface IContactService
   {
-    //Task SendInviteAsync(string unameFrom, string unameTo);
-    Task SendInviteAsync(int uidFrom, int uidTo);
-
-    Task<Contact> SendInviteAsync(int uidFrom, string unameTo);
+    Task<Prop> SendInviteAsync(int uidFrom, string unameTo);
 
     Task RemoveContactAsync(int id);
 
@@ -35,7 +32,7 @@ namespace Server.Services
       return db.Contacts.Where(c => c.UserToId == uid && !c.isAccepted).Select(c => new Prop { Id = c.Id, Name = c.UserFrom.Name });
     }
 
-    public async Task<Contact> SendInviteAsync(int uidFrom, string unameTo)
+    public async Task<Prop> SendInviteAsync(int uidFrom, string unameTo)
     {
       User? userFrom = db.Users.Find(uidFrom);
       if (userFrom == null) throw new Exception("User From Not Found"); // user, who send invite, doesn't exist
@@ -49,7 +46,7 @@ namespace Server.Services
       var contact = db.Contacts.Add(new Contact { UserFrom = userFrom, UserTo = userTo, isAccepted = false });
 
       await db.SaveChangesAsync();
-      return contact.Entity;
+      return new Prop { Id = contact.Entity.Id, Name = contact.Entity.UserFrom.Name };
     }
 
     public IEnumerable<Prop> GetContacts(int uid)
@@ -97,23 +94,6 @@ namespace Server.Services
         contact.NameAtUserTo = userFrom.Name;
         await db.SaveChangesAsync();
       }
-    }
-
-    // send invite
-    public async Task SendInviteAsync(int uidFrom, int uidTo)
-    {
-      User? userFrom = db.Users.Find(uidFrom);
-      if (userFrom == null) throw new Exception("UserFromNotFound"); // user, who send invite, doesn't exist
-
-      User? userTo = db.Users.Find(uidTo);
-      if (userTo == null) throw new Exception("UserToNotFound"); // user, who should accept invite, doesn't exist
-
-      if (db.Contacts.Any(c => c.UserFromId == userFrom.Id && c.UserToId == userTo.Id || c.UserFromId == userTo.Id && c.UserToId == userFrom.Id))
-        throw new Exception("InviteAlreadyExist");
-
-      db.Contacts.Add(new Contact { UserFrom = userFrom, UserTo = userTo, isAccepted = false });
-
-      await db.SaveChangesAsync();
     }
 
     public async Task RemoveContactAsync(int id)

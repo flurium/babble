@@ -189,24 +189,23 @@ namespace Server.Services
     }
     public void SendMessageToContactHandle(dynamic req) { }
     public void SendMessageToGroupHandle(dynamic req) { }
-    public void SendInviteHandle(dynamic req)
+    public async void SendInviteHandle(dynamic req)
     {
-      //  try
-      //  {
-      //    //await db.SendInviteAsync(obj.Data.Id, obj.Data.NameTo);
-      //    SendData(
-      //      new Response
-      //      {
-      //        Command = req.Command,
-      //        Status = Status.OK,
-      //        Data = null
-      //      }, port);
-      //  }
-      //  catch (Exception ex)
-      //  {
-      //    SendData(
-      //new Response { Command = req.Command, Status = Status.Bad, Data = ex.Message }, port);
-      //  }
+      IPEndPoint ip = clients[req.Data.From];
+      try
+      {
+        Contact contact = await db.SendInviteAsync(req.Data.Form, req.Data.To);
+
+        // to who sended request
+        SendData(new Response { Command = Command.SendInvite, Status = Status.OK, Data = "Invite is sent successfully" }, ip);
+
+        // to who will get invite
+        SendData(new Response { Command = Command.GetInvite, Status = Status.OK, Data = contact }, ip);
+
+      } catch (Exception ex)
+      {
+        SendData( new Response { Command = req.Command, Status = Status.Bad, Data = ex.Message }, ip);
+      }
     }
     public void AcceptInviteHandle(dynamic req)
     {
