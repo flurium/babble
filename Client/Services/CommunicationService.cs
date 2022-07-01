@@ -16,21 +16,21 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using CrossLibrary;
+using Newtonsoft.Json;
 
 namespace Client.Services
 {
   public class CommunicationService
   {
-    int remotePort;
-    int localPort;
-    string remoteIp;
-    bool run = false;
-    Socket listeningSocket;
+        private int remotePort = 5001;
+        private int localPort;
+        private string remoteIp = "127.0.0.1";
+        private bool run = false;
+        private Socket listeningSocket;
+        Random rnd = new Random();
+        private Task listenongTask;
 
-    Random rnd = new Random();
-    Task listenongTask;
-
-    public ObservableCollection<Prop> Contacts { get; set; } = new ObservableCollection<Prop>();
+        public ObservableCollection<Prop> Contacts { get; set; } = new ObservableCollection<Prop>();
     public ObservableCollection<Prop> Groups { get; set; } = new ObservableCollection<Prop>();
     public ObservableCollection<Prop> Invites { get; set; } = new ObservableCollection<Prop>();
 
@@ -45,127 +45,165 @@ namespace Client.Services
     }
 
 
-    private void Authentication(string name, string password)
-    {
-
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    private void SendData(string message, string ip, int port)
-    {
-      try
-      {
-        // where to send
-        IPEndPoint remotePoint = new IPEndPoint(IPAddress.Parse(ip), port);
-        byte[] data = Encoding.Unicode.GetBytes(message); // message in bytes
-        listeningSocket.SendTo(data, remotePoint);
-      }
-      catch (Exception ex)
-      {
-        MessageBox.Show(ex.Message);
-      }
-    }
-
-    private void Start()
-    {
-      run = true;
-      try
-      {
-        listeningSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-        listenongTask = new Task(Listen);
-        listenongTask.Start();
-      }
-      catch (Exception ex)
-      {
-        MessageBox.Show(ex.Message);
-      }
-    }
-
-
-    /// <summary>
-    /// ///////////
-    /// </summary>
-    private void Listen()
-    {
-      try
-      {
-        IPEndPoint localIP = new IPEndPoint(IPAddress.Parse(remoteIp), localPort);
-        listeningSocket.Bind(localIP);
-
-        while (run)
+        public void SignIn(string name, string password)
         {
-          StringBuilder builder = new StringBuilder();
-          int bytes = 0;
-          byte[] data = new byte[256];
+            do
+            {
+                localPort = rnd.Next(2000, 49000);
+            } while (localPort == 5001); // 5001 - server port
 
-          // adress fromm where get
-          EndPoint remoteIp = new IPEndPoint(IPAddress.Any, 0);
-
-          do
-          {
-            bytes = listeningSocket.ReceiveFrom(data, ref remoteIp);
-            builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
-          }
-          while (listeningSocket.Available > 0);
-
-          IPEndPoint remoteFullIp = (IPEndPoint)remoteIp;
+            try
+            {
+                Request sing = new Request();
+                sing.Command = Command.SingIn;
+                sing.Data = new
+                {
+                    Name = name,
+                    Password = password
+                };
 
 
-          // output
-          AddToOutput(builder.ToString());
-          //return builder.ToString();
+                SendData(sing, remoteIp, remotePort);
+                run = true;
+                listeningSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+                Task listenongTask = new Task(Listen);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
-      }
-      catch (SocketException socketEx)
-      {
-        if (socketEx.ErrorCode != 10004)
-          MessageBox.Show(socketEx.Message + socketEx.ErrorCode);
-      }
-      catch (Exception ex)
-      {
-        MessageBox.Show(ex.Message + ex.GetType().ToString());
-      }
-      finally
-      {
-        CloseConnection();
-      }
+
+
+        private void SendData(Request message, string ip, int port)
+        {
+            try
+            {
+                // where to send
+                IPEndPoint remotePoint = new IPEndPoint(IPAddress.Parse(ip), port);
+                string requestStr = JsonConvert.SerializeObject(message);
+                byte[] data = Encoding.Unicode.GetBytes(requestStr);
+                listeningSocket.SendTo(data, remotePoint);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+
+
+
+        /// <summary>
+        /// ///////////
+        /// </summary>
+        private void Listen()
+        {
+            try
+            {
+                IPEndPoint localIP = new IPEndPoint(IPAddress.Parse(remoteIp), localPort);
+                listeningSocket.Bind(localIP);
+
+                while (run)
+                {
+                    StringBuilder builder = new StringBuilder();
+                    int bytes = 0;
+                    byte[] data = new byte[256];
+
+                    // adress fromm where get
+                    EndPoint remoteIp = new IPEndPoint(IPAddress.Any, 0);
+
+                    do
+                    {
+                        bytes = listeningSocket.ReceiveFrom(data, ref remoteIp);
+                        builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
+                    }
+                    while (listeningSocket.Available > 0);
+
+                    IPEndPoint remoteFullIp = (IPEndPoint)remoteIp;
+
+
+                    // output
+                    // AddToOutput(builder.ToString());
+
+                }
+            }
+            catch (SocketException socketEx)
+            {
+                if (socketEx.ErrorCode != 10004)
+                    MessageBox.Show(socketEx.Message + socketEx.ErrorCode);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message + ex.GetType().ToString());
+            }
+            finally
+            {
+                CloseConnection();
+            }
+        }
+
+
+        private void Treatment(string message)
+        {
+            Response lable = JsonConvert.DeserializeObject<Response>(message);
+            if (lable.Status == Status.OK)
+            {
+                if (lable.Command == Command.SingIn)
+                {
+                    List<Prop> group = new List<Prop>();
+                    foreach (var item in lable.Data.Groups)
+                    {
+                        Groups.Add(item);
+                    }
+                   
+                    foreach (var item in lable.Data.Contacts)
+                    {
+                        Contacts.Add(item);
+                    }
+
+                    foreach (var item in lable.Data.Invites)
+                    {
+                        Invites.Add(item);
+                    }
+
+
+                }
+                else if (lable.Command == Command.SingUp)
+                {
+
+                }
+                else
+                {
+
+                }
+            }
+
+        }
+
+
+        /*
+        private void AddToOutput(string message)
+        {
+            Dispatcher.BeginInvoke(() =>
+            {
+                //messageTextBlock.Text += Environment.NewLine;
+                outputTextBox.Text += string.Format("{0}\n", message);
+            }, null);
+        }
+      */
+
+
+        private void CloseConnection()
+        {
+            if (listeningSocket != null)
+            {
+                listeningSocket.Shutdown(SocketShutdown.Both);
+                listeningSocket.Close();
+                listeningSocket = null;
+            }
+        }
+
     }
-
-
-
-    private string AddToOutput(string message)
-    {
-      return message;
-    }
-
-
-
-    private void CloseConnection()
-    {
-      if (listeningSocket != null)
-      {
-        listeningSocket.Shutdown(SocketShutdown.Both);
-        listeningSocket.Close();
-        listeningSocket = null;
-      }
-    }
-
-  }
 
 }
