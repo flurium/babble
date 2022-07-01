@@ -7,9 +7,9 @@ namespace Server.Services
   {
     User AddUser(string name, string password);
 
-    Task RemoveUserAsync(int id);
-
     User? GetUser(string name);
+
+    Task RemoveUserAsync(int id);
   }
 
   public class UserService : IUserService
@@ -26,6 +26,11 @@ namespace Server.Services
       return user.Entity;
     }
 
+    public User? GetUser(string name)
+    {
+      return db.Users.FirstOrDefault(u => u.Name == name);
+    }
+
     public async Task RemoveUserAsync(int id)
     {
       User? user = db.Users.Find(id);
@@ -34,11 +39,6 @@ namespace Server.Services
         db.Users.Remove(user);
         await db.SaveChangesAsync();
       }
-    }
-
-    public User? GetUser(string name)
-    {
-      return db.Users.FirstOrDefault(u => u.Name == name);
     }
   }
 }

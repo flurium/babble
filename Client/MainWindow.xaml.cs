@@ -11,10 +11,9 @@ namespace Client
 
   public partial class MainWindow : Window
   {
-    public static UserPage userChat;
     public static SignInPage signIn;
     public static SignUpPage signUp;
-
+    public static UserPage userChat;
     private CommunicationService cs = new CommunicationService();
 
     public MainWindow()

@@ -136,13 +136,13 @@
         <ListBox.ItemContainerStyle>
           <Style TargetType="ListBoxItem">
             <Setter Property="Background" Value="#f4f4f6" />
-            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Padding" Value="10" />
             <Setter Property="Margin" Value="100,5,0,0" />
-            <!--<Setter Property="HorizontalContentAlignment" Value="Right"/>-->
+            <!--<Setter Property="HorizontalContentAlignment" Value="Right" />-->
             <Style.Triggers>
               <DataTrigger Binding="{Binding Path=IsIncoming}" Value="true">
                 <Setter Property="Margin" Value="0,5,100,0" />
-                <!--<Setter Property="HorizontalContentAlignment" Value="Left"/>-->
+                <!--<Setter Property="HorizontalContentAlignment" Value="Left" />-->
               </DataTrigger>
             </Style.Triggers>
           </Style>

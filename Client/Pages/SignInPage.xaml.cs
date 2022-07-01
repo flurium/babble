@@ -18,15 +18,15 @@ namespace Client.Pages
       this.cs = cs;
     }
 
-    private void SignUp(object sender, RoutedEventArgs e)
-    {
-      NavigationService.Navigate(MainWindow.signUp);
-      NavigationService.RemoveBackEntry();
-    }
-
     private void SignIn_Click(object sender, RoutedEventArgs e)
     {
       NavigationService.Navigate(MainWindow.userChat);
+      NavigationService.RemoveBackEntry();
+    }
+
+    private void SignUp(object sender, RoutedEventArgs e)
+    {
+      NavigationService.Navigate(MainWindow.signUp);
       NavigationService.RemoveBackEntry();
     }
   }

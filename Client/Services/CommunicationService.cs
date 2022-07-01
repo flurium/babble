@@ -13,20 +13,38 @@ namespace Client.Services
 {
   public class CommunicationService
   {
-    private int remotePort = 5001;
+    private Dictionary<Command, Action<Response>> handlers = new Dictionary<Command, Action<Response>>();
+    private Socket listeningSocket;
+    private Task listenongTask;
     private int localPort;
     private string remoteIp = "127.0.0.1";
-    private bool run = false;
-    private Socket listeningSocket;
+    private int remotePort = 5001;
     private Random rnd = new Random();
-    private Task listenongTask;
+    private bool run = false;
+    public CommunicationService()
+    {
+      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
 
-    private Dictionary<Command, Action<Response>> handlers = new Dictionary<Command, Action<Response>>();
+      // to erplace
+      //Groups.Clear();
+      Groups.Add(new Prop { Id = 1, Name = "dfasd" });
 
-    public Prop User { get; set; }
+      // Init handlers
+      handlers.Add(Command.SignIn, SignInHandle);
+      handlers.Add(Command.SignUp, SignUpHandle);
+      handlers.Add(Command.SendInvite, SendInviteHandle);
+      handlers.Add(Command.GetInvite, GetInviteHandle);
+      handlers.Add(Command.GetContact, GetContactHandle);
+    }
+
     public ObservableCollection<Prop> Contacts { get; set; } = new ObservableCollection<Prop>();
     public ObservableCollection<Prop> Groups { get; set; } = new ObservableCollection<Prop>();
     public ObservableCollection<Prop> Invites { get; set; } = new ObservableCollection<Prop>();
+    public Prop User { get; set; }
+    public void Disconnect()
+    {
+      // Send disconnect request
+    }
 
     public void SignIn(string name, string password)
     {
@@ -58,20 +76,41 @@ namespace Client.Services
       }
     }
 
-    // ip and port same all time
-    private void SendData(Request message, string ip, int port)
+    private void CloseConnection()
     {
-      try
+      if (listeningSocket != null)
       {
-        // where to send
-        IPEndPoint remotePoint = new IPEndPoint(IPAddress.Parse(ip), port);
-        string requestStr = JsonConvert.SerializeObject(message);
-        byte[] data = Encoding.Unicode.GetBytes(requestStr);
-        listeningSocket.SendTo(data, remotePoint);
+        listeningSocket.Shutdown(SocketShutdown.Both);
+        listeningSocket.Close();
+        listeningSocket = null;
       }
-      catch (Exception ex)
+    }
+
+    private void GetContactHandle(Response res)
+    { }
+
+    private void GetInviteHandle(Response res)
+    { }
+
+    // Treatment
+    private void Handle(string resStr)
+    {
+      Response res = JsonConvert.DeserializeObject<Response>(resStr);
+      if (res.Status == Status.OK)
       {
-        MessageBox.Show(ex.Message);
+        try
+        {
+          handlers[res.Command](res);
+        }
+        catch (Exception ex)
+        {
+          // Show error
+        }
+      }
+      else if (res.Status == Status.Bad)
+      {
+        // Show exeption message
+        // res.Data = message
       }
     }
 
@@ -124,53 +163,24 @@ namespace Client.Services
       }
     }
 
-    public CommunicationService()
+    // ip and port same all time
+    private void SendData(Request message, string ip, int port)
     {
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-
-      // to erplace
-      //Groups.Clear();
-      Groups.Add(new Prop { Id = 1, Name = "dfasd" });
-
-      // Init handlers
-      handlers.Add(Command.SignIn, SignInHandle);
-      handlers.Add(Command.SignUp, SignUpHandle);
-      handlers.Add(Command.SendInvite, SendInviteHandle);
-      handlers.Add(Command.GetInvite, GetInviteHandle);
-      handlers.Add(Command.GetContact, GetContactHandle);
-    }
-
-    private void CloseConnection()
-    {
-      if (listeningSocket != null)
+      try
       {
-        listeningSocket.Shutdown(SocketShutdown.Both);
-        listeningSocket.Close();
-        listeningSocket = null;
+        // where to send
+        IPEndPoint remotePoint = new IPEndPoint(IPAddress.Parse(ip), port);
+        string requestStr = JsonConvert.SerializeObject(message);
+        byte[] data = Encoding.Unicode.GetBytes(requestStr);
+        listeningSocket.SendTo(data, remotePoint);
+      }
+      catch (Exception ex)
+      {
+        MessageBox.Show(ex.Message);
       }
     }
-
-    // Treatment
-    private void Handle(string resStr)
-    {
-      Response res = JsonConvert.DeserializeObject<Response>(resStr);
-      if (res.Status == Status.OK)
-      {
-        try
-        {
-          handlers[res.Command](res);
-        }
-        catch (Exception ex)
-        {
-          // Show error
-        }
-      }
-      else if (res.Status == Status.Bad)
-      {
-        // Show exeption message
-        // res.Data = message
-      }
-    }
+    private void SendInviteHandle(Response res)
+    { }
 
     private void SignInHandle(Response res)
     {
@@ -181,19 +191,5 @@ namespace Client.Services
     }
 
     private void SignUpHandle(Response res) => User = res.Data;
-
-    private void SendInviteHandle(Response res)
-    { }
-
-    private void GetInviteHandle(Response res)
-    { }
-
-    private void GetContactHandle(Response res)
-    { }
-
-    public void Disconnect()
-    {
-      // Send disconnect request
-    }
   }
 }

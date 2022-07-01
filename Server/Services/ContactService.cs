@@ -6,15 +6,15 @@ namespace Server.Services
 {
   public interface IContactService
   {
-    Task<Prop> SendInviteAsync(int uidFrom, string unameTo);
-
-    Task RemoveContactAsync(int id);
-
     Task<Contact> AcceptInviteAsync(int id);
+
+    IEnumerable<Prop> GetContacts(int uid);
 
     IEnumerable<Prop> GetInvites(int uid);
 
-    IEnumerable<Prop> GetContacts(int uid);
+    Task RemoveContactAsync(int id);
+
+    Task<Prop> SendInviteAsync(int uidFrom, string unameTo);
   }
 
   public class ContactService : IContactService
@@ -23,11 +23,42 @@ namespace Server.Services
 
     public ContactService(BabbleContext db) => this.db = db;
 
+    // accept invite
+    public async Task<Contact> AcceptInviteAsync(int id)
+    {
+      Contact? contact = db.Contacts.Find(id);
+      if (contact == null) throw new Exception("Contact isn't found");
+
+      contact.isAccepted = true;
+      contact.NameAtUserFrom = contact.UserTo.Name;
+      contact.NameAtUserTo = contact.UserFrom.Name;
+      await db.SaveChangesAsync();
+      return contact;
+    }
+
+    public IEnumerable<Prop> GetContacts(int uid)
+    {
+      return db.Contacts
+         .Where(c => c.UserFromId == uid || c.UserToId == uid)
+         .Select(c => c.UserFromId == uid ?
+         new Prop { Id = c.UserToId, Name = c.NameAtUserFrom }
+         : new Prop { Id = c.UserFromId, Name = c.NameAtUserTo });
+    }
+
     // todo: rewrite
     // get invites, sended to the person
     public IEnumerable<Prop> GetInvites(int uid)
     {
       return db.Contacts.Where(c => c.UserToId == uid && !c.isAccepted).Select(c => new Prop { Id = c.Id, Name = c.UserFrom.Name });
+    }
+
+    public async Task RemoveContactAsync(int id)
+    {
+      Contact? contact = db.Contacts.Find(id);
+      if (contact == null) throw new Exception("ContactNotFound");
+
+      db.Contacts.Remove(contact);
+      await db.SaveChangesAsync();
     }
 
     public async Task<Prop> SendInviteAsync(int uidFrom, string unameTo)
@@ -46,29 +77,6 @@ namespace Server.Services
       await db.SaveChangesAsync();
       return new Prop { Id = contact.Entity.Id, Name = contact.Entity.UserFrom.Name };
     }
-
-    public IEnumerable<Prop> GetContacts(int uid)
-    {
-      return db.Contacts
-         .Where(c => c.UserFromId == uid || c.UserToId == uid)
-         .Select(c => c.UserFromId == uid ?
-         new Prop { Id = c.UserToId, Name = c.NameAtUserFrom }
-         : new Prop { Id = c.UserFromId, Name = c.NameAtUserTo });
-    }
-
-    // accept invite
-    public async Task<Contact> AcceptInviteAsync(int id)
-    {
-      Contact? contact = db.Contacts.Find(id);
-      if (contact == null) throw new Exception("Contact isn't found");
-
-      contact.isAccepted = true;
-      contact.NameAtUserFrom = contact.UserTo.Name;
-      contact.NameAtUserTo = contact.UserFrom.Name;
-      await db.SaveChangesAsync();
-      return contact;
-    }
-
     private async Task AcceptInviteAsync(User userFrom, User userTo)
     {
       Contact? contact = db.Contacts.FirstOrDefault(c => c.UserFromId == userFrom.Id && c.UserToId == userTo.Id);
@@ -79,15 +87,6 @@ namespace Server.Services
         contact.NameAtUserTo = userFrom.Name;
         await db.SaveChangesAsync();
       }
-    }
-
-    public async Task RemoveContactAsync(int id)
-    {
-      Contact? contact = db.Contacts.Find(id);
-      if (contact == null) throw new Exception("ContactNotFound");
-
-      db.Contacts.Remove(contact);
-      await db.SaveChangesAsync();
     }
   }
 }

@@ -10,13 +10,13 @@ namespace Server.Services
   {
     Task AddGroupAsync(int uid, string groupName);
 
-    Task RenameGroupAsync(int id, string newName);
-
     Task<bool> AddUserToGroupAsync(int uid, string groupName);
 
     IEnumerable<Prop> GetUserGroups(int uid);
 
     Task RemoveUserFromGroupAsync(int uid, string groupName);
+
+    Task RenameGroupAsync(int id, string newName);
   }
 
   public class GroupService : IGroupService
@@ -24,16 +24,6 @@ namespace Server.Services
     private BabbleContext db;
 
     public GroupService(BabbleContext db) => this.db = db;
-
-    public async Task RenameGroupAsync(int id, string newName)
-    {
-      Group? group = db.Groups.Find(id);
-      if (group != null)
-      {
-        group.Name = newName;
-        await db.SaveChangesAsync();
-      }
-    }
 
     public async Task AddGroupAsync(int uid, string groupName)
     {
@@ -88,6 +78,16 @@ namespace Server.Services
 
           await db.SaveChangesAsync();
         }
+      }
+    }
+
+    public async Task RenameGroupAsync(int id, string newName)
+    {
+      Group? group = db.Groups.Find(id);
+      if (group != null)
+      {
+        group.Name = newName;
+        await db.SaveChangesAsync();
       }
     }
   }
