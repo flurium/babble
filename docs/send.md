@@ -1,26 +1,111 @@
 # Формат отправки данних
 
-## От клиента на сервер
+## Структури
+Все структури находятся в CrossLibrary. Для работи с ними надо вставить `using CrossLibrary;` в начало файла.
 
-Имена для комманд (Мария дописать в таком же стиле):
-- `signup` = решистрация
-- `signin` = логин
-- `send` = отправка сообщения
+Есть enum Command, которий отображает отправляемие команди. 
+```cs
+enum Command {
+  SingIn,
+  SingUp,
+  SendMessageToContact,
+  SendMessageToGroup,
+  GetMessageFromContact,
+  GetMessageFromGroup,
+  SendInvite,
+  GetInvite,
+  AcceptInvite,
+  RenameContact,
+  RemoveContact,
+  AddGroup,
+  LeaveGroup,
+  //RenameGroup
+  // RemoveGroup не нужен, так как група автоматически удаляется если ее покнут все учасники
+}
+```
 
-Обязательние поля:
-- `command` = отвечает за то, что будет виполнено с переданими даннимим
-- `data` = хранит переданние данние (может иметь разную структуру)
+Есть enum Status, которий отоюражает статус в response.
+```cs
+enum Status {
+  OK,
+  Bad
+}
+```
 
-### Пример отправки запроса на регистрацию:
+Структура запроса:
+```cs
+struct Request
+{
+  Command Command { get; set; }
+  dynamic Data { get; set; }
+}
+```
+
+Структура ответа:
+```cs
+struct Response
+{
+  Status Status { get; set; }
+  Command Command { get; set; }
+  dynamic Data { get; set; }
+}
+```
+
+Структура которая описивает большинство сущностей, которие отправляются в поле `Data` от сервера:
+```cs
+struct Prop {
+  int Id { get; set; }
+  string Name { get; set; }
+}
+``` 
+
+
+## Пример отправки запроса на регистрацию:
+
+```cs
+Request req = new Request {
+  Command = Command.SignUp,
+  Data = new {
+    Name = "username",
+    Password = "password"
+  } 
+};
+```
+
+То что получится после JsonConvert.Serialyze(req)
 ```json
 {
- "command":"signup",
- "data": {
-  "name": "имя пользователя",
-  "password": "хешированний пароль"
+ "Command": 1,
+ "Data": {
+  "Name": "username",
+  "Password": "password"
  }
 }
 ```
+Ви видете что команда по факту ето число, но когда ви будете десериализовать ето в обьект типа `Request` комманда снова станет типа `enum Command`. Сравнение производите так:
+```cs
+if(req.Command == Command.SingIn) {
+  ...
+}
+```
+
+## Пример отправки результата на запрос регистрации 
+То есть на сервер пришел запрос на регистрацию, он виполнил операцию и ето то что он вернет на клиент:
+  
+```cs
+var user = db.AddUser(req.Data.Name, req.Data.Password)
+
+Response res = new Response {
+  Status = Status.OK,
+  Command = req.Command,
+  Data = new Prop {
+    Id = user.Id,
+    Name = user.Name
+  }  
+}
+```
+
+## Старая инфа
 
 ### Пример отправки запроса на логин: 
 ```json
@@ -51,22 +136,6 @@
 
 
 ## От сервера на клиент
-
-Обязательние поля:
-- `status` = статус говорит за состояние запроса (`ok` или `exception`, ...)
-- `data` = хранит переданние данние (может иметь разную структуру)
-
-
-### Пример отправки результата на запрос регистрации (тоесть на сервер пришел запрос на регистрацию, он виполнил операцию и ето то что он вернет на клиент):
-
-- `user` = информация о пользователе
-- `contacts` = контакти (тут представляют собой список из id и имен контактов)
-  - `id` = id пользователя
-- `groups` = список групп, такая же структура как и у контактов
-  - `id` = id группи
-- `invitations` =  список приглашений отосланих етому пользователю
-  - `id` = id контакта в базе даних (его надо будет отправлять при подтверждении приглашения)
-  
 ```json
 {
   "status": "ok",
