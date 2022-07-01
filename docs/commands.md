@@ -50,11 +50,7 @@
 
 
 ## AcceptInvite
-- Request: в `Data` хранится имя и хеширований пароль
-
-Должно отправлятся 2-а response:
-- Response тому кто принял: в `Data` контакт. Сообщение ошибки если ошибка.
-- Response тому кому бил отправлен инвайт: в `Data` новий контакт, смотреть `GetContact`
+- Request: в `Data` id контакта
 
 
 ## GetContact
