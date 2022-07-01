@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using Client.Services;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;
 
@@ -9,9 +10,12 @@ namespace Client.Pages
   /// </summary>
   public partial class SignUpPage : Page
   {
-    public SignUpPage()
+    CommunicationService cs;
+
+    public SignUpPage(CommunicationService cs)
     {
       InitializeComponent();
+      this.cs = cs;
     }
 
     private void SignUpNewAcc(object sender, RoutedEventArgs e)

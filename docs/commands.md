@@ -49,7 +49,7 @@
 - Response: в `Data` id инвайта (неподтвержденний контакт), имя пользователя, которий отправил
 
 
-## AcceptInvite
+## AcceptInvite +
 - Request: в `Data` id контакта
 
 

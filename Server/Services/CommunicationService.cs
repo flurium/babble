@@ -90,8 +90,6 @@ namespace Server.Services
       }
     }
 
-
-
     private void SendData(Response response, IPEndPoint ip)
     {
       string responseStr = JsonConvert.SerializeObject(response);
@@ -109,7 +107,6 @@ namespace Server.Services
       //  }
       //}
     }
-
 
     // Handlers
     public void SignUpHandle(dynamic req, IPEndPoint ip)
@@ -176,8 +173,17 @@ namespace Server.Services
 
       SendData(res, ip);
     }
-    public void SendMessageToContactHandle(dynamic req, IPEndPoint ip) { }
-    public void SendMessageToGroupHandle(dynamic req, IPEndPoint ip) { }
+
+    public void SendMessageToContactHandle(dynamic req, IPEndPoint ip)
+    { 
+      
+    }
+
+    public void SendMessageToGroupHandle(dynamic req, IPEndPoint ip)
+    {
+    
+    }
+
     public async void SendInviteHandle(dynamic req, IPEndPoint ip)
     {
       try
@@ -195,6 +201,7 @@ namespace Server.Services
         SendData(new Response { Command = req.Command, Status = Status.Bad, Data = ex.Message }, ip);
       }
     }
+
     public async void AcceptInviteHandle(dynamic req, IPEndPoint ip)
     {
       // ip = ip of user to
@@ -221,18 +228,23 @@ namespace Server.Services
         SendData(new Response { Command = req.Command, Status = Status.Bad, Data = ex.Message }, ip);
       }
     }
-    public void RenameContactHandle(dynamic req, IPEndPoint ip) { }
-    public void RemoveContactHandle(dynamic req, IPEndPoint ip) { }
-    public void AddGroupHandle(dynamic req, IPEndPoint ip) { }
-    public void LeaveGroupHandle(dynamic req, IPEndPoint ip) { }
+
+    public void RenameContactHandle(dynamic req, IPEndPoint ip)
+    { }
+
+    public void RemoveContactHandle(dynamic req, IPEndPoint ip)
+    { }
+
+    public void AddGroupHandle(dynamic req, IPEndPoint ip)
+    { }
+
+    public void LeaveGroupHandle(dynamic req, IPEndPoint ip)
+    { }
 
     public void DisconnectHandle(dynamic req, IPEndPoint ip)
     {
       clients.Remove(req.Data);
     }
-
-
-
 
     public CommunicationService()
     {

@@ -175,5 +175,11 @@ namespace Client.Services
         listeningSocket = null;
       }
     }
+
+    public void Disconnect()
+    {
+      // Send disconnect request
+
+    }
   }
 }

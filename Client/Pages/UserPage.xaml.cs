@@ -1,20 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Client.Services;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Client.Services;
-using CrossLibrary;
 
 namespace Client
 {
@@ -23,11 +10,12 @@ namespace Client
   /// </summary>
   public partial class UserPage : Page
   {
-    private CommunicationService cs = new CommunicationService();
+    CommunicationService cs;
 
-    public UserPage()
+    public UserPage(CommunicationService cs)
     {
       InitializeComponent();
+      this.cs = cs;
       DataContext = cs;
 
       var lbi = new TextBlock();
@@ -40,6 +28,7 @@ namespace Client
     {
       NavigationService.GoBack();
       NavigationService.RemoveBackEntry();
+      cs.Disconnect();
     }
 
     private void GoToContacts_Click(object sender, RoutedEventArgs e) => ListSection.SelectedIndex = 0;

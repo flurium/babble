@@ -1,4 +1,5 @@
 ﻿using Client.Pages;
+using Client.Services;
 using System.Windows;
 
 namespace Client
@@ -10,14 +11,26 @@ namespace Client
 
   public partial class MainWindow : Window
   {
-    public static UserPage userChat = new UserPage();
-    public static SignInPage signIn = new SignInPage();
-    public static SignUpPage signUp = new SignUpPage();
+    public static UserPage userChat;
+    public static SignInPage signIn;
+    public static SignUpPage signUp;
+
+    private CommunicationService cs = new CommunicationService();
 
     public MainWindow()
     {
       InitializeComponent();
+
+      userChat = new UserPage(cs);
+      signIn = new SignInPage(cs);
+      signUp = new SignUpPage(cs);
+
       MainFrame.Content = signIn;
+    }
+
+    private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+    {
+      cs.Disconnect();
     }
   }
 }
