@@ -24,11 +24,13 @@
     <Style TargetType="Button" BasedOn="{StaticResource Base}">
       <Setter Property="Background" Value="#0bbffa" />
     </Style>
-    <Style TargetType="TabControl">
+    <Style TargetType="ListBox">
       <Setter Property="BorderThickness" Value="0"/>
     </Style>
-    <Style TargetType="TabItem">
-      <Setter Property="BorderThickness" Value="0"/>
+    <Style TargetType="ListBoxItem">
+      <Setter Property="Background" Value="#f4f4f6" />
+      <Setter Property="Height" Value="50" />
+      <Setter Property="FontSize" Value="20" />
     </Style>
   </Page.Resources>
 
@@ -55,16 +57,10 @@
       <Button Grid.Column="1" Grid.Row="0" Click="GoToGroups_Click">Groups</Button>
       <Button Grid.Column="2" Grid.Row="0" Click="GoToInvites_Click">Invites</Button>
 
-      <TabControl x:Name="ListSection" Grid.Row="1" Grid.ColumnSpan="3" BorderThickness="0">
-        <TabItem BorderThickness="0" Visibility="Collapsed">
-          <ListBox x:Name="ContactsList"  ScrollViewer.HorizontalScrollBarVisibility="Disabled" BorderThickness="0">
-            <ListBox.ItemContainerStyle>
-              <Style TargetType="ListBoxItem">
-                <Setter Property="Background" Value="#f4f4f6" />
-                <Setter Property="Height" Value="50" />
-                <Setter Property="FontSize" Value="20" />
-              </Style>
-            </ListBox.ItemContainerStyle>
+      <TabControl x:Name="ListSection" BorderThickness="0" Grid.Row="1" Grid.ColumnSpan="3">
+        
+        <TabItem Visibility="Collapsed"> 
+          <ListBox x:Name="ContactsList">
             <ListBox.ItemTemplate>
               <DataTemplate>
                 <TextBlock Text="{Binding Path=Text}" TextWrapping="Wrap" />
@@ -72,13 +68,21 @@
             </ListBox.ItemTemplate>
           </ListBox>
         </TabItem>
+        
         <TabItem Visibility="Collapsed">
-          <TextBlock>AAAAAAAAAAAAAA</TextBlock>
-          <!--<ListBox></ListBox>-->
+          <ListBox x:Name="GroupsList" ItemsSource="{Binding Groups}"><!--ItemsSource="{Binding Path=Groups, Mode=OneWay}"-->
+            <ListBox.ItemTemplate>
+              <DataTemplate>
+                <TextBlock Text="{Binding Name}"/>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
         </TabItem>
+        
         <TabItem Visibility="Collapsed">
-          <TextBlock>BBBBBBBBBBBBBBBBBB</TextBlock>
-          <!--<ListBox></ListBox>-->
+          <ListBox x:Name="InvitesList">
+            
+          </ListBox>
         </TabItem>
       </TabControl>
 
@@ -135,7 +139,7 @@
       <Label Name="interlocutor" Grid.Column="0" Grid.Row="0" Content="interlocutor" />
       <Button Grid.Column="1" Grid.Row="0" x:Name="Exit" Click="Exit_Click">Exit</Button>
 
-      <ListBox Grid.Row="1" Grid.ColumnSpan="3" x:Name="MessageList" ScrollViewer.VerticalScrollBarVisibility="Auto"  ScrollViewer.HorizontalScrollBarVisibility="Disabled" BorderThickness="0">
+      <ListBox Grid.Row="1" Grid.ColumnSpan="3" x:Name="MessageList" ScrollViewer.VerticalScrollBarVisibility="Auto"  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
         <ListBox.ItemContainerStyle>
           <Style TargetType="ListBoxItem">
             <Setter Property="Background" Value="#f4f4f6" />
