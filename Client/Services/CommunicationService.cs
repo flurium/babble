@@ -55,7 +55,7 @@ namespace Client.Services
             try
             {
                 Request sing = new Request();
-                sing.Command = Command.SingIn;
+                sing.Command = Command.SignIn;
                 sing.Data = new
                 {
                     Name = name,
@@ -149,9 +149,8 @@ namespace Client.Services
             Response lable = JsonConvert.DeserializeObject<Response>(message);
             if (lable.Status == Status.OK)
             {
-                if (lable.Command == Command.SingIn)
+                if (lable.Command == Command.SignIn)
                 {
-                    List<Prop> group = new List<Prop>();
                     foreach (var item in lable.Data.Groups)
                     {
                         Groups.Add(item);
@@ -169,7 +168,7 @@ namespace Client.Services
 
 
                 }
-                else if (lable.Command == Command.SingUp)
+                else if (lable.Command == Command.SignUp)
                 {
 
                 }

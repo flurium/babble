@@ -59,8 +59,8 @@
 
       <TabControl x:Name="ListSection" BorderThickness="0" Grid.Row="1" Grid.ColumnSpan="3">
         
-        <TabItem Visibility="Collapsed"> 
-          <ListBox x:Name="ContactsList">
+        <TabItem Visibility="Collapsed">
+          <ListBox x:Name="ContactsList" ItemsSource="{Binding Contacts}">
             <ListBox.ItemTemplate>
               <DataTemplate>
                 <TextBlock Text="{Binding Path=Text}" TextWrapping="Wrap" />
@@ -80,7 +80,7 @@
         </TabItem>
         
         <TabItem Visibility="Collapsed">
-          <ListBox x:Name="InvitesList">
+          <ListBox x:Name="InvitesList" ItemsSource="{Binding Contacts}">
             
           </ListBox>
         </TabItem>
