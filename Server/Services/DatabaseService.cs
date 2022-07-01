@@ -38,16 +38,14 @@ namespace Server.Services
     public Task AddGroupAsync(int uid, string groupName) => groupService.AddGroupAsync(uid, groupName);
 
     // work with contacts
-    public Task AcceptInviteAsync(string unameFrom, string unameTo) => contactService.AcceptInviteAsync(unameFrom, unameTo);
-
     public IEnumerable<Prop> GetInvites(int uid) => contactService.GetInvites(uid);
 
     public IEnumerable<Prop> GetContacts(int uid) => contactService.GetContacts(uid);
 
     public Task RemoveContactAsync(int id) => contactService.RemoveContactAsync(id);
 
-    public Task<Contact> SendInviteAsync(int uidFrom, string unameTo) => contactService.SendInviteAsync(uidFrom, unameTo);
+    public Task<Prop> SendInviteAsync(int uidFrom, string unameTo) => contactService.SendInviteAsync(uidFrom, unameTo);
 
-    public Task<Contact?> AcceptInviteAsync(int id) => contactService.AcceptInviteAsync(id);
+    public Task<Contact> AcceptInviteAsync(int id) => contactService.AcceptInviteAsync(id);
   }
 }

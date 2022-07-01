@@ -16,7 +16,7 @@ namespace Server.Services
     private Socket listeningSocket;
     private Dictionary<int, IPEndPoint> clients = new Dictionary<int, IPEndPoint>();
 
-    private Dictionary<Command, Action<dynamic>> handlers = new Dictionary<Command, Action<dynamic>>();
+    private Dictionary<Command, Action<dynamic, IPEndPoint>> handlers = new Dictionary<Command, Action<dynamic, IPEndPoint>>();
 
     public void Run()
     {
@@ -81,18 +81,7 @@ namespace Server.Services
       {
         try
         {
-          if (req.Command == Command.SignIn)
-          {
-            SignInHandle(req, ip);
-          }
-          else if (req.Command == Command.SignUp)
-          {
-            SignUpHandle(req, ip);
-          }
-          else
-          {
-            handlers[req.Command](req);
-          }
+          handlers[req.Command](req, ip);
         }
         catch (Exception ex)
         {
@@ -177,7 +166,7 @@ namespace Server.Services
         }
         else
         {
-         res = new Response { Command = req.Command, Status = Status.Bad, Data = "Wrong password" };
+          res = new Response { Command = req.Command, Status = Status.Bad, Data = "Wrong password" };
         }
       }
       else
@@ -187,11 +176,10 @@ namespace Server.Services
 
       SendData(res, ip);
     }
-    public void SendMessageToContactHandle(dynamic req) { }
-    public void SendMessageToGroupHandle(dynamic req) { }
-    public async void SendInviteHandle(dynamic req)
+    public void SendMessageToContactHandle(dynamic req, IPEndPoint ip) { }
+    public void SendMessageToGroupHandle(dynamic req, IPEndPoint ip) { }
+    public async void SendInviteHandle(dynamic req, IPEndPoint ip)
     {
-      IPEndPoint ip = clients[req.Data.From];
       try
       {
         Contact contact = await db.SendInviteAsync(req.Data.Form, req.Data.To);
@@ -201,53 +189,44 @@ namespace Server.Services
 
         // to who will get invite
         SendData(new Response { Command = Command.GetInvite, Status = Status.OK, Data = contact }, ip);
-
-      } catch (Exception ex)
+      }
+      catch (Exception ex)
       {
-        SendData( new Response { Command = req.Command, Status = Status.Bad, Data = ex.Message }, ip);
+        SendData(new Response { Command = req.Command, Status = Status.Bad, Data = ex.Message }, ip);
       }
     }
-    public void AcceptInviteHandle(dynamic req)
+    public async void AcceptInviteHandle(dynamic req, IPEndPoint ip)
     {
-      //  IPEndPoint port; // tmp
-      //  try
-      //  {
-      //    //Contact contact = await db.AcceptInviteAsync(obj.Data.Id);
-      //    //await db.AcceptInviteAsync(obj.Data.Id);
-      //    SendData(
-      //      new Response
-      //      {
-      //        Command = req.Command,
-      //        Status = Status.OK,
-      //        //Data = new Prop {
-      //        //    Id =  contact.UserFromId,
-      //        //    Name = contact.NameAtUserTo
-      //        //}
-      //      }, port);
+      // ip = ip of user to
+      // req.Data = contact id
+      try
+      {
+        Contact contact = await db.AcceptInviteAsync(req.Data);
 
-      //    //SendData(
-      //    //  new Response
-      //    //  {
-      //    //      Command = obj.Command,
-      //    //      Status = Status.OK,
-      //    //      Data = new Prop {
-      //    //          Id = contact.UserToId,
-      //    //          Name = contact.NameAtUserFrom
-      //    //      }
-      //    //  }, clients[contact.UserFromId].port);
-      //  }
-      //  catch (Exception ex)
-      //  {
-      //    SendData(
-      //new Response { Command = req.Command, Status = Status.Bad, Data = ex.Message }, port);
-      //  }
+        // to user to
+        SendData(new Response { Command = Command.GetContact, Status = Status.OK, Data = new Prop { Id = contact.UserFromId, Name = contact.NameAtUserTo } }, ip);
+
+        // to user from
+        if (clients.ContainsKey(contact.UserFromId))
+        {
+          // only if user from online
+          SendData(
+            new Response { Command = Command.GetContact, Status = Status.OK, Data = new Prop { Id = contact.UserToId, Name = contact.NameAtUserFrom } },
+            clients[contact.UserFromId]
+          );
+        }
+      }
+      catch (Exception ex)
+      {
+        SendData(new Response { Command = req.Command, Status = Status.Bad, Data = ex.Message }, ip);
+      }
     }
-    public void RenameContactHandle(dynamic req) { }
-    public void RemoveContactHandle(dynamic req) { }
-    public void AddGroupHandle(dynamic req) { }
-    public void LeaveGroupHandle(dynamic req) { }
+    public void RenameContactHandle(dynamic req, IPEndPoint ip) { }
+    public void RemoveContactHandle(dynamic req, IPEndPoint ip) { }
+    public void AddGroupHandle(dynamic req, IPEndPoint ip) { }
+    public void LeaveGroupHandle(dynamic req, IPEndPoint ip) { }
 
-    public void DisconnectHandle(dynamic req)
+    public void DisconnectHandle(dynamic req, IPEndPoint ip)
     {
       clients.Remove(req.Data);
     }
@@ -257,8 +236,8 @@ namespace Server.Services
 
     public CommunicationService()
     {
-      //handlers.Add(Command.SignIn, SignInHandle);
-      //handlers.Add(Command.SignUp, SignUpHandle);
+      handlers.Add(Command.SignIn, SignInHandle);
+      handlers.Add(Command.SignUp, SignUpHandle);
       handlers.Add(Command.SendMessageToContact, SendMessageToContactHandle);
       handlers.Add(Command.SendMessageToGroup, SendMessageToGroupHandle);
       handlers.Add(Command.SendInvite, SendInviteHandle);

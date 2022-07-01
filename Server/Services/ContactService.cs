@@ -10,9 +10,7 @@ namespace Server.Services
 
     Task RemoveContactAsync(int id);
 
-    Task AcceptInviteAsync(string unameFrom, string unameTo);
-
-    Task<Contact?> AcceptInviteAsync(int id);
+    Task<Contact> AcceptInviteAsync(int id);
 
     IEnumerable<Prop> GetInvites(int uid);
 
@@ -59,29 +57,16 @@ namespace Server.Services
     }
 
     // accept invite
-    public async Task AcceptInviteAsync(string unameFrom, string unameTo)
-    {
-      User? userFrom = db.Users.FirstOrDefault(u => u.Name == unameFrom);
-      User? userTo = db.Users.FirstOrDefault(u => u.Name == unameTo);
-
-      if (userFrom != null && userTo != null)
-      {
-        await AcceptInviteAsync(userFrom, userTo);
-      }
-    }
-
-    public async Task<Contact?> AcceptInviteAsync(int id)
+    public async Task<Contact> AcceptInviteAsync(int id)
     {
       Contact? contact = db.Contacts.Find(id);
-      if (contact != null)
-      {
-        contact.isAccepted = true;
-        contact.NameAtUserFrom = contact.UserTo.Name;
-        contact.NameAtUserTo = contact.UserFrom.Name;
-        await db.SaveChangesAsync();
-        return contact;
-      }
-      return null;
+      if (contact == null) throw new Exception("Contact isn't found");
+
+      contact.isAccepted = true;
+      contact.NameAtUserFrom = contact.UserTo.Name;
+      contact.NameAtUserTo = contact.UserFrom.Name;
+      await db.SaveChangesAsync();
+      return contact;
     }
 
     private async Task AcceptInviteAsync(User userFrom, User userTo)
