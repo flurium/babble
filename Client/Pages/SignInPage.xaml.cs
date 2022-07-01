@@ -10,7 +10,8 @@ namespace Client.Pages
   /// </summary>
   public partial class SignInPage : Page
   {
-    CommunicationService cs;
+    private CommunicationService cs;
+
     public SignInPage(CommunicationService cs)
     {
       InitializeComponent();

@@ -68,7 +68,7 @@
         </TabItem>
 
         <TabItem Visibility="Collapsed">
-          <ListBox x:Name="GroupsList" ItemsSource="{Binding Groups}"><!--ItemsSource="{Binding Path=Groups, Mode=OneWay}"-->
+          <ListBox x:Name="GroupsList" ItemsSource="{Binding Groups}">
             <ListBox.ItemTemplate>
               <DataTemplate>
                 <TextBlock Text="{Binding Name}" />
@@ -136,19 +136,26 @@
         <ListBox.ItemContainerStyle>
           <Style TargetType="ListBoxItem">
             <Setter Property="Background" Value="#f4f4f6" />
-            <Setter Property="Margin" Value="5" />
-            <Setter Property="Padding" Value="5" />
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Margin" Value="100,5,0,0" />
+            <!--<Setter Property="HorizontalContentAlignment" Value="Right"/>-->
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding Path=IsIncoming}" Value="true">
+                <Setter Property="Margin" Value="0,5,100,0" />
+                <!--<Setter Property="HorizontalContentAlignment" Value="Left"/>-->
+              </DataTrigger>
+            </Style.Triggers>
           </Style>
         </ListBox.ItemContainerStyle>
         <ListBox.ItemTemplate>
           <DataTemplate>
-            <TextBlock Text="{Binding}" TextWrapping="Wrap"></TextBlock>
+            <TextBlock Grid.Column="1" Text="{Binding String}" TextWrapping="WrapWithOverflow"></TextBlock>
           </DataTemplate>
         </ListBox.ItemTemplate>
       </ListBox>
 
       <TextBox Grid.Column="0" Grid.Row="2" x:Name="MessageWrite" Style="{StaticResource Input}"></TextBox>
-      <Button Grid.Column="1" Grid.Row="2" x:Name="MessageSend">Send</Button>
+      <Button Grid.Column="1" Grid.Row="2" x:Name="MessageSend" Click="MessageSend_Click">Send</Button>
     </Grid>
   </Grid>
 </Page>

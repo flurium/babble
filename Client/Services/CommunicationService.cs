@@ -129,7 +129,6 @@ namespace Client.Services
       //Groups.Clear();
       Groups.Add(new Prop { Id = 1, Name = "dfasd" });
 
-
       // Init handlers
       handlers.Add(Command.SignIn, SignInHandle);
       handlers.Add(Command.SignUp, SignUpHandle);
@@ -180,14 +179,18 @@ namespace Client.Services
 
     private void SignUpHandle(Response res) => User = res.Data;
 
-    private void SendInviteHandle(Response res) { }
-    private void GetInviteHandle(Response res) { }
-    private void GetContactHandle(Response res) { }
+    private void SendInviteHandle(Response res)
+    { }
+
+    private void GetInviteHandle(Response res)
+    { }
+
+    private void GetContactHandle(Response res)
+    { }
 
     public void Disconnect()
     {
       // Send disconnect request
-      
     }
   }
 }

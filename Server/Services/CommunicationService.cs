@@ -172,13 +172,11 @@ namespace Server.Services
     }
 
     public void SendMessageToContactHandle(dynamic req, IPEndPoint ip)
-    { 
-      
+    {
     }
 
     public void SendMessageToGroupHandle(dynamic req, IPEndPoint ip)
     {
-    
     }
 
     public async void SendInviteHandle(dynamic req, IPEndPoint ip)
@@ -192,7 +190,7 @@ namespace Server.Services
 
         // to who will get invite
         IPEndPoint toIp;
-        if(clients.TryGetValue(req.Data.To, out toIp))
+        if (clients.TryGetValue(req.Data.To, out toIp))
         {
           SendData(new Response { Command = Command.GetInvite, Status = Status.OK, Data = contact }, toIp);
         }
