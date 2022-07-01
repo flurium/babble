@@ -2,7 +2,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using Newtonsoft.Json;
-using HashLibrary;
+using CrossLibrary;
 using Server.Models;
 
 namespace Server.Services

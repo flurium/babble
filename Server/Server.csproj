@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HashLibrary\HashLibrary.csproj" />
+    <ProjectReference Include="..\CrossLibrary\CrossLibrary.csproj" />
   </ItemGroup>
 
 </Project>
