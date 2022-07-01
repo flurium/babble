@@ -7,6 +7,6 @@
         Title="Babble" Foreground="#181c27"
         MinWidth="600" MinHeight="400">
   <Grid>
-    <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden" />
+    <Frame x:Name="MainFrame" NavigationUIVisibility="Visible" />
   </Grid>
 </Window>

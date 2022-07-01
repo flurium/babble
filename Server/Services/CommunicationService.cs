@@ -8,8 +8,15 @@ namespace Server.Services
   public struct Response
   {
     public string Status { get; set; }
+    public string Command { get; set; }
     public dynamic Data { get; set; }
   }
+  public struct Request
+  {
+    public string Command { get; set; }
+    public dynamic Data { get; set; }
+  }
+
 
   public class CommunicationService
   {
@@ -81,40 +88,39 @@ namespace Server.Services
     private void WorkData(string request, int port)
     {
       // allways: Command, Data
-      dynamic? obj = JsonConvert.DeserializeObject(request);
-      if (obj != null)
+      Request obj = JsonConvert.DeserializeObject<Request>(request);
+
+      try
       {
-        try
+        if (obj.Command == "signin")
         {
-          if (obj.Command == "signin")
-          {
-            // get user
-            SendData(
-              new Response
-              {
-                Status = "ok",
-                Data = new
-                {
-                  User = db.GetUser("a"),
-                  Groups = db.GetUserGroups(1)
-                }
-              }, port);
-          }
-        } catch (Exception ex)
-        {
+          // get user
           SendData(
-              new Response
+            new Response
+            {
+              Status = "ok",
+              Data = new
               {
-                Status = "exception",
-                Data = ex.Message
-              }, port);
+                User = db.GetUser("a"),
+                Groups = db.GetUserGroups(1)
+              }
+            }, port);
         }
       }
+      catch (Exception ex)
+      {
+        SendData(
+            new Response
+            {
+              Status = "exception",
+              Data = ex.Message
+            }, port);
+      }
+
     }
 
     private void SendData(Response response, int port)
     {
-
       string responseStr = JsonConvert.SerializeObject(response);
       byte[] data = Encoding.Unicode.GetBytes(responseStr);
 

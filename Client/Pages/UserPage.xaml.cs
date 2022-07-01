@@ -23,6 +23,8 @@ namespace Client
     public UserPage()
     {
       InitializeComponent();
+
+
       var lbi = new TextBlock();
 
       lbi.Text = "Liber";
