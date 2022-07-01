@@ -32,8 +32,8 @@ namespace CrossLibrary
 
   public enum Command
   {
-    SingIn,
-    SingUp,
+    SignIn,
+    SignUp,
     SendMessageToContact,
     SendMessageToGroup,
     GetMessageFromContact,
