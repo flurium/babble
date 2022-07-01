@@ -12,6 +12,8 @@ namespace Server.Services
     Task RemoveContactAsync(int id);
 
     Task AcceptInviteAsync(string unameFrom, string unameTo);
+    Task AcceptInviteAsync(int id);
+
 
     IEnumerable<Prop> GetInvites(int uid);
 
