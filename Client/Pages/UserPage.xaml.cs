@@ -121,5 +121,11 @@ namespace Client
       NavigationService.GoBack();
       NavigationService.RemoveBackEntry();
     }
+
+    private void GoToContacts_Click(object sender, RoutedEventArgs e) => ListSection.SelectedIndex = 0;
+
+    private void GoToGroups_Click(object sender, RoutedEventArgs e) => ListSection.SelectedIndex = 1;
+
+    private void GoToInvites_Click(object sender, RoutedEventArgs e) => ListSection.SelectedIndex = 2;
   }
 }
