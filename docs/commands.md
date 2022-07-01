@@ -81,3 +81,7 @@
 ## RenameGroup
 - Request: в `Data` хранится имя и хеширований пароль
 - Response: в `Data` хранятся пользователь
+
+## Disconnect
+- Request: в `Data` хранится id
+```Data = 1```

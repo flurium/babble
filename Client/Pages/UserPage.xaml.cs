@@ -30,7 +30,6 @@ namespace Client
       InitializeComponent();
       DataContext = cs;
 
-
       var lbi = new TextBlock();
       lbi.Text = " Hi Liber,afhagsfkhgaskgfkahsgfhagsfhgaagsjhfgajhsgfjhagsjfhgajhsfgjahgsfjhagsjfhgasjfhgajhsgfjhahfbznbcmnzbxmcbzmnxbcznbxcmabhsfahsjfhgashfgkasfkjaksjfkajsfkjaskfjgaksfghasgfhgahsfgjhgasfjhagsjf";
 
@@ -48,7 +47,5 @@ namespace Client
     private void GoToGroups_Click(object sender, RoutedEventArgs e) => ListSection.SelectedIndex = 1;
 
     private void GoToInvites_Click(object sender, RoutedEventArgs e) => ListSection.SelectedIndex = 2;
-
-
   }
 }

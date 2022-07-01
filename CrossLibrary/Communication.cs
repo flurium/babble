@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CrossLibrary
+﻿namespace CrossLibrary
 {
   public struct Prop
   {
@@ -25,7 +19,8 @@ namespace CrossLibrary
     public dynamic Data { get; set; }
   }
 
-  public enum Status {
+  public enum Status
+  {
     OK,
     Bad
   }
@@ -45,6 +40,7 @@ namespace CrossLibrary
     RenameContact,
     RemoveContact,
     AddGroup,
-    LeaveGroup
+    LeaveGroup,
+    Disconnect
   }
 }
