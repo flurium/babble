@@ -256,15 +256,26 @@ namespace Client.Services
         SendData(req);
             
     }
-    
+    /////////////
     private void SendMessageToGroup(string message, int to, int from)
     {
         Request req = new Request { Command = Command.SendMessageToGroup, Data = { To = to, From = from, Message = message } };
         SendData(req);
 
     }
-     
+    
+    private void RenameContact(string newName, int to, int from)
+    {
+            Request req = new Request { Command = Command.RenameContact, Data = { To = to, From = from, NewName = newName } };
+            SendData(req);
+    }
 
+    private void RenameGroup(string newName, int idGroup)
+    {
+            Request req = new Request { Command = Command.RenameGroup, Data = { IdGroup= idGroup, NewName = newName } };
+            SendData(req);
+    }
+    /////////////
 
     private void GetMessageFromContactHandle(Response res)
     {
