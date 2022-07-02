@@ -30,6 +30,7 @@ namespace Server.Services
       handlers.Add(Command.AddGroup, AddGroupHandle);
       handlers.Add(Command.LeaveGroup, LeaveGroupHandle);
       handlers.Add(Command.Disconnect, DisconnectHandle);
+      handlers.Add(Command.RenameGroup, RenameGroupHandle);
     }
 
     public async void AcceptInviteHandle(dynamic req, IPEndPoint ip)
@@ -69,6 +70,20 @@ namespace Server.Services
 
     public void LeaveGroupHandle(dynamic req, IPEndPoint ip)
     { }
+
+    public async void RenameGroupHandle(dynamic req, IPEndPoint ip)
+    {
+            try
+            {
+                await db.RenameGroupAsync(req.Data.IdGroup, req.Data.NewName);
+                SendData(new Response { Command = Command.RenameGroup, Status = Status.OK, Data = "Group renamed" }, ip);
+
+            }
+            catch (Exception ex)
+            {
+                SendData(new Response { Command = req.Command, Status = Status.Bad, Data = ex.Message }, ip);
+            }
+        }
 
     public void RemoveContactHandle(dynamic req, IPEndPoint ip)
     {
