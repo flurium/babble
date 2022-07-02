@@ -64,7 +64,7 @@
 
 
 ## RemoveContact
-- Request: в `Data` 
+- Request: в `Data` id from, id to
 - Response: в `Data`
 
 ## AddGroup
