@@ -19,13 +19,14 @@
     </Style>
     <Style x:Key="Input" TargetType="Control" BasedOn="{StaticResource Base}">
       <Setter Property="Background" Value="#f4f4f6" />
-      <Setter Property="Padding" Value="15,0,0,0" />
+      <Setter Property="Padding" Value="15,0,15,0" />
     </Style>
     <Style TargetType="Button" BasedOn="{StaticResource Base}">
       <Setter Property="Background" Value="#0bbffa" />
     </Style>
     <Style TargetType="ListBox">
       <Setter Property="BorderThickness" Value="0" />
+      <!--<Setter Property=""-->
     </Style>
     <Style TargetType="ListBoxItem">
       <Setter Property="Background" Value="#f4f4f6" />
@@ -84,78 +85,47 @@
       </TabControl>
     </Grid>
 
-    <!--<Grid Grid.Column="0">
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition />
-        <ColumnDefinition />
-        <ColumnDefinition />
-      </Grid.ColumnDefinitions>
-      <Grid.RowDefinitions>
-        <RowDefinition Height="50"></RowDefinition>
-        <RowDefinition Height="30"></RowDefinition>
-        <RowDefinition></RowDefinition>
-      </Grid.RowDefinitions>
+    <Border Grid.Column="1" BorderBrush="#abadb8" BorderThickness="1,0,0,0" >
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition />
+          <ColumnDefinition Width="50" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="40" />
+          <RowDefinition />
+          <RowDefinition Height="40" />
+        </Grid.RowDefinitions>
 
-      <Button Grid.Column="0" Grid.Row="0">Contacts</Button>
-      <Button Grid.Column="1" Grid.Row="0">Groups</Button>
-      <Button Grid.Column="2" Grid.Row="0" >Invites</Button>
+        <Label Name="interlocutor" Grid.Column="0" Grid.Row="0" Content="interlocutor" />
+        <Button Grid.Column="1" Grid.Row="0" x:Name="Exit" Click="Exit_Click">Exit</Button>
 
-      <TextBox Grid.Row="1" Grid.ColumnSpan="3"></TextBox>
+        <ListBox Grid.Row="1" Grid.ColumnSpan="3" x:Name="MessageList" ItemsSource="{Binding Messages}" ScrollViewer.ScrollChanged="MessageList_ScrollChanged" ScrollViewer.VerticalScrollBarVisibility="Auto"  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+          <ListBox.ItemContainerStyle>
+            <Style TargetType="ListBoxItem">
+              <Setter Property="Margin" Value="100,5,5,0" />
+              <Setter Property="HorizontalContentAlignment" Value="Right"/>
+              <Setter Property="IsEnabled" Value="False"/>
+              <Style.Triggers>
+                <DataTrigger Binding="{Binding Path=IsIncoming}" Value="true">
+                  <Setter Property="Margin" Value="5,5,100,0" />
+                  <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                </DataTrigger>
+              </Style.Triggers>
+            </Style>
+          </ListBox.ItemContainerStyle>
+          <ListBox.ItemTemplate>
+            <DataTemplate>
+              <Grid Background="#f4f4f6">
+                <TextBlock Text="{Binding String}" Foreground="Black" Padding="10" TextWrapping="Wrap"></TextBlock>
+              </Grid>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
 
-      <ListBox Grid.Row="2"  Grid.ColumnSpan="3" x:Name="ContactsList"  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-        <ListBox.ItemContainerStyle>
-          <Style TargetType="ListBoxItem">
-            <Setter Property="Background" Value="#f4f4f6" />
-            <Setter Property="Height" Value="50" />
-            <Setter Property="FontSize" Value="20" />
-          </Style>
-        </ListBox.ItemContainerStyle>
-        <ListBox.ItemTemplate>
-          <DataTemplate>
-            <TextBlock Text="{Binding Path=Text}" TextWrapping="Wrap" />
-          </DataTemplate>
-        </ListBox.ItemTemplate>
-      </ListBox>
-    </Grid>-->
-
-    <Grid Grid.Column="1">
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition />
-        <ColumnDefinition Width="50" />
-      </Grid.ColumnDefinitions>
-      <Grid.RowDefinitions>
-        <RowDefinition Height="40" />
-        <RowDefinition />
-        <RowDefinition Height="40" />
-      </Grid.RowDefinitions>
-
-      <Label Name="interlocutor" Grid.Column="0" Grid.Row="0" Content="interlocutor" />
-      <Button Grid.Column="1" Grid.Row="0" x:Name="Exit" Click="Exit_Click">Exit</Button>
-
-      <ListBox Grid.Row="1" Grid.ColumnSpan="3" x:Name="MessageList" ScrollViewer.VerticalScrollBarVisibility="Auto"  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-        <ListBox.ItemContainerStyle>
-          <Style TargetType="ListBoxItem">
-            <Setter Property="Background" Value="#f4f4f6" />
-            <Setter Property="Padding" Value="10" />
-            <Setter Property="Margin" Value="100,5,0,0" />
-            <!--<Setter Property="HorizontalContentAlignment" Value="Right" />-->
-            <Style.Triggers>
-              <DataTrigger Binding="{Binding Path=IsIncoming}" Value="true">
-                <Setter Property="Margin" Value="0,5,100,0" />
-                <!--<Setter Property="HorizontalContentAlignment" Value="Left" />-->
-              </DataTrigger>
-            </Style.Triggers>
-          </Style>
-        </ListBox.ItemContainerStyle>
-        <ListBox.ItemTemplate>
-          <DataTemplate>
-            <TextBlock Grid.Column="1" Text="{Binding String}" TextWrapping="WrapWithOverflow"></TextBlock>
-          </DataTemplate>
-        </ListBox.ItemTemplate>
-      </ListBox>
-
-      <TextBox Grid.Column="0" Grid.Row="2" x:Name="MessageWrite" Style="{StaticResource Input}"></TextBox>
-      <Button Grid.Column="1" Grid.Row="2" x:Name="MessageSend" Click="MessageSend_Click">Send</Button>
-    </Grid>
+        <TextBox Grid.Column="0" Grid.Row="2" x:Name="MessageWrite" Style="{StaticResource Input}"></TextBox>
+        <Button Grid.Column="1" Grid.Row="2" x:Name="MessageSend" Click="MessageSend_Click">Send</Button>
+      </Grid>
+    </Border>
   </Grid>
 </Page>

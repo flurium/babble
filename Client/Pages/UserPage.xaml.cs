@@ -1,4 +1,6 @@
 ﻿using Client.Services;
+using System;
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;
@@ -8,17 +10,29 @@ namespace Client
   /// <summary>
   /// Логика взаимодействия для UserPage.xaml
   /// </summary>
+  /// 
+  public struct Message
+  {
+    public string String { get; set; }
+    public bool IsIncoming { get; set; }
+  }
+
   public partial class UserPage : Page
   {
     private CommunicationService cs;
+
+    public ObservableCollection<Message> Messages { get; set; } = new ObservableCollection<Message>();
 
     public UserPage(CommunicationService cs)
     {
       InitializeComponent();
       this.cs = cs;
-      DataContext = cs;
-
-      AddMessage("Nunc pulvinar imperdiet neque, ac interdum lacus interdum ut. Ut id blandit metus, id pulvinar mauris. Nulla sapien velit, euismod eu imperdiet vitae, imperdiet eu augue.");
+      ContactsList.DataContext = cs;
+      GroupsList.DataContext = cs;
+      InvitesList.DataContext = cs;
+      MessageList.DataContext = this;
+      
+      AddMessage("Phasellus vitae quam arcu. Sed ac nunc metus", true);
       AddMessage("Phasellus vitae quam arcu. Sed ac nunc metus. Nulla tellus mi, ornare vitae metus in, accumsan fringilla ex. Proin felis ligula, euismod non tellus sed, rhoncus hendrerit erat.", true);
     }
 
@@ -28,7 +42,7 @@ namespace Client
     {
       Dispatcher.BeginInvoke(() =>
       {
-        MessageList.Items.Add(new { String = message, IsIncoming = isIncoming });
+        Messages.Add(new Message { String = message, IsIncoming = isIncoming });
       }, null);
     }
 
@@ -49,8 +63,17 @@ namespace Client
     {
       if (MessageWrite.Text.Trim() != "")
       {
-        AddMessage(MessageWrite.Text);
+        AddMessage(MessageWrite.Text.Trim());
         MessageWrite.Text = "";
+      }
+    }
+
+    private void MessageList_ScrollChanged(object sender, ScrollChangedEventArgs e)
+    {
+      if (e.OriginalSource is ScrollViewer scrollViewer &&
+        Math.Abs(e.ExtentHeightChange) > 0.0)
+      {
+        scrollViewer.ScrollToBottom();
       }
     }
   }

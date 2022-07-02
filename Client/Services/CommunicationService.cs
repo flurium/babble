@@ -24,6 +24,32 @@ namespace Client.Services
     public CommunicationService()
     {
       Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
+      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
+      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
+      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
+      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
+      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
+      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
+      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
+      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
+      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
+      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
+      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
+      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
+      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
+      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
+      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
+      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
+      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
+      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
+      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
+      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
+      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
+      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
+      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
+      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
+      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
+      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
 
       // to erplace
       //Groups.Clear();
