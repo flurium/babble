@@ -71,10 +71,14 @@ namespace Server.Services
     { }
 
     public void RemoveContactHandle(dynamic req, IPEndPoint ip)
-    { }
+    { 
+
+    }
 
     public void RenameContactHandle(dynamic req, IPEndPoint ip)
-    { }
+    { 
+       
+    }
 
     public void Run()
     {
@@ -88,7 +92,7 @@ namespace Server.Services
     {
       try
       {
-        Contact contact = await db.SendInviteAsync(req.Data.Form, req.Data.To);
+        Contact contact = await db.SendInviteAsync(req.Data.From, req.Data.To);
 
         // to who sended request
         SendData(new Response { Command = Command.SendInvite, Status = Status.OK, Data = "Invite is sent successfully" }, ip);
@@ -108,7 +112,23 @@ namespace Server.Services
 
     public void SendMessageToContactHandle(dynamic req, IPEndPoint ip)
     {
-    }
+            try
+            {
+                // to user who sent
+                SendData(new Response { Command = Command.SendMessageToContact, Status = Status.OK, Data = "Message sent" }, ip);
+
+                // to user for whom sent
+                IPEndPoint toIp;
+                if (clients.TryGetValue(req.Data.To, out toIp))
+                {
+                    SendData(new Response { Command = Command.GetMessageFromContact, Status = Status.OK, Data = req.Data.Message }, toIp);
+                }
+            }
+            catch (Exception ex)
+            {
+                SendData(new Response { Command = req.Command, Status = Status.Bad, Data = ex.Message }, ip);
+            }
+        }
 
     public void SendMessageToGroupHandle(dynamic req, IPEndPoint ip)
     {
