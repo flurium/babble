@@ -59,28 +59,27 @@
 
 
 ## RenameContact
-- Request: в `Data` хранится имя и хеширований пароль
-- Response: в `Data` хранятся пользователь
+- Request: в `Data` 
+- Response: в `Data`
 
 
 ## RemoveContact
-- Request: в `Data` хранится имя и хеширований пароль
-- Response: в `Data` хранятся пользователь
-
+- Request: в `Data` 
+- Response: в `Data`
 
 ## AddGroup
-- Request: в `Data` хранится имя и хеширований пароль
-- Response: в `Data` хранятся пользователь
+- Request: в `Data` 
+- Response: в `Data` 
 
 
 ## LeaveGroup
-- Request: в `Data` хранится имя и хеширований пароль
-- Response: в `Data` хранятся пользователь
+- Request: в `Data` 
+- Response: в `Data`
 
 
 ## RenameGroup
-- Request: в `Data` хранится имя и хеширований пароль
-- Response: в `Data` хранятся пользователь
+- Request: в `Data` 
+- Response: в `Data` 
 
 ## Disconnect
 - Request: в `Data` хранится id

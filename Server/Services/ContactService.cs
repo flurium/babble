@@ -16,6 +16,9 @@ namespace Server.Services
     Task RemoveContactAsync(int id);
 
     Task<Prop> SendInviteAsync(int uidFrom, string unameTo);
+
+    Task RenameContact(int uidFrom, int uidTo, string newName);
+    Task RemoveContact(int uidFrom, int uidTo);
   }
 
   public class ContactService : IContactService
@@ -62,12 +65,33 @@ namespace Server.Services
       return db.Contacts.Where(c => c.UserToId == uid && !c.isAccepted).Select(c => new Prop { Id = c.Id, Name = c.UserFrom.Name });
     }
 
+    public async Task RemoveContact(int uidFrom, int uidTo)
+    {
+      Contact contact = GetContact(uidFrom, uidTo);
+      db.Contacts.Remove(contact);
+      await db.SaveChangesAsync();
+    }
+
     public async Task RemoveContactAsync(int id)
     {
       Contact? contact = db.Contacts.Find(id);
       if (contact == null) throw new Exception("ContactNotFound");
 
       db.Contacts.Remove(contact);
+      await db.SaveChangesAsync();
+    }
+
+    public async Task RenameContact(int uidFrom, int uidTo, string newName)
+    {
+      Contact contact = GetContact(uidFrom, uidTo);
+      if (contact.UserFromId == uidFrom)
+      {
+        contact.NameAtUserFrom = newName;
+      }
+      else
+      {
+        contact.NameAtUserTo = newName;
+      }
       await db.SaveChangesAsync();
     }
 
