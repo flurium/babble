@@ -71,14 +71,32 @@ namespace Server.Services
     { }
 
     public void RemoveContactHandle(dynamic req, IPEndPoint ip)
-    { 
+    {
+            try
+            {
+                db.RemoveContact(req.Data.From, req.Data.To);
+                SendData(new Response { Command = Command.RemoveContact, Status = Status.OK, Data = "Contact removed" }, ip);
 
-    }
+            }
+            catch (Exception ex)
+            {
+                SendData(new Response { Command = req.Command, Status = Status.Bad, Data = ex.Message }, ip);
+            }
+        }
 
     public void RenameContactHandle(dynamic req, IPEndPoint ip)
-    { 
-       
-    }
+    {
+            try
+            {
+                db.RenameContact(req.Data.From, req.Data.To, req.Data.newName);
+                SendData(new Response { Command = Command.RenameContact, Status = Status.OK, Data = "Contact renamed" }, ip);
+
+            }
+            catch (Exception ex)
+            {
+                SendData(new Response { Command = req.Command, Status = Status.Bad, Data = ex.Message }, ip);
+            }
+        }
 
     public void Run()
     {
@@ -250,9 +268,6 @@ namespace Server.Services
             string request = builder.ToString();
             Handle(request, clientFullIp);
 
-            //Console.WriteLine(string.Format("{0}:{1} - {2}", clientFullIp.Address.ToString(), clientFullIp.Port, request));
-
-            //SendData(builder.ToString(), clientFullIp.Port);
           }
         }
         catch (SocketException socketEx)
@@ -278,15 +293,6 @@ namespace Server.Services
 
       // send to one
       listeningSocket.SendTo(data, ip);
-
-      //foreach (var client in clients)
-      //{
-      //  if (client.Key.Port == port) // send only to one who asked
-      //  {
-      //    listeningSocket.SendTo(data, client.Key);
-      //    clients[client.Key] = DateTime.Now; // update time
-      //  }
-      //}
     }
   }
 }
