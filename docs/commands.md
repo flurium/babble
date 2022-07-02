@@ -68,19 +68,19 @@
 - Response: в `Data`
 
 ## AddGroup
-- Request: в `Data` 
+- Request: в `Data` name, user id
 - Response: в `Data` 
 
 
 ## LeaveGroup
-- Request: в `Data` 
+- Request: в `Data` uid, group id
 - Response: в `Data`
 
 
 ## RenameGroup
-- Request: в `Data` 
+- Request: в `Data` group id, name
 - Response: в `Data` 
 
 ## Disconnect
-- Request: в `Data` хранится id
+- Request: в `Data` хранится user id
 ```Data = 1```
