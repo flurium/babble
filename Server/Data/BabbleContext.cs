@@ -5,19 +5,17 @@ namespace Server.Data
 {
   public class BabbleContext : DbContext
   {
-    public DbSet<User> Users { get; set; }
-    public DbSet<Group> Groups { get; set; }
-    public DbSet<UserGroup> UserGroups { get; set; }
-    public DbSet<Contact> Contacts { get; set; }
-
-    public string DbPath { get; }
-
     public BabbleContext()
     {
       DbPath = Path.Join(GetRelativePath(), "babble.db");
       Console.WriteLine(DbPath);
     }
 
+    public DbSet<Contact> Contacts { get; set; }
+    public string DbPath { get; }
+    public DbSet<Group> Groups { get; set; }
+    public DbSet<UserGroup> UserGroups { get; set; }
+    public DbSet<User> Users { get; set; }
     protected override void OnConfiguring(DbContextOptionsBuilder options)
         => options.UseSqlite($"Data Source={DbPath}");
 

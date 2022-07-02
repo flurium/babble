@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Client.Services;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;
@@ -10,20 +10,25 @@ namespace Client.Pages
   /// </summary>
   public partial class SignInPage : Page
   {
-    public SignInPage()
+    private CommunicationService cs;
+
+    public SignInPage(CommunicationService cs)
     {
       InitializeComponent();
+      this.cs = cs;
+    }
+
+    private void SignIn(object sender, RoutedEventArgs e)
+    {
+      
+
+      NavigationService.Navigate(MainWindow.userChat);
+      NavigationService.RemoveBackEntry();
     }
 
     private void SignUp(object sender, RoutedEventArgs e)
     {
       NavigationService.Navigate(MainWindow.signUp);
-      NavigationService.RemoveBackEntry();
-    }
-
-    private void SignIn_Click(object sender, RoutedEventArgs e)
-    {
-      NavigationService.Navigate(MainWindow.userChat);
       NavigationService.RemoveBackEntry();
     }
   }

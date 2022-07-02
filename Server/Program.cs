@@ -1,11 +1,21 @@
-﻿using Newtonsoft.Json;
-using Server.Services;
+﻿using Server.Services;
 using System.Text;
 
 namespace Server
 {
   public class Program
   {
+    private static void Main(string[] args)
+    {
+      Console.Title = "Babble server";
+      Console.OutputEncoding = Encoding.UTF8;
+
+      CommunicationService cs = new CommunicationService();
+
+      //cs.Run();
+      Test();
+    }
+
     private static async void Test()
     {
       DatabaseService db = new DatabaseService();
@@ -79,17 +89,6 @@ namespace Server
       //dbService.RemoveUser("aboba");
 
       //dbService.RemoveUserFromGroup("aboba", "Admin Group");
-    }
-
-    private static void Main(string[] args)
-    {
-      Console.Title = "Babble server";
-      Console.OutputEncoding = Encoding.UTF8;
-
-      CommunicationService cs = new CommunicationService();
-
-      //cs.Run();
-      Test();
     }
   }
 }

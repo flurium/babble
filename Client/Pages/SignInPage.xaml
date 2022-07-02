@@ -42,7 +42,7 @@
       <Label  Content="Password"  Grid.Column="1" Grid.Row="2" />
       <PasswordBox x:Name="SignInPassword" Style="{StaticResource Input}" Grid.Column="1" Grid.Row="3" />
 
-      <Button Content="Sign In"  Grid.Column="1" Grid.Row="4" Click="SignIn_Click" />
+      <Button Content="Sign In"  Grid.Column="1" Grid.Row="4" Click="SignIn" />
       <Button Content="Don't have an account yet?  Sign Up"  Grid.Row="5" Grid.Column="1" Click="SignUp" />
     </Grid>
   </Grid>

@@ -5,14 +5,11 @@ namespace Server.Services
 {
   internal interface IUserService
   {
-    //Task AddUserAsync(string name, string password);
     User AddUser(string name, string password);
-
-    Task RemoveUserAsync(int id);
 
     User? GetUser(string name);
 
-    //public Task RemoveUserAsync(string name);
+    Task RemoveUserAsync(int id);
   }
 
   public class UserService : IUserService
@@ -29,6 +26,11 @@ namespace Server.Services
       return user.Entity;
     }
 
+    public User? GetUser(string name)
+    {
+      return db.Users.FirstOrDefault(u => u.Name == name);
+    }
+
     public async Task RemoveUserAsync(int id)
     {
       User? user = db.Users.Find(id);
@@ -38,20 +40,5 @@ namespace Server.Services
         await db.SaveChangesAsync();
       }
     }
-
-    public User? GetUser(string name)
-    {
-      return db.Users.FirstOrDefault(u => u.Name == name);
-    }
-
-    //public async Task RemoveUserAsync(string name)
-    //{
-    //  User? user = db.Users.FirstOrDefault(u => u.Name == name);
-    //  if (user != null)
-    //  {
-    //    db.Users.Remove(user);
-    //    await db.SaveChangesAsync();
-    //  }
-    //}
   }
 }

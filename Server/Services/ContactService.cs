@@ -1,23 +1,24 @@
-﻿using Server.Data;
+﻿using CrossLibrary;
+using Server.Data;
 using Server.Models;
 
 namespace Server.Services
 {
   public interface IContactService
   {
-    //Task SendInviteAsync(string unameFrom, string unameTo);
-    Task SendInviteAsync(int uidFrom, int uidTo);
+    Task<Contact> AcceptInviteAsync(int id);
+
+    Contact GetContact(int uidFromm, int uidTo);
+    IEnumerable<Prop> GetContacts(int uid);
+
+    IEnumerable<Prop> GetInvites(int uid);
 
     Task RemoveContactAsync(int id);
 
-    Task AcceptInviteAsync(string unameFrom, string unameTo);
+    Task<Prop> SendInviteAsync(int uidFrom, string unameTo);
 
-    IEnumerable<dynamic> GetInvites(int uid);
-
-    //public IEnumerable<Contact> GetInvites(string uname);
-    IEnumerable<dynamic> GetContacts(int uid);
-
-    //public IEnumerable<Contact> GetContacts(string uname);
+    Task RenameContact(int uidFrom, int uidTo, string newName);
+    Task RemoveContact(int uidFrom, int uidTo);
   }
 
   public class ContactService : IContactService
@@ -26,75 +27,48 @@ namespace Server.Services
 
     public ContactService(BabbleContext db) => this.db = db;
 
-    // todo: rewrite
-    // get invites, sended to the person
-    public IEnumerable<dynamic> GetInvites(int uid)
+    // accept invite
+    public async Task<Contact> AcceptInviteAsync(int id)
     {
-      return from c in db.Contacts
-             where c.UserToId == uid && !c.isAccepted
-             select new { c.Id, c.UserFrom.Name };
+      Contact? contact = db.Contacts.Find(id);
+      if (contact == null) throw new Exception("Contact isn't found");
+
+      contact.isAccepted = true;
+      contact.NameAtUserFrom = contact.UserTo.Name;
+      contact.NameAtUserTo = contact.UserFrom.Name;
+      await db.SaveChangesAsync();
+      return contact;
     }
 
-    //public IEnumerable<Contact> GetInvites(string uname)
-    //{
-    //  return from c in db.Contacts
-    //         where c.UserTo.Name == uname && !c.isAccepted
-    //         select c;
-    //}
+    public Contact GetContact(int uidFrom, int uidTo)
+    {
+      Contact? contact = db.Contacts.FirstOrDefault(
+        c => (c.UserFromId == uidFrom && c.UserToId == uidTo) || (c.UserToId == uidFrom && c.UserFromId == uidTo)
+        );
+      if (contact == null) throw new Exception("Contact isn't found");
+      return contact;
+    }
 
-    // get accepted contacts
-    //public IEnumerable<Contact> GetContacts(string uname)
-    //{
-    //  return from c in db.Contacts
-    //         where c.isAccepted && (c.UserFrom.Name == uname || c.UserTo.Name == uname)
-    //         select c;
-    //}
-
-    public IEnumerable<dynamic> GetContacts(int uid)
+    public IEnumerable<Prop> GetContacts(int uid)
     {
       return db.Contacts
          .Where(c => c.UserFromId == uid || c.UserToId == uid)
-         .Select(c => c.UserFromId == uid ? new { c.Id, Name = c.NameAtUserFrom } : new { c.Id, Name = c.NameAtUserTo });
+         .Select(c => c.UserFromId == uid ?
+         new Prop { Id = c.UserToId, Name = c.NameAtUserFrom }
+         : new Prop { Id = c.UserFromId, Name = c.NameAtUserTo });
     }
 
-    // accept invite
-    public async Task AcceptInviteAsync(string unameFrom, string unameTo)
+    // todo: rewrite
+    // get invites, sended to the person
+    public IEnumerable<Prop> GetInvites(int uid)
     {
-      User? userFrom = db.Users.FirstOrDefault(u => u.Name == unameFrom);
-      User? userTo = db.Users.FirstOrDefault(u => u.Name == unameTo);
-
-      if (userFrom != null && userTo != null)
-      {
-        await AcceptInviteAsync(userFrom, userTo);
-      }
+      return db.Contacts.Where(c => c.UserToId == uid && !c.isAccepted).Select(c => new Prop { Id = c.Id, Name = c.UserFrom.Name });
     }
 
-    private async Task AcceptInviteAsync(User userFrom, User userTo)
+    public async Task RemoveContact(int uidFrom, int uidTo)
     {
-      Contact? contact = db.Contacts.FirstOrDefault(c => c.UserFromId == userFrom.Id && c.UserToId == userTo.Id);
-      if (contact != null)
-      {
-        contact.isAccepted = true;
-        contact.NameAtUserFrom = userTo.Name;
-        contact.NameAtUserTo = userFrom.Name;
-        await db.SaveChangesAsync();
-      }
-    }
-
-    // send invite
-    public async Task SendInviteAsync(int uidFrom, int uidTo)
-    {
-      User? userFrom = db.Users.Find(uidFrom);
-      if (userFrom == null) throw new Exception("UserFromNotFound"); // user, who send invite, doesn't exist
-
-      User? userTo = db.Users.Find(uidTo);
-      if (userTo == null) throw new Exception("UserToNotFound"); // user, who should accept invite, doesn't exist
-
-      if (db.Contacts.Any(c => c.UserFromId == userFrom.Id && c.UserToId == userTo.Id || c.UserFromId == userTo.Id && c.UserToId == userFrom.Id))
-        throw new Exception("InviteAlreadyExist");
-
-      db.Contacts.Add(new Contact { UserFrom = userFrom, UserTo = userTo, isAccepted = false });
-
+      Contact contact = GetContact(uidFrom, uidTo);
+      db.Contacts.Remove(contact);
       await db.SaveChangesAsync();
     }
 
@@ -107,15 +81,46 @@ namespace Server.Services
       await db.SaveChangesAsync();
     }
 
-    //public async Task SendInviteAsync(string unameFrom, string unameTo)
-    //{
-    //  User? userFrom = db.Users.FirstOrDefault(u => u.Name == unameFrom);
-    //  User? userTo = db.Users.FirstOrDefault(u => u.Name == unameTo);
-    //  if (userTo != null && userFrom != null)
-    //  {
-    //    db.Contacts.Add(new Contact { UserFrom = userFrom, UserTo = userTo, isAccepted = false });
-    //    await db.SaveChangesAsync();
-    //  }
-    //}
+    public async Task RenameContact(int uidFrom, int uidTo, string newName)
+    {
+      Contact contact = GetContact(uidFrom, uidTo);
+      if (contact.UserFromId == uidFrom)
+      {
+        contact.NameAtUserFrom = newName;
+      }
+      else
+      {
+        contact.NameAtUserTo = newName;
+      }
+      await db.SaveChangesAsync();
+    }
+
+    public async Task<Prop> SendInviteAsync(int uidFrom, string unameTo)
+    {
+      User? userFrom = db.Users.Find(uidFrom);
+      if (userFrom == null) throw new Exception("User From Not Found"); // user, who send invite, doesn't exist
+
+      User? userTo = db.Users.FirstOrDefault(u => u.Name == unameTo);
+      if (userTo == null) throw new Exception("User To Not Found"); // user, who should accept invite, doesn't exist
+
+      if (db.Contacts.Any(c => c.UserFromId == userFrom.Id && c.UserToId == userTo.Id || c.UserFromId == userTo.Id && c.UserToId == userFrom.Id))
+        throw new Exception("Invite Already Exist");
+
+      var contact = db.Contacts.Add(new Contact { UserFrom = userFrom, UserTo = userTo, isAccepted = false });
+
+      await db.SaveChangesAsync();
+      return new Prop { Id = contact.Entity.Id, Name = contact.Entity.UserFrom.Name };
+    }
+    private async Task AcceptInviteAsync(User userFrom, User userTo)
+    {
+      Contact? contact = db.Contacts.FirstOrDefault(c => c.UserFromId == userFrom.Id && c.UserToId == userTo.Id);
+      if (contact != null)
+      {
+        contact.isAccepted = true;
+        contact.NameAtUserFrom = userTo.Name;
+        contact.NameAtUserTo = userFrom.Name;
+        await db.SaveChangesAsync();
+      }
+    }
   }
 }

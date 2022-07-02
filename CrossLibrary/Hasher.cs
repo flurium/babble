@@ -4,9 +4,8 @@ namespace CrossLibrary
 {
   public static class Hasher
   {
-    private const int SaltSize = 16;
     private const int HashSize = 20;
-
+    private const int SaltSize = 16;
     public static string Hash(string password)
     {
       return Hash(password, 10000);
