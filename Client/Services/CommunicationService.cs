@@ -176,9 +176,26 @@ namespace Client.Services
       }
       catch (Exception ex)
       {
-        MessageBox.Show(ex.Message);
+       MessageBox.Show(ex.Message);
       }
     }
+
+    private void SendData(Request req)
+    {
+      try
+      {
+        // TODO: optimize
+        IPEndPoint remotePoint = new IPEndPoint(IPAddress.Parse(remoteIp), remotePort);
+        string requestStr = JsonConvert.SerializeObject(req);
+        byte[] data = Encoding.Unicode.GetBytes(requestStr);
+        listeningSocket.SendTo(data, remotePoint);
+      }
+      catch (Exception ex)
+      {
+        // show error
+      }
+    }
+
     private void SendInviteHandle(Response res)
     { }
 
