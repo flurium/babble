@@ -59,8 +59,8 @@
 
 
 ## RenameContact
-- Request: в `Data` 
-- Response: в `Data`
+- Request: в `Data` id from, id to, new name
+- Response: в `Data` 
 
 
 ## RemoveContact
