@@ -109,6 +109,7 @@
       <Grid>
         <Grid.ColumnDefinitions>
           <ColumnDefinition />
+          <ColumnDefinition Width="60" />
           <ColumnDefinition Width="50" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
@@ -117,8 +118,11 @@
           <RowDefinition Height="40" />
         </Grid.RowDefinitions>
 
-        <Label Name="interlocutor" Grid.Column="0" Grid.Row="0" Content="interlocutor" />
-        <Button Grid.Column="1" Grid.Row="0" x:Name="Exit" Click="Exit_Click">Exit</Button>
+        <TextBox Grid.Column="0" Grid.Row="0" x:Name="ChatName" Text="interlocutor" Style="{StaticResource Input}" IsReadOnly="True"></TextBox>
+        <Button Grid.Column="1" Grid.Row="0" x:Name="RenameBtn" Click="RenameBtn_Click">Rename</Button>
+        <!--<Label Name="interlocutor" Grid.Column="0" Grid.Row="0" Content="interlocutor" />-->
+        
+        <Button Grid.Column="2" Grid.Row="0" x:Name="Exit" Click="Exit_Click">Exit</Button>
 
         <ListBox Grid.Row="1" Grid.ColumnSpan="3" x:Name="MessageList" ItemsSource="{Binding Messages}" ScrollViewer.ScrollChanged="MessageList_ScrollChanged" ScrollViewer.VerticalScrollBarVisibility="Auto"  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
           <ListBox.ItemContainerStyle>
@@ -143,8 +147,8 @@
           </ListBox.ItemTemplate>
         </ListBox>
 
-        <TextBox Grid.Column="0" Grid.Row="2" x:Name="MessageWrite" Style="{StaticResource Input}"></TextBox>
-        <Button Grid.Column="1" Grid.Row="2" x:Name="MessageSend" Click="MessageSend_Click">Send</Button>
+        <TextBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" x:Name="MessageWrite" Style="{StaticResource Input}"></TextBox>
+        <Button Grid.Column="2" Grid.Row="2" x:Name="MessageSend" Click="MessageSend_Click">Send</Button>
       </Grid>
     </Border>
   </Grid>

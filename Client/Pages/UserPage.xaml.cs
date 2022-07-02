@@ -20,9 +20,9 @@ namespace Client
   public partial class UserPage : Page
   {
     private CommunicationService cs;
-
     public ObservableCollection<Message> Messages { get; set; } = new ObservableCollection<Message>();
 
+    
     public UserPage(CommunicationService cs)
     {
       InitializeComponent();
@@ -65,6 +65,7 @@ namespace Client
       {
         AddMessage(MessageWrite.Text.Trim());
         MessageWrite.Text = "";
+        MessageWrite.Focus();
       }
     }
 
@@ -75,6 +76,16 @@ namespace Client
       {
         scrollViewer.ScrollToBottom();
       }
+    }
+
+    private void RenameBtn_Click(object sender, RoutedEventArgs e)
+    {
+      ChatName.IsReadOnly = !ChatName.IsReadOnly;
+      RenameBtn.Content = ChatName.IsReadOnly ? "Rename" : "Confirm";
+      ChatName.Focus();
+      ChatName.CaretIndex = ChatName.Text.Length;
+      ChatName.FontSize = ChatName.FontSize == 14 ? 12 : 14;
+    
     }
   }
 }
