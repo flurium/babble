@@ -31,6 +31,8 @@ namespace Server.Services
 
     public IEnumerable<Prop> GetContacts(int uid) => contactService.GetContacts(uid);
 
+    public IEnumerable<int> GetGroupMembersIds(int id) => groupService.GetGroupMembersIds(id);
+
     // work with contacts
     public IEnumerable<Prop> GetInvites(int uid) => contactService.GetInvites(uid);
 

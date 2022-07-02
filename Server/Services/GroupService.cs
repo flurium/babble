@@ -17,8 +17,10 @@ namespace Server.Services
     Task RemoveUserFromGroupAsync(int uid, string groupName);
 
     Task RenameGroupAsync(int id, string newName);
-  }
 
+    IEnumerable<int> GetGroupMembersIds(int id);
+  }
+  
   public class GroupService : IGroupService
   {
     private BabbleContext db;
@@ -58,6 +60,12 @@ namespace Server.Services
     public IEnumerable<Prop> GetUserGroups(int uid)
     {
       return db.UserGroups.Where(ug => ug.UserId == uid).Select(ug => new Prop { Id = ug.GroupId, Name = ug.Group.Name });
+    }
+
+    // id = group id
+    public IEnumerable<int> GetGroupMembersIds(int id)
+    {
+      return db.UserGroups.Where(ug => ug.GroupId == id).Select(ug => ug.UserId); 
     }
 
     // TODO: add throw exeptions
