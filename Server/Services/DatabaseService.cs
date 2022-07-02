@@ -27,6 +27,8 @@ namespace Server.Services
     // work with groups
     public Task<bool> AddUserToGroupAsync(int uid, string groupName) => groupService.AddUserToGroupAsync(uid, groupName);
 
+    public Contact GetContact(int uidFromm, int uidTo) => contactService.GetContact(uidFromm, uidTo);
+
     public IEnumerable<Prop> GetContacts(int uid) => contactService.GetContacts(uid);
 
     // work with contacts
