@@ -14,6 +14,7 @@ namespace Client.Services
   public class CommunicationService
   {
     private Dictionary<Command, Action<Response>> handlers = new Dictionary<Command, Action<Response>>();
+    private Dictionary<Command, Action<Request>> senders = new Dictionary<Command, Action<Request>>();
     private Socket listeningSocket;
     private Task listenongTask;
     private int localPort;
@@ -62,6 +63,7 @@ namespace Client.Services
       handlers.Add(Command.SendInvite, SendInviteHandle);
       handlers.Add(Command.GetInvite, GetInviteHandle);
       handlers.Add(Command.GetContact, GetContactHandle);
+      handlers.Add(Command.GetMessageFromContact, GetMessageFromContactHandle);
     }
 
     public ObservableCollection<Prop> Contacts { get; set; } = new ObservableCollection<Prop>();
@@ -220,13 +222,24 @@ namespace Client.Services
       }
       catch (Exception ex)
       {
-        // show error
-      }
+        MessageBox.Show(ex.Message);
+       }
     }
 
-    private void SendInviteHandle(Response res)
-    { }
+        private void SendInviteHandle(Response res)
+        {
+           /*
+            Response sing = new Response();
+            sing.Command = Command.SignIn;
+            sing.Data = new
+            {
+                Name = name,
+                Password = password
 
+            };
+           */
+ 
+        }
     private void SignInHandle(Response res)
     {
       User = res.Data.User;
@@ -236,5 +249,34 @@ namespace Client.Services
     }
 
     private void SignUpHandle(Response res) => User = res.Data;
+    
+    private void SendMessageToContact(string message, int to, int from)
+    {
+        Request req = new Request{ Command=Command.SendMessageToContact, Data={To=to, From=from, Message=message}};
+        SendData(req);
+            
+    }
+    
+    private void SendMessageToGroup(string message, int to, int from)
+    {
+        Request req = new Request { Command = Command.SendMessageToGroup, Data = { To = to, From = from, Message = message } };
+        SendData(req);
+
+    }
+     
+
+
+    private void GetMessageFromContactHandle(Response res)
+    {
+           
+         
+
+    }
+
+
+
+
+
+
   }
 }
