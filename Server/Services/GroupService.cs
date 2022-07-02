@@ -20,7 +20,7 @@ namespace Server.Services
 
     IEnumerable<int> GetGroupMembersIds(int id);
   }
-  
+
   public class GroupService : IGroupService
   {
     private BabbleContext db;
@@ -65,7 +65,7 @@ namespace Server.Services
     // id = group id
     public IEnumerable<int> GetGroupMembersIds(int id)
     {
-      return db.UserGroups.Where(ug => ug.GroupId == id).Select(ug => ug.UserId); 
+      return db.UserGroups.Where(ug => ug.GroupId == id).Select(ug => ug.UserId);
     }
 
     // TODO: add throw exeptions

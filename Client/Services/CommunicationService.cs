@@ -21,6 +21,7 @@ namespace Client.Services
     private int remotePort = 5001;
     private Random rnd = new Random();
     private bool run = false;
+
     public CommunicationService()
     {
       Groups.Add(new Prop { Id = 1, Name = "aaaща мкуег" });
@@ -67,6 +68,7 @@ namespace Client.Services
     public ObservableCollection<Prop> Groups { get; set; } = new ObservableCollection<Prop>();
     public ObservableCollection<Prop> Invites { get; set; } = new ObservableCollection<Prop>();
     public Prop User { get; set; }
+
     public void Disconnect()
     {
       // Send disconnect request
@@ -202,7 +204,7 @@ namespace Client.Services
       }
       catch (Exception ex)
       {
-       MessageBox.Show(ex.Message);
+        MessageBox.Show(ex.Message);
       }
     }
 

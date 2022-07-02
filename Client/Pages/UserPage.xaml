@@ -25,7 +25,7 @@
       <Setter Property="Background" Value="#0bbffa" />
     </Style>
     <Style TargetType="ListBox">
-      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="BorderThickness" Value="0" />
     </Style>
     <Style TargetType="ListBoxItem">
       <Setter Property="Height" Value="50" />
@@ -77,7 +77,7 @@
           <ListBox x:Name="ContactsList" ItemsSource="{Binding Contacts}" Margin="0,-2,-2,0">
             <ListBox.ItemTemplate>
               <DataTemplate>
-                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="15,0,15,0"/>
+                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="15,0,15,0" />
               </DataTemplate>
             </ListBox.ItemTemplate>
           </ListBox>
@@ -87,7 +87,7 @@
           <ListBox x:Name="GroupsList" ItemsSource="{Binding Groups}" Margin="0,-2,-2,0">
             <ListBox.ItemTemplate>
               <DataTemplate>
-                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="15,0,15,0"/>
+                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="15,0,15,0" />
               </DataTemplate>
             </ListBox.ItemTemplate>
           </ListBox>
@@ -97,7 +97,7 @@
           <ListBox x:Name="InvitesList" ItemsSource="{Binding Invites}" Margin="0,-2,-2,0">
             <ListBox.ItemTemplate>
               <DataTemplate>
-                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="15,0,15,0"/>
+                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="15,0,15,0" />
               </DataTemplate>
             </ListBox.ItemTemplate>
           </ListBox>
@@ -105,7 +105,7 @@
       </TabControl>
     </Grid>
 
-    <Border Grid.Column="1" BorderBrush="#abadb8" BorderThickness="1,0,0,0" >
+    <Border Grid.Column="1" BorderBrush="#abadb8" BorderThickness="1,0,0,0">
       <Grid>
         <Grid.ColumnDefinitions>
           <ColumnDefinition />
@@ -121,19 +121,19 @@
         <TextBox Grid.Column="0" Grid.Row="0" x:Name="ChatName" Text="interlocutor" Style="{StaticResource Input}" IsReadOnly="True"></TextBox>
         <Button Grid.Column="1" Grid.Row="0" x:Name="RenameBtn" Click="RenameBtn_Click">Rename</Button>
         <!--<Label Name="interlocutor" Grid.Column="0" Grid.Row="0" Content="interlocutor" />-->
-        
+
         <Button Grid.Column="2" Grid.Row="0" x:Name="Exit" Click="Exit_Click">Exit</Button>
 
         <ListBox Grid.Row="1" Grid.ColumnSpan="3" x:Name="MessageList" ItemsSource="{Binding Messages}" ScrollViewer.ScrollChanged="MessageList_ScrollChanged" ScrollViewer.VerticalScrollBarVisibility="Auto"  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
           <ListBox.ItemContainerStyle>
             <Style TargetType="ListBoxItem">
               <Setter Property="Margin" Value="100,5,5,0" />
-              <Setter Property="HorizontalContentAlignment" Value="Right"/>
-              <Setter Property="IsEnabled" Value="False"/>
+              <Setter Property="HorizontalContentAlignment" Value="Right" />
+              <Setter Property="IsEnabled" Value="False" />
               <Style.Triggers>
                 <DataTrigger Binding="{Binding IsIncoming}" Value="true">
                   <Setter Property="Margin" Value="5,5,100,0" />
-                  <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                  <Setter Property="HorizontalContentAlignment" Value="Left" />
                 </DataTrigger>
               </Style.Triggers>
             </Style>

@@ -16,6 +16,7 @@ namespace Server.Services
     private string localIp = "127.0.0.1";
     private int localPort = 5001;
     private bool run = false;
+
     public CommunicationService()
     {
       handlers.Add(Command.SignIn, SignInHandle);
@@ -249,6 +250,7 @@ namespace Server.Services
         }
       }
     }
+
     private void SendData(Response response, IPEndPoint ip)
     {
       string responseStr = JsonConvert.SerializeObject(response);

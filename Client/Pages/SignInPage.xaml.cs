@@ -20,8 +20,6 @@ namespace Client.Pages
 
     private void SignIn(object sender, RoutedEventArgs e)
     {
-      
-
       NavigationService.Navigate(MainWindow.userChat);
       NavigationService.RemoveBackEntry();
     }
