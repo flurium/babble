@@ -23,7 +23,7 @@ namespace Client.Services
     private bool run = false;
     public CommunicationService()
     {
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
+      Groups.Add(new Prop { Id = 1, Name = "aaaща мкуег" });
       Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
       Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
       Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
