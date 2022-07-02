@@ -8,6 +8,7 @@ namespace Server.Services
   {
     Task<Contact> AcceptInviteAsync(int id);
 
+    Contact GetContact(int uidFromm, int uidTo);
     IEnumerable<Prop> GetContacts(int uid);
 
     IEnumerable<Prop> GetInvites(int uid);
@@ -33,6 +34,15 @@ namespace Server.Services
       contact.NameAtUserFrom = contact.UserTo.Name;
       contact.NameAtUserTo = contact.UserFrom.Name;
       await db.SaveChangesAsync();
+      return contact;
+    }
+
+    public Contact GetContact(int uidFrom, int uidTo)
+    {
+      Contact? contact = db.Contacts.FirstOrDefault(
+        c => (c.UserFromId == uidFrom && c.UserToId == uidTo) || (c.UserToId == uidFrom && c.UserFromId == uidTo)
+        );
+      if (contact == null) throw new Exception("Contact isn't found");
       return contact;
     }
 
