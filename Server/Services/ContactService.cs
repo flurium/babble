@@ -8,7 +8,7 @@ namespace Server.Services
   {
     Task<Contact> AcceptInviteAsync(int id);
 
-    Contact GetContact(int uidFromm, int uidTo);
+    Contact GetContact(int uidFrom, int uidTo);
 
     IEnumerable<Prop> GetContacts(int uid);
 
