@@ -309,7 +309,7 @@ namespace Server.Services
             IPEndPoint clientFullIp = (IPEndPoint)clientIp;
 
             string request = builder.ToString();
-            Console.WriteLine(string.Format("{0}:{1} = {2}", clientIp.ToString(), clientFullIp.Port, request));
+            Console.WriteLine(string.Format("{0} = {1}", clientIp.ToString(), request));
             Handle(request, clientFullIp);
           }
         }

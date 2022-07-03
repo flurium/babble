@@ -37,7 +37,7 @@ namespace Client.Services
     // function from interface to confirm sign
     public Action ConfirmSign { get; set; }
 
-    public Action DenySign { get; set; }
+    public Action<string> DenySign { get; set; }
 
     public CommunicationService()
     {
@@ -46,15 +46,6 @@ namespace Client.Services
       {
         localPort = rnd.Next(3000, 49000);
       } while (localPort == 5001); // 5001 = server port
-
-      // test
-      Contacts.Add(new Prop { Id = 3, Name = "3" });
-      contactMessages.Add(new Prop { Id = 3, Name = "3" }, new());
-      Contacts.Add(new Prop { Id = 2, Name = "2" });
-      contactMessages.Add(new Prop { Id = 2, Name = "2" }, new());
-
-      Groups.Add(new Prop { Id = 1, Name = "dfasd" });
-      groupMessages.Add(new Prop { Id = 1, Name = "dfasd" }, new());
 
       // Init handlers
       handlers.Add(Command.SignIn, SignInHandle);
@@ -244,7 +235,7 @@ namespace Client.Services
       try
       {
         // TODO: optimize
-        IPEndPoint remotePoint = new IPEndPoint(IPAddress.Parse(remoteIp), remotePort);
+        IPEndPoint remotePoint = new(IPAddress.Parse(remoteIp), remotePort);
         string requestStr = JsonConvert.SerializeObject(req);
         byte[] data = Encoding.Unicode.GetBytes(requestStr);
         listeningSocket.SendTo(data, remotePoint);
@@ -272,34 +263,41 @@ namespace Client.Services
     {
       if (res.Status == Status.OK)
       {
-        Prop user = res.Data.User;
+        Prop user = new();
+        user.Id = res.Data.User.Id;
+        user.Name = res.Data.User.Name;
         User = user;
 
-        IEnumerable<Prop> groups = res.Data.Groups;
+        var groups = res.Data.Groups;
         foreach (var group in groups)
         {
-          groupMessages.Add(group, new LinkedList<Message>());
-          Groups.Add(group);
+          Prop groupProp = new() { Id = group.Id, Name = group.Name };
+          groupMessages.Add(groupProp, new());
+
+          Application.Current.Dispatcher.Invoke(() => Groups.Add(groupProp));
         }
 
-        IEnumerable<Prop> invites = res.Data.Invites;
+        var invites = res.Data.Invites;
         foreach (var invite in invites)
         {
-          Invites.Add(invite);
+          Prop inviteProp = new() { Id = invite.Id, Name = invite.Name };
+          Application.Current.Dispatcher.Invoke(() => Invites.Add(inviteProp));
         }
 
-        IEnumerable<Prop> contacts = res.Data.Contacts;
+        var contacts = res.Data.Contacts;
         foreach (var contact in contacts)
         {
-          contactMessages.Add(contact, new LinkedList<Message>());
-          Contacts.Add(contact);
+          Prop contactProp = new() { Id = contact.Id, Name = contact.Name };
+          contactMessages.Add(contactProp, new());
+          Application.Current.Dispatcher.Invoke(() => Contacts.Add(contactProp));
         }
 
         ConfirmSign();
       }
       else
       {
-        DenySign();
+        string message = res.Data;
+        DenySign(message);
       }
     }
 
@@ -315,7 +313,8 @@ namespace Client.Services
       }
       else
       {
-        DenySign();
+        string message = res.Data;
+        DenySign(message);
       }
     }
 

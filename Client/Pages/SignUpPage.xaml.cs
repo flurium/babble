@@ -33,13 +33,13 @@ namespace Client.Pages
       });
     }
 
-    public void DenySignUp()
+    private void DenySignUp(string message)
     {
       Dispatcher.Invoke(() =>
       {
         SignUpBtn.IsEnabled = true;
         GoToSignInBtn.IsEnabled = true;
-        MessageBox.Show("Sign up failed");
+        MessageBox.Show(message);
       });
     }
 
