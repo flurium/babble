@@ -41,7 +41,7 @@ namespace Server.Services
       }
       catch (Exception ex)
       {
-        SendData(new Response { Command = req.Command, Status = Status.Bad, Data = ex.Message }, ip);
+        SendData(new Response { Command = Command.AcceptInvite, Status = Status.Bad, Data = ex.Message }, ip);
       }
     }
 
@@ -110,7 +110,7 @@ namespace Server.Services
       }
       catch (Exception ex)
       {
-        SendData(new Response { Command = req.Command, Status = Status.Bad, Data = ex.Message }, ip);
+        SendData(new Response { Command = Command.RenameContact, Status = Status.Bad, Data = ex.Message }, ip);
       }
     }
 
@@ -125,7 +125,7 @@ namespace Server.Services
       }
       catch (Exception ex)
       {
-        SendData(new Response { Command = req.Command, Status = Status.Bad, Data = ex.Message }, ip);
+        SendData(new Response { Command = Command.RenameContact, Status = Status.Bad, Data = ex.Message }, ip);
       }
     }
 
@@ -149,7 +149,7 @@ namespace Server.Services
       }
       catch (Exception ex)
       {
-        SendData(new Response { Command = req.Command, Status = Status.Bad, Data = ex.Message }, ip);
+        SendData(new Response { Command = Command.SendInvite, Status = Status.Bad, Data = ex.Message }, ip);
       }
     }
 
@@ -174,7 +174,7 @@ namespace Server.Services
       }
       catch (Exception ex)
       {
-        SendData(new Response { Command = req.Command, Status = Status.Bad, Data = ex.Message }, ip);
+        SendData(new Response { Command = Command.SendMessageToContact, Status = Status.Bad, Data = ex.Message }, ip);
       }
     }
 
@@ -197,7 +197,7 @@ namespace Server.Services
       }
       catch (Exception ex)
       {
-        SendData(new Response { Command = req.Command, Status = Status.Bad, Data = ex.Message }, ip);
+        SendData(new Response { Command = Command.SendMessageToGroup, Status = Status.Bad, Data = ex.Message }, ip);
       }
     }
 
@@ -230,12 +230,12 @@ namespace Server.Services
         }
         else
         {
-          res = new Response { Command = req.Command, Status = Status.Bad, Data = "Wrong password" };
+          res = new Response { Command = Command.SignIn, Status = Status.Bad, Data = "Wrong password" };
         }
       }
       else
       {
-        res = new Response { Command = req.Command, Status = Status.Bad, Data = "User not found" };
+        res = new Response { Command = Command.SignIn, Status = Status.Bad, Data = "User not found" };
       }
 
       SendData(res, ip);
@@ -265,7 +265,7 @@ namespace Server.Services
       }
       catch (Exception ex)
       {
-        res = new Response { Command = req.Command, Status = Status.Bad, Data = ex.Message };
+        res = new Response { Command = Command.SignUp, Status = Status.Bad, Data = ex.Message };
       }
 
       SendData(res, ip);
