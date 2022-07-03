@@ -9,9 +9,9 @@ namespace Server.Services
 {
   public class CommunicationService
   {
-    private Dictionary<int, IPEndPoint> clients = new Dictionary<int, IPEndPoint>();
-    private DatabaseService db = new DatabaseService();
-    private Dictionary<Command, Action<dynamic, IPEndPoint>> handlers = new Dictionary<Command, Action<dynamic, IPEndPoint>>();
+    private Dictionary<int, IPEndPoint> clients = new();
+    private DatabaseService db = new();
+    private Dictionary<Command, Action<Request, IPEndPoint>> handlers = new();
     private Socket listeningSocket;
     private string localIp = "127.0.0.1";
     private int localPort = 5001;
@@ -32,7 +32,7 @@ namespace Server.Services
       handlers.Add(Command.Disconnect, DisconnectHandle);
     }
 
-    public async void AcceptInviteHandle(dynamic req, IPEndPoint ip)
+    public async void AcceptInviteHandle(Request req, IPEndPoint ip)
     {
       // ip = ip of user to
       // req.Data = contact id
@@ -59,21 +59,21 @@ namespace Server.Services
       }
     }
 
-    public void AddGroupHandle(dynamic req, IPEndPoint ip)
+    public void AddGroupHandle(Request req, IPEndPoint ip)
     { }
 
-    public void DisconnectHandle(dynamic req, IPEndPoint ip)
+    public void DisconnectHandle(Request req, IPEndPoint ip)
     {
       clients.Remove(req.Data);
     }
 
-    public void LeaveGroupHandle(dynamic req, IPEndPoint ip)
+    public void LeaveGroupHandle(Request req, IPEndPoint ip)
     { }
 
-    public void RemoveContactHandle(dynamic req, IPEndPoint ip)
+    public void RemoveContactHandle(Request req, IPEndPoint ip)
     { }
 
-    public void RenameContactHandle(dynamic req, IPEndPoint ip)
+    public void RenameContactHandle(Request req, IPEndPoint ip)
     { }
 
     public void Run()
@@ -84,7 +84,7 @@ namespace Server.Services
       Task listenongTask = new Task(Listen);
     }
 
-    public async void SendInviteHandle(dynamic req, IPEndPoint ip)
+    public async void SendInviteHandle(Request req, IPEndPoint ip)
     {
       try
       {
@@ -106,15 +106,15 @@ namespace Server.Services
       }
     }
 
-    public void SendMessageToContactHandle(dynamic req, IPEndPoint ip)
+    public void SendMessageToContactHandle(Request req, IPEndPoint ip)
     {
     }
 
-    public void SendMessageToGroupHandle(dynamic req, IPEndPoint ip)
+    public void SendMessageToGroupHandle(Request req, IPEndPoint ip)
     {
     }
 
-    public void SignInHandle(dynamic req, IPEndPoint ip)
+    public void SignInHandle(Request req, IPEndPoint ip)
     {
       Response res;
       User? user = db.GetUser(req.Data.Name);
@@ -152,7 +152,7 @@ namespace Server.Services
     }
 
     // Handlers
-    public void SignUpHandle(dynamic req, IPEndPoint ip)
+    public void SignUpHandle(Request req, IPEndPoint ip)
     {
       Response res;
       try

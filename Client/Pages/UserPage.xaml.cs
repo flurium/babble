@@ -1,8 +1,10 @@
 ﻿using Client.Services;
+using CrossLibrary;
 using System;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Navigation;
 
 namespace Client
@@ -20,28 +22,23 @@ namespace Client
   public partial class UserPage : Page
   {
     private CommunicationService cs;
+
     public UserPage(CommunicationService cs)
     {
       InitializeComponent();
       this.cs = cs;
-      ContactsList.DataContext = cs;
-      GroupsList.DataContext = cs;
-      InvitesList.DataContext = cs;
-      MessageList.DataContext = this;
-
-      AddMessage("Phasellus vitae quam arcu. Sed ac nunc metus", true);
-      AddMessage("Phasellus vitae quam arcu. Sed ac nunc metus. Nulla tellus mi, ornare vitae metus in, accumsan fringilla ex. Proin felis ligula, euismod non tellus sed, rhoncus hendrerit erat.", true);
+      DataContext = cs;
     }
 
-    public ObservableCollection<Message> Messages { get; set; } = new ObservableCollection<Message>();
-    // if isIncomming == false message will be at right side
-    // else message will be at left side
-    private void AddMessage(string message, bool isIncoming = false)
+    private void ContactsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-      Dispatcher.BeginInvoke(() =>
+      if (ContactsList.SelectedIndex != -1)
       {
-        Messages.Add(new Message { String = message, IsIncoming = isIncoming });
-      }, null);
+        Prop contact = (Prop)ContactsList.SelectedItem;
+        cs.SetCurrentContact(contact);
+        MessageWrite.Focus();
+        ChatName.Text = contact.Name;
+      }
     }
 
     private void Exit_Click(object sender, RoutedEventArgs e)
@@ -51,11 +48,30 @@ namespace Client
       cs.Disconnect();
     }
 
-    private void GoToContacts_Click(object sender, RoutedEventArgs e) => ListSection.SelectedIndex = 0;
+    private void GoToContacts_Click(object sender, RoutedEventArgs e)
+    {
+      ListSection.SelectedIndex = 0;
+      GroupsList.SelectedIndex = -1;
+    }
 
-    private void GoToGroups_Click(object sender, RoutedEventArgs e) => ListSection.SelectedIndex = 1;
+    private void GoToGroups_Click(object sender, RoutedEventArgs e)
+    {
+      ListSection.SelectedIndex = 1;
+      ContactsList.SelectedIndex = -1;
+    }
 
     private void GoToInvites_Click(object sender, RoutedEventArgs e) => ListSection.SelectedIndex = 2;
+
+    private void GroupsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+      if (GroupsList.SelectedIndex != -1)
+      {
+        Prop group = (Prop)GroupsList.SelectedItem;
+        cs.SetCurrentGroup(group);
+        MessageWrite.Focus();
+        ChatName.Text = group.Name;
+      }
+    }
 
     private void MessageList_ScrollChanged(object sender, ScrollChangedEventArgs e)
     {
@@ -68,13 +84,17 @@ namespace Client
 
     private void MessageSend_Click(object sender, RoutedEventArgs e)
     {
-      if (MessageWrite.Text.Trim() != "")
+      SendMessage();
+    }
+
+    private void MessageSend_KeyDown(object sender, KeyEventArgs e)
+    {
+      if (e.Key == Key.Enter)
       {
-        AddMessage(MessageWrite.Text.Trim());
-        MessageWrite.Text = "";
-        MessageWrite.Focus();
+        SendMessage();
       }
     }
+
     private void RenameBtn_Click(object sender, RoutedEventArgs e)
     {
       ChatName.IsReadOnly = !ChatName.IsReadOnly;
@@ -82,6 +102,25 @@ namespace Client
       ChatName.Focus();
       ChatName.CaretIndex = ChatName.Text.Length;
       ChatName.FontSize = ChatName.FontSize == 14 ? 12 : 14;
+    }
+
+    private void SendMessage()
+    {
+      if (MessageWrite.Text.Trim() != "")
+      {
+        if (ListSection.SelectedIndex == 0 && ContactsList.SelectedIndex != -1)
+        {
+          cs.SendMessageToContact(MessageWrite.Text.Trim());
+          MessageWrite.Text = "";
+          MessageWrite.Focus();
+        }
+        else if (ListSection.SelectedIndex == 1 && GroupsList.SelectedIndex != -1)
+        {
+          cs.SendMessageToGroup(MessageWrite.Text.Trim());
+          MessageWrite.Text = "";
+          MessageWrite.Focus();
+        }
+      }
     }
   }
 }

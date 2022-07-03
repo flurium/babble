@@ -11,8 +11,17 @@ using System.Windows;
 
 namespace Client.Services
 {
+  public struct Message
+  {
+    public bool IsIncoming { get; set; }
+    public string String { get; set; }
+  }
+
   public class CommunicationService
   {
+    private Dictionary<Prop, LinkedList<Message>> contactMessages = new();
+    private Prop currentProp;
+    private Dictionary<Prop, LinkedList<Message>> groupMessages = new();
     private Dictionary<Command, Action<Response>> handlers = new Dictionary<Command, Action<Response>>();
     private Socket listeningSocket;
     private Task listenongTask;
@@ -24,37 +33,14 @@ namespace Client.Services
 
     public CommunicationService()
     {
-      Groups.Add(new Prop { Id = 1, Name = "aaaща мкуег" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
+      // test
+      Contacts.Add(new Prop { Id = 3, Name = "3" });
+      contactMessages.Add(new Prop { Id = 3, Name = "3" }, new());
+      Contacts.Add(new Prop { Id = 2, Name = "2" });
+      contactMessages.Add(new Prop { Id = 2, Name = "2" }, new());
 
-      // to erplace
-      //Groups.Clear();
       Groups.Add(new Prop { Id = 1, Name = "dfasd" });
+      groupMessages.Add(new Prop { Id = 1, Name = "dfasd" }, new());
 
       // Init handlers
       handlers.Add(Command.SignIn, SignInHandle);
@@ -64,10 +50,52 @@ namespace Client.Services
       handlers.Add(Command.GetContact, GetContactHandle);
     }
 
-    public ObservableCollection<Prop> Contacts { get; set; } = new ObservableCollection<Prop>();
-    public ObservableCollection<Prop> Groups { get; set; } = new ObservableCollection<Prop>();
-    public ObservableCollection<Prop> Invites { get; set; } = new ObservableCollection<Prop>();
-    public Prop User { get; set; }
+    // ObservableCollections must not be recreated
+    public ObservableCollection<Prop> Contacts { get; } = new();
+
+    public ObservableCollection<Message> CurrentMessages { get; } = new();
+
+    public ObservableCollection<Prop> Groups { get; } = new();
+
+    public ObservableCollection<Prop> Invites { get; } = new();
+
+    public Prop User { get; private set; }
+
+    public void SendMessageToContact(string str)
+    {
+      Message message = new Message { String = str, IsIncoming = false };
+      contactMessages[currentProp].AddLast(message);
+      CurrentMessages.Add(message);
+    }
+
+    public void SendMessageToGroup(string str)
+    {
+      Message message = new Message { String = str, IsIncoming = false };
+      groupMessages[currentProp].AddLast(message);
+      CurrentMessages.Add(message);
+    }
+
+    public void SetCurrentContact(Prop contact)
+    {
+      currentProp = contact;
+      // refresh CurrentMessages
+      CurrentMessages.Clear();
+      foreach (Message message in contactMessages[currentProp])
+      {
+        CurrentMessages.Add(message);
+      }
+    }
+
+    public void SetCurrentGroup(Prop group)
+    {
+      currentProp = group;
+      // refresh CurrentMessages
+      CurrentMessages.Clear();
+      foreach (Message message in groupMessages[currentProp])
+      {
+        CurrentMessages.Add(message);
+      }
+    }
 
     public void Disconnect()
     {
