@@ -38,9 +38,9 @@
 
       <Label  Content="Name"  Grid.Column="1" Grid.Row="0" />
 
-      <TextBox x:Name="SignInName" Style="{StaticResource Input}" Grid.Column="1" Grid.Row="1" />
+      <TextBox x:Name="NameInput" Style="{StaticResource Input}" Grid.Column="1" Grid.Row="1" />
       <Label  Content="Password"  Grid.Column="1" Grid.Row="2" />
-      <PasswordBox x:Name="SignInPassword" Style="{StaticResource Input}" Grid.Column="1" Grid.Row="3" />
+      <PasswordBox x:Name="PasswordInput" Style="{StaticResource Input}" Grid.Column="1" Grid.Row="3" />
 
       <Button Content="Sign In"  Grid.Column="1" Grid.Row="4" Click="SignIn" />
       <Button Content="Don't have an account yet?  Sign Up"  Grid.Row="5" Grid.Column="1" Click="SignUp" />

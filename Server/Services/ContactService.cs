@@ -8,7 +8,8 @@ namespace Server.Services
   {
     Task<Contact> AcceptInviteAsync(int id);
 
-    Contact GetContact(int uidFromm, int uidTo);
+    Contact GetContact(int uidFrom, int uidTo);
+
     IEnumerable<Prop> GetContacts(int uid);
 
     IEnumerable<Prop> GetInvites(int uid);
@@ -18,6 +19,7 @@ namespace Server.Services
     Task<Prop> SendInviteAsync(int uidFrom, string unameTo);
 
     Task RenameContact(int uidFrom, int uidTo, string newName);
+
     Task RemoveContact(int uidFrom, int uidTo);
   }
 
@@ -111,6 +113,7 @@ namespace Server.Services
       await db.SaveChangesAsync();
       return new Prop { Id = contact.Entity.Id, Name = contact.Entity.UserFrom.Name };
     }
+
     private async Task AcceptInviteAsync(User userFrom, User userTo)
     {
       Contact? contact = db.Contacts.FirstOrDefault(c => c.UserFromId == userFrom.Id && c.UserToId == userTo.Id);

@@ -12,6 +12,7 @@
 
     // name of contact showed at user to
     public string? NameAtUserTo { get; set; }
+
     public User UserFrom { get; set; }
     public int UserFromId { get; set; }
     public User UserTo { get; set; }

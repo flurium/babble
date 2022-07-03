@@ -6,6 +6,7 @@ namespace CrossLibrary
   {
     private const int HashSize = 20;
     private const int SaltSize = 16;
+
     public static string Hash(string password)
     {
       return Hash(password, 10000);

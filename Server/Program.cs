@@ -12,8 +12,8 @@ namespace Server
 
       CommunicationService cs = new CommunicationService();
 
-      //cs.Run();
-      Test();
+      cs.Listen();
+      //Test();
     }
 
     private static async void Test()

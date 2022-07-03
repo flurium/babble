@@ -20,10 +20,22 @@ namespace Client.Pages
 
     private void SignIn(object sender, RoutedEventArgs e)
     {
-      
+      string name = NameInput.Text.Trim();
+      string password = PasswordInput.Password.Trim();
 
-      NavigationService.Navigate(MainWindow.userChat);
-      NavigationService.RemoveBackEntry();
+      if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(password))
+      {
+        MessageBox.Show("Name or password is empty");
+      }
+      else
+      {
+        cs.SignIn(name, password);
+
+        // only if sign in
+        // check
+        NavigationService.Navigate(MainWindow.userChat);
+        NavigationService.RemoveBackEntry();
+      }
     }
 
     private void SignUp(object sender, RoutedEventArgs e)

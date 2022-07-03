@@ -11,49 +11,50 @@ using System.Windows;
 
 namespace Client.Services
 {
+  public struct Message
+  {
+    public bool IsIncoming { get; set; }
+    public string String { get; set; }
+  }
+
   public class CommunicationService
   {
-    private Dictionary<Command, Action<Response>> handlers = new Dictionary<Command, Action<Response>>();
+    private Dictionary<Prop, LinkedList<Message>> contactMessages = new();
+    private Prop currentProp;
+    private Dictionary<Prop, LinkedList<Message>> groupMessages = new();
+    private Dictionary<Command, Action<Response>> handlers = new();
     private Socket listeningSocket;
-    private Task listenongTask;
+    private Task listeningTask;
     private int localPort;
     private string remoteIp = "127.0.0.1";
     private int remotePort = 5001;
     private Random rnd = new Random();
     private bool run = false;
+
+    // unnessery
+    private Dictionary<Command, Action<Request>> senders = new();
+
+    // function from interface to confirm sign
+    public Action ConfirmSign { get; set; }
+
+    public Action DenySign { get; set; }
+
     public CommunicationService()
     {
-      Groups.Add(new Prop { Id = 1, Name = "aaaща мкуег" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
-      Groups.Add(new Prop { Id = 1, Name = "aaaaa" });
+      // open port
+      do
+      {
+        localPort = rnd.Next(3000, 49000);
+      } while (localPort == 5001); // 5001 = server port
 
-      // to erplace
-      //Groups.Clear();
+      // test
+      Contacts.Add(new Prop { Id = 3, Name = "3" });
+      contactMessages.Add(new Prop { Id = 3, Name = "3" }, new());
+      Contacts.Add(new Prop { Id = 2, Name = "2" });
+      contactMessages.Add(new Prop { Id = 2, Name = "2" }, new());
+
       Groups.Add(new Prop { Id = 1, Name = "dfasd" });
+      groupMessages.Add(new Prop { Id = 1, Name = "dfasd" }, new());
 
       // Init handlers
       handlers.Add(Command.SignIn, SignInHandle);
@@ -61,40 +62,53 @@ namespace Client.Services
       handlers.Add(Command.SendInvite, SendInviteHandle);
       handlers.Add(Command.GetInvite, GetInviteHandle);
       handlers.Add(Command.GetContact, GetContactHandle);
+      handlers.Add(Command.GetMessageFromContact, GetMessageFromContactHandle);
     }
 
-    public ObservableCollection<Prop> Contacts { get; set; } = new ObservableCollection<Prop>();
-    public ObservableCollection<Prop> Groups { get; set; } = new ObservableCollection<Prop>();
-    public ObservableCollection<Prop> Invites { get; set; } = new ObservableCollection<Prop>();
-    public Prop User { get; set; }
-    public void Disconnect()
+    // ObservableCollections must not be recreated
+    public ObservableCollection<Prop> Contacts { get; } = new();
+
+    public ObservableCollection<Message> CurrentMessages { get; } = new();
+
+    public ObservableCollection<Prop> Groups { get; } = new();
+
+    public ObservableCollection<Prop> Invites { get; } = new();
+
+    public Prop User { get; private set; }
+
+    public void SetCurrentContact(Prop contact)
     {
-      // Send disconnect request
+      currentProp = contact;
+      // refresh CurrentMessages
+      CurrentMessages.Clear();
+      foreach (Message message in contactMessages[currentProp])
+      {
+        CurrentMessages.Add(message);
+      }
+    }
+
+    public void SetCurrentGroup(Prop group)
+    {
+      currentProp = group;
+      // refresh CurrentMessages
+      CurrentMessages.Clear();
+      foreach (Message message in groupMessages[currentProp])
+      {
+        CurrentMessages.Add(message);
+      }
     }
 
     public void SignIn(string name, string password)
     {
-      // TODO: remove to constructor
-      do
-      {
-        localPort = rnd.Next(2000, 49000);
-      } while (localPort == 5001); // 5001 - server port
-      //
-
       try
       {
-        Request sing = new Request();
-        sing.Command = Command.SignIn;
-        sing.Data = new
-        {
-          Name = name,
-          Password = password
-        };
+        Request req = new() { Command = Command.SignIn, Data = new { Name = name, Password = password } };
 
-        SendData(sing, remoteIp, remotePort);
-        run = true;
-        listeningSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-        Task listenongTask = new Task(Listen);
+        OpenConnection();
+
+        SendData(req, remoteIp, remotePort);
+
+        listeningTask.Start();
       }
       catch (Exception ex)
       {
@@ -102,10 +116,40 @@ namespace Client.Services
       }
     }
 
+    public void SignUp(string name, string password)
+    {
+      try
+      {
+        Request req = new() { Command = Command.SignUp, Data = new { Name = name, Password = Hasher.Hash(password) } };
+
+        OpenConnection();
+
+        SendData(req, remoteIp, remotePort);
+
+        //Listen();
+
+        listeningTask.Start();
+      }
+      catch (Exception ex)
+      {
+        MessageBox.Show(ex.Message);
+      }
+    }
+
+    private void OpenConnection()
+    {
+      run = true;
+      listeningSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+      IPEndPoint localIP = new IPEndPoint(IPAddress.Parse(remoteIp), localPort);
+      listeningSocket.Bind(localIP);
+      listeningTask = new(Listen);
+    }
+
     private void CloseConnection()
     {
       if (listeningSocket != null)
       {
+        run = false;
         listeningSocket.Shutdown(SocketShutdown.Both);
         listeningSocket.Close();
         listeningSocket = null;
@@ -122,21 +166,13 @@ namespace Client.Services
     private void Handle(string resStr)
     {
       Response res = JsonConvert.DeserializeObject<Response>(resStr);
-      if (res.Status == Status.OK)
+      try
       {
-        try
-        {
-          handlers[res.Command](res);
-        }
-        catch (Exception ex)
-        {
-          // Show error
-        }
+        handlers[res.Command](res);
       }
-      else if (res.Status == Status.Bad)
+      catch (Exception ex)
       {
-        // Show exeption message
-        // res.Data = message
+        // Show error
       }
     }
 
@@ -147,9 +183,6 @@ namespace Client.Services
     {
       try
       {
-        IPEndPoint localIP = new IPEndPoint(IPAddress.Parse(remoteIp), localPort);
-        listeningSocket.Bind(localIP);
-
         while (run)
         {
           StringBuilder builder = new StringBuilder();
@@ -202,7 +235,7 @@ namespace Client.Services
       }
       catch (Exception ex)
       {
-       MessageBox.Show(ex.Message);
+        MessageBox.Show(ex.Message);
       }
     }
 
@@ -218,21 +251,145 @@ namespace Client.Services
       }
       catch (Exception ex)
       {
-        // show error
+        MessageBox.Show(ex.Message);
       }
     }
 
     private void SendInviteHandle(Response res)
-    { }
+    {
+      /*
+       Response sing = new Response();
+       sing.Command = Command.SignIn;
+       sing.Data = new
+       {
+           Name = name,
+           Password = password
+       };
+      */
+    }
 
     private void SignInHandle(Response res)
     {
-      User = res.Data.User;
-      foreach (var group in res.Data.Groups) Groups.Add(group);
-      foreach (var invite in res.Data.Invites) Groups.Add(invite);
-      foreach (var contact in res.Data.Contacts) Groups.Add(contact);
+      if (res.Status == Status.OK)
+      {
+        Prop user = res.Data.User;
+        User = user;
+
+        IEnumerable<Prop> groups = res.Data.Groups;
+        foreach (var group in groups)
+        {
+          groupMessages.Add(group, new LinkedList<Message>());
+          Groups.Add(group);
+        }
+
+        IEnumerable<Prop> invites = res.Data.Invites;
+        foreach (var invite in invites)
+        {
+          Invites.Add(invite);
+        }
+
+        IEnumerable<Prop> contacts = res.Data.Contacts;
+        foreach (var contact in contacts)
+        {
+          contactMessages.Add(contact, new LinkedList<Message>());
+          Contacts.Add(contact);
+        }
+
+        ConfirmSign();
+      }
+      else
+      {
+        DenySign();
+      }
     }
 
-    private void SignUpHandle(Response res) => User = res.Data;
+    private void SignUpHandle(Response res)
+    {
+      if (res.Status == Status.OK)
+      {
+        Prop user = new();
+        user.Id = res.Data.Id;
+        user.Name = res.Data.Name;
+        User = user;
+        ConfirmSign();
+      }
+      else
+      {
+        DenySign();
+      }
+    }
+
+    public void SendMessageToContact(string messageStr)
+    {
+      Message message = new() { String = messageStr, IsIncoming = false };
+      contactMessages[currentProp].AddLast(message);
+      CurrentMessages.Add(message);
+
+      Request req = new() { Command = Command.SendMessageToContact, Data = new { To = currentProp.Id, From = User.Id, Message = message.String } };
+      SendData(req);
+    }
+
+    public void SendMessageToGroup(string messageStr)
+    {
+      Message message = new() { String = messageStr, IsIncoming = false };
+      groupMessages[currentProp].AddLast(message);
+      CurrentMessages.Add(message);
+
+      Request req = new() { Command = Command.SendMessageToGroup, Data = new { To = currentProp.Id, From = User.Id, Message = message.String } };
+      SendData(req);
+    }
+
+    private void RenameContact(string newName)
+    {
+      Request req = new() { Command = Command.RenameContact, Data = new { To = currentProp.Id, From = User.Id, NewName = newName } };
+      SendData(req);
+    }
+
+    private void RenameGroup(string newName)
+    {
+      Request req = new() { Command = Command.RenameGroup, Data = new { Id = currentProp.Id, NewName = newName } };
+      SendData(req);
+    }
+
+    private void LeaveGroup(int groupId)
+    {
+      Request req = new() { Command = Command.LeaveGroup, Data = new { Group = groupId, User = User.Id } };
+      SendData(req);
+    }
+
+    private void RemoveContact(int to)
+    {
+      Request req = new() { Command = Command.RemoveContact, Data = { To = to, From = User.Id } };
+      SendData(req);
+    }
+
+    private void AddGroup(string name)
+    {
+      Request req = new() { Command = Command.AddGroup, Data = new { Name = name, User = User.Id } };
+      SendData(req);
+    }
+
+    private void SendInvite(string name)
+    {
+      Request req = new() { Command = Command.SendInvite, Data = new { To = name, From = User.Id } };
+      SendData(req);
+    }
+
+    private void AcceptInvite(int id)
+    {
+      Request req = new() { Command = Command.AcceptInvite, Data = new { Id = id } };
+      SendData(req);
+    }
+
+    public void Disconnect()
+    {
+      Request req = new() { Command = Command.Disconnect, Data = User.Id };
+      SendData(req);
+      CloseConnection();
+    }
+
+    private void GetMessageFromContactHandle(Response res)
+    {
+    }
   }
 }
