@@ -12,26 +12,10 @@ namespace Server.Services
     private Dictionary<int, IPEndPoint> clients = new();
     private DatabaseService db = new();
     private Dictionary<Command, Action<Request, IPEndPoint>> handlers = new();
-    private Socket listeningSocket;
+    private Socket listeningSocket; // todo: nullable
     private string localIp = "127.0.0.1";
     private int localPort = 5001;
     private bool run = false;
-
-    public CommunicationService()
-    {
-      handlers.Add(Command.SignIn, SignInHandle);
-      handlers.Add(Command.SignUp, SignUpHandle);
-      handlers.Add(Command.SendMessageToContact, SendMessageToContactHandle);
-      handlers.Add(Command.SendMessageToGroup, SendMessageToGroupHandle);
-      handlers.Add(Command.SendInvite, SendInviteHandle);
-      handlers.Add(Command.AcceptInvite, AcceptInviteHandle);
-      handlers.Add(Command.RenameContact, RenameContactHandle);
-      handlers.Add(Command.RemoveContact, RemoveContactHandle);
-      handlers.Add(Command.AddGroup, AddGroupHandle);
-      handlers.Add(Command.LeaveGroup, LeaveGroupHandle);
-      handlers.Add(Command.Disconnect, DisconnectHandle);
-      handlers.Add(Command.RenameGroup, RenameGroupHandle);
-    }
 
     public async void AcceptInviteHandle(Request req, IPEndPoint ip)
     {
@@ -71,16 +55,16 @@ namespace Server.Services
     public void LeaveGroupHandle(Request req, IPEndPoint ip)
     { }
 
-    public async void RenameGroupHandle(Request req, IPEndPoint ip)
+    public void RemoveContactHandle(Request req, IPEndPoint ip)
     {
       try
       {
-        await db.RenameGroupAsync(req.Data.IdGroup, req.Data.NewName);
-        SendData(new Response { Command = Command.RenameGroup, Status = Status.OK, Data = "Group renamed" }, ip);
+        db.RemoveContact(req.Data.From, req.Data.To);
+        SendData(new Response { Command = Command.RemoveContact, Status = Status.OK, Data = "Contact is removed" }, ip);
       }
       catch (Exception ex)
       {
-        SendData(new Response { Command = req.Command, Status = Status.Bad, Data = ex.Message }, ip);
+        SendData(new Response { Command = Command.RemoveContact, Status = Status.Bad, Data = ex.Message }, ip);
       }
     }
 
@@ -90,6 +74,19 @@ namespace Server.Services
       {
         db.RenameContact(req.Data.From, req.Data.To, req.Data.newName);
         SendData(new Response { Command = Command.RenameContact, Status = Status.OK, Data = "Contact renamed" }, ip);
+      }
+      catch (Exception ex)
+      {
+        SendData(new Response { Command = req.Command, Status = Status.Bad, Data = ex.Message }, ip);
+      }
+    }
+
+    public async void RenameGroupHandle(Request req, IPEndPoint ip)
+    {
+      try
+      {
+        await db.RenameGroupAsync(req.Data.IdGroup, req.Data.NewName);
+        SendData(new Response { Command = Command.RenameGroup, Status = Status.OK, Data = "Group renamed" }, ip);
       }
       catch (Exception ex)
       {
@@ -132,7 +129,7 @@ namespace Server.Services
       try
       {
         // to user who sent
-        SendData(new Response { Command = Command.SendMessageToContact, Status = Status.OK, Data = "Message sent" }, ip);
+        //SendData(new Response { Command = Command.SendMessageToContact, Status = Status.OK, Data = "Message sent" }, ip);
 
         // to user for whom sent
         IPEndPoint toIp;
@@ -149,6 +146,22 @@ namespace Server.Services
 
     public void SendMessageToGroupHandle(Request req, IPEndPoint ip)
     {
+      try
+      {
+        IPEndPoint toIp;
+        IEnumerable<int> ids = db.GetGroupMembersIds(req.Data.Id);
+        foreach (int id in ids)
+        {
+          if (clients.TryGetValue(id, out toIp))
+          {
+            SendData(new Response { Command = Command.GetMessageFromGroup, Status = Status.OK, Data = new { Id = req.Data.Id, Message = req.Data.Message } }, toIp);
+          }
+        }
+      }
+      catch (Exception ex)
+      {
+        SendData(new Response { Command = req.Command, Status = Status.Bad, Data = ex.Message }, ip);
+      }
     }
 
     public void SignInHandle(Request req, IPEndPoint ip)
@@ -188,7 +201,6 @@ namespace Server.Services
       SendData(res, ip);
     }
 
-    // Handlers
     public void SignUpHandle(Request req, IPEndPoint ip)
     {
       Response res;
@@ -215,29 +227,6 @@ namespace Server.Services
       }
 
       SendData(res, ip);
-    }
-
-    private void CloseConnection()
-    {
-      if (listeningSocket != null)
-      {
-        listeningSocket.Shutdown(SocketShutdown.Both);
-        listeningSocket.Close();
-        listeningSocket = null;
-      }
-    }
-
-    public void RemoveContactHandle(Request req, IPEndPoint ip)
-    {
-      try
-      {
-        db.RemoveContact(req.Data.From, req.Data.To);
-        SendData(new Response { Command = Command.RemoveContact, Status = Status.OK, Data = "Contact removed" }, ip);
-      }
-      catch
-      {
-        // todo
-      }
     }
 
     private void Handle(string reqStr, IPEndPoint ip)
@@ -278,6 +267,7 @@ namespace Server.Services
             IPEndPoint clientFullIp = (IPEndPoint)clientIp;
 
             string request = builder.ToString();
+            Console.WriteLine(string.Format("{0}:{1} = {2}", clientIp.ToString(), clientFullIp.Port, request));
             Handle(request, clientFullIp);
           }
         }
@@ -304,6 +294,32 @@ namespace Server.Services
 
       // send to one
       listeningSocket.SendTo(data, ip);
+    }
+
+    public CommunicationService()
+    {
+      handlers.Add(Command.SignIn, SignInHandle);
+      handlers.Add(Command.SignUp, SignUpHandle);
+      handlers.Add(Command.SendMessageToContact, SendMessageToContactHandle);
+      handlers.Add(Command.SendMessageToGroup, SendMessageToGroupHandle);
+      handlers.Add(Command.SendInvite, SendInviteHandle);
+      handlers.Add(Command.AcceptInvite, AcceptInviteHandle);
+      handlers.Add(Command.RenameContact, RenameContactHandle);
+      handlers.Add(Command.RemoveContact, RemoveContactHandle);
+      handlers.Add(Command.AddGroup, AddGroupHandle);
+      handlers.Add(Command.LeaveGroup, LeaveGroupHandle);
+      handlers.Add(Command.Disconnect, DisconnectHandle);
+      handlers.Add(Command.RenameGroup, RenameGroupHandle);
+    }
+
+    private void CloseConnection()
+    {
+      if (listeningSocket != null)
+      {
+        listeningSocket.Shutdown(SocketShutdown.Both);
+        listeningSocket.Close();
+        listeningSocket = null;
+      }
     }
   }
 }
