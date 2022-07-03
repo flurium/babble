@@ -92,7 +92,9 @@ namespace Server.Services
     {
       try
       {
-        await db.RenameGroupAsync(req.Data.Id, req.Data.Name);
+        int id = req.Data.Id;
+        string name = req.Data.Name;
+        await db.RenameGroupAsync(id, name);
         SendData(new Response { Command = Command.RenameGroup, Status = Status.OK, Data = "Group renamed" }, ip);
       }
       catch (Exception ex)
@@ -105,14 +107,16 @@ namespace Server.Services
     {
       try
       {
-        Contact contact = await db.SendInviteAsync(req.Data.From, req.Data.To);
+        int from = req.Data.From;
+        string to = req.Data.To;
+        Prop contact = await db.SendInviteAsync(from, to);
 
         // to who sended request
         SendData(new Response { Command = Command.SendInvite, Status = Status.OK, Data = "Invite is sent successfully" }, ip);
 
         // to who will get invite
         IPEndPoint toIp;
-        if (clients.TryGetValue(req.Data.To, out toIp))
+        if (clients.TryGetValue(contact.Id, out toIp))
         {
           SendData(new Response { Command = Command.GetInvite, Status = Status.OK, Data = contact }, toIp);
         }
@@ -131,10 +135,15 @@ namespace Server.Services
         //SendData(new Response { Command = Command.SendMessageToContact, Status = Status.OK, Data = "Message sent" }, ip);
 
         // to user for whom sent
+
+        int from = req.Data.From;
+        int to = req.Data.To;
+        string message = req.Data.Message;
+
         IPEndPoint toIp;
-        if (clients.TryGetValue(req.Data.To, out toIp))
+        if (clients.TryGetValue(to, out toIp))
         {
-          SendData(new Response { Command = Command.GetMessageFromContact, Status = Status.OK, Data = new { Id = req.Data.From, Message = req.Data.Message } }, toIp);
+          SendData(new Response { Command = Command.GetMessageFromContact, Status = Status.OK, Data = new { Id = from, Message = message } }, toIp);
         }
       }
       catch (Exception ex)
@@ -147,13 +156,16 @@ namespace Server.Services
     {
       try
       {
+        int group = req.Data.Id;
+        string message = req.Data.Message;
+
         IPEndPoint toIp;
-        IEnumerable<int> ids = db.GetGroupMembersIds(req.Data.Id);
+        IEnumerable<int> ids = db.GetGroupMembersIds(group);
         foreach (int id in ids)
         {
           if (clients.TryGetValue(id, out toIp))
           {
-            SendData(new Response { Command = Command.GetMessageFromGroup, Status = Status.OK, Data = new { Id = req.Data.Id, Message = req.Data.Message } }, toIp);
+            SendData(new Response { Command = Command.GetMessageFromGroup, Status = Status.OK, Data = new { Id = group, Message = message } }, toIp);
           }
         }
       }
@@ -165,11 +177,14 @@ namespace Server.Services
 
     public void SignInHandle(Request req, IPEndPoint ip)
     {
+      string name = req.Data.Name;
+      string password = req.Data.Password;
+
       Response res;
-      User? user = db.GetUser(req.Data.Name);
+      User? user = db.GetUser(name);
       if (user != null)
       {
-        if (Hasher.Verify(req.Data.Password, user.Password))
+        if (Hasher.Verify(password, user.Password))
         {
           // add user to connected clients
           clients.TryAdd(user.Id, ip);
