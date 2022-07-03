@@ -47,34 +47,34 @@ namespace Server.Services
 
     public async void AddGroupHandle(Request req, IPEndPoint ip)
     {
-        try
-        {
-            int uid = req.Data.Id;
-            string name = req.Data.Name;
-            await db.AddGroupAsync(uid, name);
+      try
+      {
+        int uid = req.Data.Id;
+        string name = req.Data.Name;
+        await db.AddGroupAsync(uid, name);
 
-            SendData(new Response { Command = Command.AddGroup, Status = Status.OK, Data = "Group added" }, ip);
-        }
-        catch (Exception ex)
-        {
-            SendData(new Response { Command = Command.AddGroup, Status = Status.Bad, Data = ex.Message }, ip);
-        }
+        SendData(new Response { Command = Command.AddGroup, Status = Status.OK, Data = "Group added" }, ip);
+      }
+      catch (Exception ex)
+      {
+        SendData(new Response { Command = Command.AddGroup, Status = Status.Bad, Data = ex.Message }, ip);
+      }
     }
 
     public async void LeaveGroupHandle(Request req, IPEndPoint ip)
     {
-        try
-        {
-            int uid = req.Data.Id;
-            string name = req.Data.Name;
-            await db.RemoveUserFromGroupAsync(uid, name);
+      try
+      {
+        int uid = req.Data.Id;
+        string name = req.Data.Name;
+        await db.RemoveUserFromGroupAsync(uid, name);
 
-            SendData(new Response { Command = Command.LeaveGroup, Status = Status.OK, Data = "Group is removed" }, ip);
-        }
-        catch (Exception ex)
-        {
-            SendData(new Response { Command = Command.LeaveGroup, Status = Status.Bad, Data = ex.Message }, ip);
-        }
+        SendData(new Response { Command = Command.LeaveGroup, Status = Status.OK, Data = "Group is removed" }, ip);
+      }
+      catch (Exception ex)
+      {
+        SendData(new Response { Command = Command.LeaveGroup, Status = Status.Bad, Data = ex.Message }, ip);
+      }
     }
 
     public void DisconnectHandle(Request req, IPEndPoint ip)
