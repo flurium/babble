@@ -24,7 +24,7 @@ namespace Client.Services
     private Dictionary<Prop, LinkedList<Message>> groupMessages = new();
     private Dictionary<Command, Action<Response>> handlers = new Dictionary<Command, Action<Response>>();
     private Socket listeningSocket;
-    private Task listenongTask;
+    private Task listeningTask;
     private int localPort;
     private string remoteIp = "127.0.0.1";
     private int remotePort = 5001;
@@ -35,6 +35,12 @@ namespace Client.Services
 
     public CommunicationService()
     {
+      // open port
+      do
+      {
+        localPort = rnd.Next(3000, 49000);
+      } while (localPort == 5001); // 5001 = server port
+
       // test
       Contacts.Add(new Prop { Id = 3, Name = "3" });
       contactMessages.Add(new Prop { Id = 3, Name = "3" }, new());
@@ -64,20 +70,6 @@ namespace Client.Services
 
     public Prop User { get; private set; }
 
-    public void SendMessageToContact(string str)
-    {
-      Message message = new Message { String = str, IsIncoming = false };
-      contactMessages[currentProp].AddLast(message);
-      CurrentMessages.Add(message);
-    }
-
-    public void SendMessageToGroup(string str)
-    {
-      Message message = new Message { String = str, IsIncoming = false };
-      groupMessages[currentProp].AddLast(message);
-      CurrentMessages.Add(message);
-    }
-
     public void SetCurrentContact(Prop contact)
     {
       currentProp = contact;
@@ -100,34 +92,37 @@ namespace Client.Services
       }
     }
 
-    public void Disconnect()
-    {
-      // Send disconnect request
-    }
-
     public void SignIn(string name, string password)
     {
-      // TODO: remove to constructor
-      do
-      {
-        localPort = rnd.Next(2000, 49000);
-      } while (localPort == 5001); // 5001 - server port
-                                   //
-
       try
       {
-        Request sing = new Request();
-        sing.Command = Command.SignIn;
-        sing.Data = new
-        {
-          Name = name,
-          Password = password
-        };
+        Request req = new() { Command = Command.SignIn, Data = new { Name = name, Password = password } };
 
-        SendData(sing, remoteIp, remotePort);
         run = true;
         listeningSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-        Task listenongTask = new Task(Listen);
+
+        SendData(req, remoteIp, remotePort);
+
+        listeningTask = new(Listen);
+      }
+      catch (Exception ex)
+      {
+        MessageBox.Show(ex.Message);
+      }
+    }
+
+    public void SignUp(string name, string password)
+    {
+      try
+      {
+        Request req = new() { Command = Command.SignUp, Data = new { Name = name, Password = Hasher.Hash(password) } };
+
+        run = true;
+        listeningSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+
+        SendData(req, remoteIp, remotePort);
+
+        listeningTask = new(Listen);
       }
       catch (Exception ex)
       {
@@ -271,75 +266,92 @@ namespace Client.Services
     private void SignInHandle(Response res)
     {
       User = res.Data.User;
-      foreach (var group in res.Data.Groups) Groups.Add(group);
-      foreach (var invite in res.Data.Invites) Groups.Add(invite);
-      foreach (var contact in res.Data.Contacts) Groups.Add(contact);
+      foreach (var group in res.Data.Groups)
+      {
+        groupMessages.Add(group, new LinkedList<Message>());
+        Groups.Add(group);
+      }
+      foreach (var invite in res.Data.Invites)
+      {
+        Invites.Add(invite);
+      }
+      foreach (var contact in res.Data.Contacts)
+      {
+        contactMessages.Add(contact, new LinkedList<Message>());
+        Contacts.Add(contact);
+      }
     }
 
     private void SignUpHandle(Response res) => User = res.Data;
 
-    private void SendMessageToContact(string message, int to, int from)
+    public void SendMessageToContact(string messageStr)
     {
-      Request req = new Request { Command = Command.SendMessageToContact, Data = { To = to, From = from, Message = message } };
+      Message message = new() { String = messageStr, IsIncoming = false };
+      contactMessages[currentProp].AddLast(message);
+      CurrentMessages.Add(message);
+
+      Request req = new() { Command = Command.SendMessageToContact, Data = new { To = currentProp.Id, From = User.Id, Message = message.String } };
       SendData(req);
     }
 
-    /////////////
-    private void SendMessageToGroup(string message, int to, int from)
+    public void SendMessageToGroup(string messageStr)
     {
-      Request req = new Request { Command = Command.SendMessageToGroup, Data = { To = to, From = from, Message = message } };
+      Message message = new() { String = messageStr, IsIncoming = false };
+      groupMessages[currentProp].AddLast(message);
+      CurrentMessages.Add(message);
+
+      Request req = new() { Command = Command.SendMessageToGroup, Data = new { To = currentProp.Id, From = User.Id, Message = message.String } };
       SendData(req);
     }
 
-    private void RenameContact(string newName, int to, int from)
+    private void RenameContact(string newName)
     {
-      Request req = new Request { Command = Command.RenameContact, Data = { To = to, From = from, NewName = newName } };
+      Request req = new() { Command = Command.RenameContact, Data = new { To = currentProp.Id, From = User.Id, NewName = newName } };
       SendData(req);
     }
 
-    private void RenameGroup(string newName, int idGroup)
+    private void RenameGroup(string newName)
     {
-      Request req = new Request { Command = Command.RenameGroup, Data = { IdGroup = idGroup, NewName = newName } };
+      Request req = new() { Command = Command.RenameGroup, Data = new { Id = currentProp.Id, NewName = newName } };
       SendData(req);
     }
 
-    private void LeaveGroup(int uid, int idGroup)
+    private void LeaveGroup(int groupId)
     {
-      Request req = new Request { Command = Command.LeaveGroup, Data = { IdGroup = idGroup, UID = uid } };
+      Request req = new() { Command = Command.LeaveGroup, Data = new { Group = groupId, User = User.Id } };
       SendData(req);
     }
 
-    private void RemoveContact(int from, int to)
+    private void RemoveContact(int to)
     {
-      Request req = new Request { Command = Command.RemoveContact, Data = { To = to, From = from } };
+      Request req = new() { Command = Command.RemoveContact, Data = { To = to, From = User.Id } };
       SendData(req);
     }
 
-    private void AddGroup(string name, int uid)
+    private void AddGroup(string name)
     {
-      Request req = new Request { Command = Command.AddGroup, Data = { Name = name, UID = uid } };
+      Request req = new() { Command = Command.AddGroup, Data = new { Name = name, User = User.Id } };
       SendData(req);
     }
 
-    private void SendInvite(int from, int to)
+    private void SendInvite(string name)
     {
-      Request req = new Request { Command = Command.SendInvite, Data = { To = to, From = from } };
+      Request req = new() { Command = Command.SendInvite, Data = new { To = name, From = User.Id } };
       SendData(req);
     }
 
     private void AcceptInvite(int id)
     {
-      Request req = new Request { Command = Command.AcceptInvite, Data = { idContact = id } };
+      Request req = new() { Command = Command.AcceptInvite, Data = new { Id = id } };
       SendData(req);
     }
 
-    private void Disconnect(int uid)
+    public void Disconnect()
     {
-      Request req = new Request { Command = Command.Disconnect, Data = { UID = uid } };
+      Request req = new() { Command = Command.Disconnect, Data = new { Id = User.Id } };
       SendData(req);
+      CloseConnection();
     }
-
-    /////////////
 
     private void GetMessageFromContactHandle(Response res)
     {

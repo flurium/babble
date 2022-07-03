@@ -23,7 +23,8 @@ namespace Server.Services
       // req.Data = contact id
       try
       {
-        Contact contact = await db.AcceptInviteAsync(req.Data);
+        int id = req.Data;
+        Contact contact = await db.AcceptInviteAsync(id);
 
         // to user to
         SendData(new Response { Command = Command.GetContact, Status = Status.OK, Data = new Prop { Id = contact.UserFromId, Name = contact.NameAtUserTo } }, ip);
@@ -49,7 +50,8 @@ namespace Server.Services
 
     public void DisconnectHandle(Request req, IPEndPoint ip)
     {
-      clients.Remove(req.Data);
+      int id = req.Data;
+      clients.Remove(id);
     }
 
     public void LeaveGroupHandle(Request req, IPEndPoint ip)
@@ -59,7 +61,9 @@ namespace Server.Services
     {
       try
       {
-        db.RemoveContact(req.Data.From, req.Data.To);
+        int from = req.Data.From;
+        int to = req.Data.To;
+        db.RemoveContact(from, to);
         SendData(new Response { Command = Command.RemoveContact, Status = Status.OK, Data = "Contact is removed" }, ip);
       }
       catch (Exception ex)
@@ -72,7 +76,10 @@ namespace Server.Services
     {
       try
       {
-        db.RenameContact(req.Data.From, req.Data.To, req.Data.newName);
+        int from = req.Data.From;
+        int to = req.Data.To;
+        string newName = req.Data.NewName;
+        db.RenameContact(from, to, newName);
         SendData(new Response { Command = Command.RenameContact, Status = Status.OK, Data = "Contact renamed" }, ip);
       }
       catch (Exception ex)
@@ -85,21 +92,13 @@ namespace Server.Services
     {
       try
       {
-        await db.RenameGroupAsync(req.Data.IdGroup, req.Data.NewName);
+        await db.RenameGroupAsync(req.Data.Id, req.Data.Name);
         SendData(new Response { Command = Command.RenameGroup, Status = Status.OK, Data = "Group renamed" }, ip);
       }
       catch (Exception ex)
       {
         SendData(new Response { Command = req.Command, Status = Status.Bad, Data = ex.Message }, ip);
       }
-    }
-
-    public void Run()
-    {
-      // запуск
-      run = true;
-      listeningSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-      Task listenongTask = new Task(Listen);
     }
 
     public async void SendInviteHandle(Request req, IPEndPoint ip)
@@ -135,7 +134,7 @@ namespace Server.Services
         IPEndPoint toIp;
         if (clients.TryGetValue(req.Data.To, out toIp))
         {
-          SendData(new Response { Command = Command.GetMessageFromContact, Status = Status.OK, Data = req.Data.Message }, toIp);
+          SendData(new Response { Command = Command.GetMessageFromContact, Status = Status.OK, Data = new { Id = req.Data.From, Message = req.Data.Message } }, toIp);
         }
       }
       catch (Exception ex)
@@ -206,7 +205,9 @@ namespace Server.Services
       Response res;
       try
       {
-        User user = db.AddUser(req.Data.Name, req.Data.Password);
+        string name = req.Data.Name;
+        string password = req.Data.Password;
+        User user = db.AddUser(name, password);
         // add user to connected clients
         clients.TryAdd(user.Id, ip);
 
@@ -243,7 +244,7 @@ namespace Server.Services
       }
     }
 
-    private void Listen()
+    public void Listen()
     {
       IPAddress ip;
       if (IPAddress.TryParse(localIp, out ip))
@@ -298,6 +299,9 @@ namespace Server.Services
 
     public CommunicationService()
     {
+      run = true;
+      listeningSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+
       handlers.Add(Command.SignIn, SignInHandle);
       handlers.Add(Command.SignUp, SignUpHandle);
       handlers.Add(Command.SendMessageToContact, SendMessageToContactHandle);

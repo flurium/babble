@@ -26,9 +26,27 @@ namespace Client.Pages
 
     private void SignUpNewAcc(object sender, RoutedEventArgs e)
     {
-      // sign up code
-      NavigationService.Navigate(MainWindow.userChat);
-      NavigationService.RemoveBackEntry();
+      string name = NameInput.Text.Trim();
+      string password = PasswordInput.Password.Trim();
+      string passwordConfirm = PasswordConfirmInput.Password.Trim();
+
+      if (password != passwordConfirm)
+      {
+        MessageBox.Show("Password confirm is failed");
+        PasswordConfirmInput.Password = "";
+      }
+      else if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(password))
+      {
+        MessageBox.Show("Name or password is empty");
+      }
+      else
+      {
+        cs.SignUp(name, password);
+
+        // sign up code
+        NavigationService.Navigate(MainWindow.userChat);
+        NavigationService.RemoveBackEntry();
+      }
     }
   }
 }
