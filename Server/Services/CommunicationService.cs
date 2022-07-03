@@ -71,47 +71,31 @@ namespace Server.Services
     public void LeaveGroupHandle(Request req, IPEndPoint ip)
     { }
 
-    public async void RenameGroupHandle(dynamic req, IPEndPoint ip)
+    public async void RenameGroupHandle(Request req, IPEndPoint ip)
     {
-            try
-            {
-                await db.RenameGroupAsync(req.Data.IdGroup, req.Data.NewName);
-                SendData(new Response { Command = Command.RenameGroup, Status = Status.OK, Data = "Group renamed" }, ip);
+      try
+      {
+        await db.RenameGroupAsync(req.Data.IdGroup, req.Data.NewName);
+        SendData(new Response { Command = Command.RenameGroup, Status = Status.OK, Data = "Group renamed" }, ip);
+      }
+      catch (Exception ex)
+      {
+        SendData(new Response { Command = req.Command, Status = Status.Bad, Data = ex.Message }, ip);
+      }
+    }
 
-            }
-            catch (Exception ex)
-            {
-                SendData(new Response { Command = req.Command, Status = Status.Bad, Data = ex.Message }, ip);
-            }
-        }
-
-    public void RemoveContactHandle(dynamic req, IPEndPoint ip)
+    public void RenameContactHandle(Request req, IPEndPoint ip)
     {
-            try
-            {
-                db.RemoveContact(req.Data.From, req.Data.To);
-                SendData(new Response { Command = Command.RemoveContact, Status = Status.OK, Data = "Contact removed" }, ip);
-
-    public void RenameContactHandle(dynamic req, IPEndPoint ip)
-    {
-            try
-            {
-                db.RenameContact(req.Data.From, req.Data.To, req.Data.newName);
-        }
-
-    public void RenameContactHandle(dynamic req, IPEndPoint ip)
-    {
-            try
-            {
-                db.RenameContact(req.Data.From, req.Data.To, req.Data.newName);
-                SendData(new Response { Command = Command.RenameContact, Status = Status.OK, Data = "Contact renamed" }, ip);
-
-            }
-            catch (Exception ex)
-            {
-                SendData(new Response { Command = req.Command, Status = Status.Bad, Data = ex.Message }, ip);
-            }
-        }
+      try
+      {
+        db.RenameContact(req.Data.From, req.Data.To, req.Data.newName);
+        SendData(new Response { Command = Command.RenameContact, Status = Status.OK, Data = "Contact renamed" }, ip);
+      }
+      catch (Exception ex)
+      {
+        SendData(new Response { Command = req.Command, Status = Status.Bad, Data = ex.Message }, ip);
+      }
+    }
 
     public void Run()
     {
@@ -145,23 +129,23 @@ namespace Server.Services
 
     public void SendMessageToContactHandle(Request req, IPEndPoint ip)
     {
-            try
-            {
-                // to user who sent
-                SendData(new Response { Command = Command.SendMessageToContact, Status = Status.OK, Data = "Message sent" }, ip);
+      try
+      {
+        // to user who sent
+        SendData(new Response { Command = Command.SendMessageToContact, Status = Status.OK, Data = "Message sent" }, ip);
 
-                // to user for whom sent
-                IPEndPoint toIp;
-                if (clients.TryGetValue(req.Data.To, out toIp))
-                {
-                    SendData(new Response { Command = Command.GetMessageFromContact, Status = Status.OK, Data = req.Data.Message }, toIp);
-                }
-            }
-            catch (Exception ex)
-            {
-                SendData(new Response { Command = req.Command, Status = Status.Bad, Data = ex.Message }, ip);
-            }
+        // to user for whom sent
+        IPEndPoint toIp;
+        if (clients.TryGetValue(req.Data.To, out toIp))
+        {
+          SendData(new Response { Command = Command.GetMessageFromContact, Status = Status.OK, Data = req.Data.Message }, toIp);
         }
+      }
+      catch (Exception ex)
+      {
+        SendData(new Response { Command = req.Command, Status = Status.Bad, Data = ex.Message }, ip);
+      }
+    }
 
     public void SendMessageToGroupHandle(Request req, IPEndPoint ip)
     {
@@ -243,6 +227,19 @@ namespace Server.Services
       }
     }
 
+    public void RemoveContactHandle(Request req, IPEndPoint ip)
+    {
+      try
+      {
+        db.RemoveContact(req.Data.From, req.Data.To);
+        SendData(new Response { Command = Command.RemoveContact, Status = Status.OK, Data = "Contact removed" }, ip);
+      }
+      catch
+      {
+        // todo
+      }
+    }
+
     private void Handle(string reqStr, IPEndPoint ip)
     {
       // allways: Command, Data
@@ -282,7 +279,6 @@ namespace Server.Services
 
             string request = builder.ToString();
             Handle(request, clientFullIp);
-
           }
         }
         catch (SocketException socketEx)
