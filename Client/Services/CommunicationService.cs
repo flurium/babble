@@ -22,7 +22,7 @@ namespace Client.Services
     private Dictionary<Prop, LinkedList<Message>> contactMessages = new();
     private Prop currentProp;
     private Dictionary<Prop, LinkedList<Message>> groupMessages = new();
-    private Dictionary<Command, Action<Response>> handlers = new Dictionary<Command, Action<Response>>();
+    private Dictionary<Command, Action<Response>> handlers = new();
     private Socket listeningSocket;
     private Task listeningTask;
     private int localPort;
@@ -31,7 +31,13 @@ namespace Client.Services
     private Random rnd = new Random();
     private bool run = false;
 
-    private Dictionary<Command, Action<Request>> senders = new Dictionary<Command, Action<Request>>();
+    // unnessery
+    private Dictionary<Command, Action<Request>> senders = new();
+
+    // function from interface to confirm sign
+    public Action ConfirmSign { get; set; }
+
+    public Action DenySign { get; set; }
 
     public CommunicationService()
     {
@@ -98,12 +104,11 @@ namespace Client.Services
       {
         Request req = new() { Command = Command.SignIn, Data = new { Name = name, Password = password } };
 
-        run = true;
-        listeningSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+        OpenConnection();
 
         SendData(req, remoteIp, remotePort);
 
-        listeningTask = new(Listen);
+        listeningTask.Start();
       }
       catch (Exception ex)
       {
@@ -117,12 +122,13 @@ namespace Client.Services
       {
         Request req = new() { Command = Command.SignUp, Data = new { Name = name, Password = Hasher.Hash(password) } };
 
-        run = true;
-        listeningSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+        OpenConnection();
 
         SendData(req, remoteIp, remotePort);
 
-        listeningTask = new(Listen);
+        //Listen();
+
+        listeningTask.Start();
       }
       catch (Exception ex)
       {
@@ -130,10 +136,20 @@ namespace Client.Services
       }
     }
 
+    private void OpenConnection()
+    {
+      run = true;
+      listeningSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+      IPEndPoint localIP = new IPEndPoint(IPAddress.Parse(remoteIp), localPort);
+      listeningSocket.Bind(localIP);
+      listeningTask = new(Listen);
+    }
+
     private void CloseConnection()
     {
       if (listeningSocket != null)
       {
+        run = false;
         listeningSocket.Shutdown(SocketShutdown.Both);
         listeningSocket.Close();
         listeningSocket = null;
@@ -150,21 +166,13 @@ namespace Client.Services
     private void Handle(string resStr)
     {
       Response res = JsonConvert.DeserializeObject<Response>(resStr);
-      if (res.Status == Status.OK)
+      try
       {
-        try
-        {
-          handlers[res.Command](res);
-        }
-        catch (Exception ex)
-        {
-          // Show error
-        }
+        handlers[res.Command](res);
       }
-      else if (res.Status == Status.Bad)
+      catch (Exception ex)
       {
-        // Show exeption message
-        // res.Data = message
+        // Show error
       }
     }
 
@@ -175,9 +183,6 @@ namespace Client.Services
     {
       try
       {
-        IPEndPoint localIP = new IPEndPoint(IPAddress.Parse(remoteIp), localPort);
-        listeningSocket.Bind(localIP);
-
         while (run)
         {
           StringBuilder builder = new StringBuilder();
@@ -265,24 +270,54 @@ namespace Client.Services
 
     private void SignInHandle(Response res)
     {
-      User = res.Data.User;
-      foreach (var group in res.Data.Groups)
+      if (res.Status == Status.OK)
       {
-        groupMessages.Add(group, new LinkedList<Message>());
-        Groups.Add(group);
+        Prop user = res.Data.User;
+        User = user;
+
+        IEnumerable<Prop> groups = res.Data.Groups;
+        foreach (var group in groups)
+        {
+          groupMessages.Add(group, new LinkedList<Message>());
+          Groups.Add(group);
+        }
+
+        IEnumerable<Prop> invites = res.Data.Invites;
+        foreach (var invite in invites)
+        {
+          Invites.Add(invite);
+        }
+
+        IEnumerable<Prop> contacts = res.Data.Contacts;
+        foreach (var contact in contacts)
+        {
+          contactMessages.Add(contact, new LinkedList<Message>());
+          Contacts.Add(contact);
+        }
+
+        ConfirmSign();
       }
-      foreach (var invite in res.Data.Invites)
+      else
       {
-        Invites.Add(invite);
-      }
-      foreach (var contact in res.Data.Contacts)
-      {
-        contactMessages.Add(contact, new LinkedList<Message>());
-        Contacts.Add(contact);
+        DenySign();
       }
     }
 
-    private void SignUpHandle(Response res) => User = res.Data;
+    private void SignUpHandle(Response res)
+    {
+      if (res.Status == Status.OK)
+      {
+        Prop user = new();
+        user.Id = res.Data.Id;
+        user.Name = res.Data.Name;
+        User = user;
+        ConfirmSign();
+      }
+      else
+      {
+        DenySign();
+      }
+    }
 
     public void SendMessageToContact(string messageStr)
     {
@@ -348,7 +383,7 @@ namespace Client.Services
 
     public void Disconnect()
     {
-      Request req = new() { Command = Command.Disconnect, Data = new { Id = User.Id } };
+      Request req = new() { Command = Command.Disconnect, Data = User.Id };
       SendData(req);
       CloseConnection();
     }

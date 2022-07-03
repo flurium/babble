@@ -18,13 +18,32 @@ namespace Client.Pages
       this.cs = cs;
     }
 
-    private void SignIn(object sender, RoutedEventArgs e)
+    private void GoToSignIn(object sender, RoutedEventArgs e)
     {
       NavigationService.Navigate(MainWindow.signIn);
       NavigationService.RemoveBackEntry();
     }
 
-    private void SignUpNewAcc(object sender, RoutedEventArgs e)
+    private void ConfirmSignUp()
+    {
+      Dispatcher.Invoke(() =>
+      {
+        NavigationService.Navigate(MainWindow.userChat);
+        NavigationService.RemoveBackEntry();
+      });
+    }
+
+    public void DenySignUp()
+    {
+      Dispatcher.Invoke(() =>
+      {
+        SignUpBtn.IsEnabled = true;
+        GoToSignInBtn.IsEnabled = true;
+        MessageBox.Show("Sign up failed");
+      });
+    }
+
+    private void SignUp(object sender, RoutedEventArgs e)
     {
       string name = NameInput.Text.Trim();
       string password = PasswordInput.Password.Trim();
@@ -41,11 +60,12 @@ namespace Client.Pages
       }
       else
       {
-        cs.SignUp(name, password);
+        SignUpBtn.IsEnabled = false;
+        GoToSignInBtn.IsEnabled = false;
 
-        // sign up code
-        NavigationService.Navigate(MainWindow.userChat);
-        NavigationService.RemoveBackEntry();
+        cs.DenySign = DenySignUp;
+        cs.ConfirmSign = ConfirmSignUp;
+        cs.SignUp(name, password);
       }
     }
   }
