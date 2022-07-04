@@ -17,7 +17,7 @@
     RenameGroup,
     AddGroup,
     LeaveGroup,
-    EnterToGroup,
+    EnterGroup,
     Disconnect
   }
 

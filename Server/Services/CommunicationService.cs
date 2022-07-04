@@ -62,6 +62,22 @@ namespace Server.Services
       }
     }
 
+    public async void EnterGroupHandle(Request req, IPEndPoint ip)
+    {
+        try
+        {
+            int uid = req.Data.Id;
+            string name = req.Data.Name;
+            await db.AddUserToGroupAsync(uid, name);
+
+            SendData(new Response { Command = Command.EnterGroup, Status = Status.OK, Data = "User added" }, ip);
+        }
+        catch (Exception ex)
+        {
+            SendData(new Response { Command = Command.EnterGroup, Status = Status.Bad, Data = ex.Message }, ip);
+        }
+    }
+
     public async void LeaveGroupHandle(Request req, IPEndPoint ip)
     {
       try
@@ -354,6 +370,7 @@ namespace Server.Services
       handlers.Add(Command.RemoveContact, RemoveContactHandle);
       handlers.Add(Command.AddGroup, AddGroupHandle);
       handlers.Add(Command.LeaveGroup, LeaveGroupHandle);
+      handlers.Add(Command.EnterGroup, EnterGroupHandle);
       handlers.Add(Command.Disconnect, DisconnectHandle);
       handlers.Add(Command.RenameGroup, RenameGroupHandle);
     }
