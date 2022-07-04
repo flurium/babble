@@ -91,8 +91,8 @@
                 </DataTemplate>
               </ListBox.ItemTemplate>
             </ListBox>
-            <TextBox x:Name="NewContact" Style="{StaticResource Input}" Grid.Row="1" Grid.Column="0"></TextBox>
-            <Button Click="SendInviteBtn_Click" Grid.Column="1" Grid.Row="1">Invite</Button>
+            <TextBox x:Name="InviteContact" Style="{StaticResource Input}" Grid.Row="1" Grid.Column="0"></TextBox>
+            <Button x:Name="SendInviteBtn" Click="SendInviteBtn_Click" Grid.Column="1" Grid.Row="1">Invite</Button>
           </Grid>
         </TabItem>
 
@@ -114,8 +114,8 @@
                 </DataTemplate>
               </ListBox.ItemTemplate>
             </ListBox>
-            <TextBox x:Name="NewGroup" Style="{StaticResource Input}" Grid.Row="1" Grid.Column="0"></TextBox>
-            <Button  Grid.Column="1" Grid.Row="1">Invite</Button>
+            <TextBox x:Name="EnterGroup" Style="{StaticResource Input}" Grid.Row="1" Grid.Column="0"></TextBox>
+            <Button x:Name="EnterGroupBtn" Click="EnterGroupBtn_Click"  Grid.Column="1" Grid.Row="1">Enter</Button>
           </Grid>
         </TabItem>
 

@@ -105,17 +105,18 @@ namespace Client
 
     private void SendMessage()
     {
-      if (MessageWrite.Text.Trim() != "")
+      string message = MessageWrite.Text.Trim();
+      if (message != "")
       {
         if (ListSection.SelectedIndex == 0 && ContactsList.SelectedIndex != -1)
         {
-          cs.SendMessageToContact(MessageWrite.Text.Trim());
+          cs.SendMessageToContact(message);
           MessageWrite.Text = "";
           MessageWrite.Focus();
         }
         else if (ListSection.SelectedIndex == 1 && GroupsList.SelectedIndex != -1)
         {
-          cs.SendMessageToGroup(MessageWrite.Text.Trim());
+          cs.SendMessageToGroup(message);
           MessageWrite.Text = "";
           MessageWrite.Focus();
         }
@@ -124,6 +125,20 @@ namespace Client
 
     private void SendInviteBtn_Click(object sender, RoutedEventArgs e)
     {
+      string inviteContact = InviteContact.Text.Trim();
+      if (inviteContact != "")
+      {
+        // cs.SendInvite(inviteContact);
+      }
+    }
+
+    private void EnterGroupBtn_Click(object sender, RoutedEventArgs e)
+    {
+      string group = EnterGroup.Text.Trim();
+      if (group != "")
+      {
+        // cs.EnterGroup(group);
+      }
     }
   }
 }
