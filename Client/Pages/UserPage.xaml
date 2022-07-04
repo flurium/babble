@@ -74,23 +74,49 @@
       <TabControl x:Name="ListSection"  Padding="0" BorderThickness="0" Grid.Row="1" Grid.ColumnSpan="3">
 
         <TabItem Visibility="Collapsed">
-          <ListBox x:Name="ContactsList" ItemsSource="{Binding Contacts}" SelectionChanged="ContactsList_SelectionChanged" Margin="0,-3,-2,0">
-            <ListBox.ItemTemplate>
-              <DataTemplate>
-                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="15,0,15,0" />
-              </DataTemplate>
-            </ListBox.ItemTemplate>
-          </ListBox>
+          <Grid>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition />
+              <ColumnDefinition Width="50" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+              <RowDefinition />
+              <RowDefinition Height="40" />
+            </Grid.RowDefinitions>
+
+            <ListBox x:Name="ContactsList" ItemsSource="{Binding Contacts}" SelectionChanged="ContactsList_SelectionChanged" Grid.Row="0" Grid.ColumnSpan="2" Margin="0,-3,-2,0">
+              <ListBox.ItemTemplate>
+                <DataTemplate>
+                  <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="15,0,15,0" />
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
+            <TextBox x:Name="NewContact" Style="{StaticResource Input}" Grid.Row="1" Grid.Column="0"></TextBox>
+            <Button Click="SendInviteBtn_Click" Grid.Column="1" Grid.Row="1">Invite</Button>
+          </Grid>
         </TabItem>
 
         <TabItem Visibility="Collapsed">
-          <ListBox x:Name="GroupsList" ItemsSource="{Binding Groups}" SelectionChanged="GroupsList_SelectionChanged" Margin="0,-3,-2,0">
-            <ListBox.ItemTemplate>
-              <DataTemplate>
-                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="15,0,15,0" />
-              </DataTemplate>
-            </ListBox.ItemTemplate>
-          </ListBox>
+          <Grid>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition />
+              <ColumnDefinition Width="50" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+              <RowDefinition />
+              <RowDefinition Height="40" />
+            </Grid.RowDefinitions>
+
+            <ListBox x:Name="GroupsList" ItemsSource="{Binding Groups}" SelectionChanged="GroupsList_SelectionChanged" Grid.Row="0" Grid.ColumnSpan="2" Margin="0,-3,-2,0">
+              <ListBox.ItemTemplate>
+                <DataTemplate>
+                  <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="15,0,15,0" />
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
+            <TextBox x:Name="NewGroup" Style="{StaticResource Input}" Grid.Row="1" Grid.Column="0"></TextBox>
+            <Button  Grid.Column="1" Grid.Row="1">Invite</Button>
+          </Grid>
         </TabItem>
 
         <TabItem Visibility="Collapsed">

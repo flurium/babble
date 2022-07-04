@@ -121,5 +121,9 @@ namespace Client
         }
       }
     }
+
+    private void SendInviteBtn_Click(object sender, RoutedEventArgs e)
+    {
+    }
   }
 }

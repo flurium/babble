@@ -1,4 +1,5 @@
 using CrossLibrary;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Server.Models;
 using System.Net;
@@ -14,7 +15,7 @@ namespace Server.Services
     private Dictionary<Command, Action<Request, IPEndPoint>> handlers = new();
     private Socket listeningSocket; // todo: nullable
     private string localIp = "127.0.0.1";
-    private int localPort = 5001;
+    private readonly int localPort = 5001;
     private bool run = false;
 
     public async void AcceptInviteHandle(Request req, IPEndPoint ip)
@@ -79,7 +80,7 @@ namespace Server.Services
 
     public void DisconnectHandle(Request req, IPEndPoint ip)
     {
-      int id = req.Data;
+      int id = req.Data.Id;
       clients.Remove(id);
     }
 

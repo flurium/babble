@@ -95,11 +95,11 @@ namespace Client.Services
       {
         Request req = new() { Command = Command.SignIn, Data = new { Name = name, Password = password } };
 
-        OpenConnection();
+        if (!run) OpenConnection();
 
         SendData(req, remoteIp, remotePort);
 
-        listeningTask.Start();
+        // if (run) listeningTask.Start();
       }
       catch (Exception ex)
       {
@@ -113,13 +113,13 @@ namespace Client.Services
       {
         Request req = new() { Command = Command.SignUp, Data = new { Name = name, Password = Hasher.Hash(password) } };
 
-        OpenConnection();
+        if (!run) OpenConnection();
 
         SendData(req, remoteIp, remotePort);
 
         //Listen();
 
-        listeningTask.Start();
+        //if (!run) listeningTask.Start();
       }
       catch (Exception ex)
       {
@@ -134,6 +134,7 @@ namespace Client.Services
       IPEndPoint localIP = new IPEndPoint(IPAddress.Parse(remoteIp), localPort);
       listeningSocket.Bind(localIP);
       listeningTask = new(Listen);
+      listeningTask.Start();
     }
 
     private void CloseConnection()
@@ -382,7 +383,7 @@ namespace Client.Services
 
     public void Disconnect()
     {
-      Request req = new() { Command = Command.Disconnect, Data = User.Id };
+      Request req = new() { Command = Command.Disconnect, Data = new { Id = User.Id } };
       SendData(req);
       CloseConnection();
     }

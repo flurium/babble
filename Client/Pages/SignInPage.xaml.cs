@@ -32,6 +32,9 @@ namespace Client.Pages
       {
         NavigationService.Navigate(MainWindow.userChat);
         NavigationService.RemoveBackEntry();
+        ReverseIsEnabled();
+        NameInput.Text = "";
+        PasswordInput.Password = "";
       });
     }
 

@@ -1,4 +1,5 @@
-﻿using Server.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Server.Data;
 using Server.Models;
 
 namespace Server.Services
@@ -21,9 +22,12 @@ namespace Server.Services
     // pasword should be hashed
     public User AddUser(string name, string password)
     {
-      var user = db.Users.Add(new User { Name = name, Password = password });
+      User user = new User { Name = name, Password = password };
+      if (db.Users.Any(u => u.Name == user.Name)) throw new Exception("User with this name already exists");
+
+      user = db.Users.Add(user).Entity;
       db.SaveChanges();
-      return user.Entity;
+      return user;
     }
 
     public User? GetUser(string name)
