@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Server.Data;
+﻿using Server.Data;
 using Server.Models;
 
 namespace Server.Services

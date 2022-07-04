@@ -23,7 +23,7 @@ namespace Client.Services
     private Prop currentProp;
     private Dictionary<Prop, LinkedList<Message>> groupMessages = new();
     private Dictionary<Command, Action<Response>> handlers = new();
-    private Socket listeningSocket;
+    private Socket? listeningSocket;
     private Task listeningTask;
     private int localPort;
     private string remoteIp = "127.0.0.1";
@@ -98,8 +98,6 @@ namespace Client.Services
         if (!run) OpenConnection();
 
         SendData(req, remoteIp, remotePort);
-
-        // if (run) listeningTask.Start();
       }
       catch (Exception ex)
       {
@@ -116,10 +114,6 @@ namespace Client.Services
         if (!run) OpenConnection();
 
         SendData(req, remoteIp, remotePort);
-
-        //Listen();
-
-        //if (!run) listeningTask.Start();
       }
       catch (Exception ex)
       {
@@ -169,81 +163,90 @@ namespace Client.Services
     }
 
     /// <summary>
-    /// ///////////
+    /// Loop that read incomming responses
     /// </summary>
     private void Listen()
     {
-      try
+      if (listeningSocket != null)
       {
-        while (run)
+        try
         {
-          StringBuilder builder = new StringBuilder();
-          int bytes = 0;
-          byte[] data = new byte[256];
-
-          // adress fromm where get
-          EndPoint remoteIp = new IPEndPoint(IPAddress.Any, 0);
-
-          do
+          while (run)
           {
-            bytes = listeningSocket.ReceiveFrom(data, ref remoteIp);
-            builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
+            StringBuilder builder = new StringBuilder();
+            int bytes = 0;
+            byte[] data = new byte[256];
+
+            // adress fromm where get
+            EndPoint remoteIp = new IPEndPoint(IPAddress.Any, 0);
+
+            do
+            {
+              bytes = listeningSocket.ReceiveFrom(data, ref remoteIp);
+              builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
+            }
+            while (listeningSocket.Available > 0);
+
+            IPEndPoint remoteFullIp = (IPEndPoint)remoteIp;
+
+            Handle(builder.ToString());
+
+            // output
+            // AddToOutput(builder.ToString());
           }
-          while (listeningSocket.Available > 0);
-
-          IPEndPoint remoteFullIp = (IPEndPoint)remoteIp;
-
-          Handle(builder.ToString());
-
-          // output
-          // AddToOutput(builder.ToString());
         }
-      }
-      catch (SocketException socketEx)
-      {
-        if (socketEx.ErrorCode != 10004)
-          MessageBox.Show(socketEx.Message + socketEx.ErrorCode);
-      }
-      catch (Exception ex)
-      {
-        MessageBox.Show(ex.Message + ex.GetType().ToString());
-      }
-      finally
-      {
-        CloseConnection();
+        catch (SocketException socketEx)
+        {
+          if (socketEx.ErrorCode != 10004)
+            MessageBox.Show(socketEx.Message + socketEx.ErrorCode);
+        }
+        catch (Exception ex)
+        {
+          MessageBox.Show(ex.Message + ex.GetType().ToString());
+        }
+        finally
+        {
+          CloseConnection();
+        }
       }
     }
 
     // ip and port same all time
     private void SendData(Request message, string ip, int port)
     {
-      try
+      if (listeningSocket != null)
       {
-        // where to send
-        IPEndPoint remotePoint = new IPEndPoint(IPAddress.Parse(ip), port);
-        string requestStr = JsonConvert.SerializeObject(message);
-        byte[] data = Encoding.Unicode.GetBytes(requestStr);
-        listeningSocket.SendTo(data, remotePoint);
-      }
-      catch (Exception ex)
-      {
-        MessageBox.Show(ex.Message);
+        try
+        {
+          // where to send
+          IPEndPoint remotePoint = new IPEndPoint(IPAddress.Parse(ip), port);
+          string requestStr = JsonConvert.SerializeObject(message);
+          byte[] data = Encoding.Unicode.GetBytes(requestStr);
+          listeningSocket.SendTo(data, remotePoint);
+        }
+        catch (Exception ex)
+        {
+          MessageBox.Show(ex.Message);
+        }
       }
     }
 
     private void SendData(Request req)
     {
-      try
+      if (listeningSocket != null)
       {
-        // TODO: optimize
-        IPEndPoint remotePoint = new(IPAddress.Parse(remoteIp), remotePort);
-        string requestStr = JsonConvert.SerializeObject(req);
-        byte[] data = Encoding.Unicode.GetBytes(requestStr);
-        listeningSocket.SendTo(data, remotePoint);
-      }
-      catch (Exception ex)
-      {
-        MessageBox.Show(ex.Message);
+        try
+        {
+          // TODO: optimize
+          IPEndPoint remotePoint = new(IPAddress.Parse(remoteIp), remotePort);
+          string requestStr = JsonConvert.SerializeObject(req);
+          byte[] data = Encoding.Unicode.GetBytes(requestStr);
+          listeningSocket.SendTo(data, remotePoint);
+        }
+        catch (Exception ex)
+        {
+          MessageBox.Show(ex.Message);
+        }
       }
     }
 
