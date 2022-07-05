@@ -402,6 +402,22 @@ namespace Client.Services
 
     private void GetMessageFromContactHandle(Response res)
     {
+      int id = res.Data.Id;
+      string messageStr = res.Data.Message;
+      Message message = new() { String = messageStr, IsIncoming = true };
+
+      foreach (var contactMessage in contactMessages)
+      {
+        if (contactMessage.Key.Id == id)
+        {
+          contactMessage.Value.AddLast(message);
+          if (currentProp.Id == id)
+          {
+            Application.Current.Dispatcher.Invoke(() => CurrentMessages.Add(message));
+          }
+          return;
+        }
+      }
     }
   }
 }
