@@ -18,6 +18,15 @@ namespace Client.Pages
       this.cs = cs;
     }
 
+    private void ReverseIsEnabled()
+    {
+      SignUpBtn.IsEnabled = !SignUpBtn.IsEnabled;
+      GoToSignInBtn.IsEnabled = !GoToSignInBtn.IsEnabled;
+      NameInput.IsEnabled = !NameInput.IsEnabled;
+      PasswordInput.IsEnabled = !PasswordInput.IsEnabled;
+      PasswordConfirmInput.IsEnabled = !PasswordConfirmInput.IsEnabled;
+    }
+
     private void GoToSignIn(object sender, RoutedEventArgs e)
     {
       NavigationService.Navigate(MainWindow.signIn);
@@ -30,16 +39,19 @@ namespace Client.Pages
       {
         NavigationService.Navigate(MainWindow.userChat);
         NavigationService.RemoveBackEntry();
+        ReverseIsEnabled();
+        NameInput.Text = "";
+        PasswordInput.Password = "";
+        PasswordConfirmInput.Password = "";
       });
     }
 
-    public void DenySignUp()
+    private void DenySignUp(string message)
     {
       Dispatcher.Invoke(() =>
       {
-        SignUpBtn.IsEnabled = true;
-        GoToSignInBtn.IsEnabled = true;
-        MessageBox.Show("Sign up failed");
+        ReverseIsEnabled();
+        MessageBox.Show(message);
       });
     }
 
@@ -60,8 +72,7 @@ namespace Client.Pages
       }
       else
       {
-        SignUpBtn.IsEnabled = false;
-        GoToSignInBtn.IsEnabled = false;
+        ReverseIsEnabled();
 
         cs.DenySign = DenySignUp;
         cs.ConfirmSign = ConfirmSignUp;

@@ -47,7 +47,7 @@
       <PasswordBox x:Name="PasswordConfirmInput" Style="{StaticResource Input}" Grid.Row="5" />
 
       <Button x:Name="SignUpBtn" Content="Sign Up" Click="SignUp"  Grid.Row="6" />
-      <Button x:Name="GoToSignInBtn" Content="Already have an account yet? Sign In" Click="GoToSignIn" Grid.Row="7" />
+      <Button x:Name="GoToSignInBtn" Content="Already have an account? Sign In" Click="GoToSignIn" Grid.Row="7" />
     </Grid>
   </Grid>
 </Page>

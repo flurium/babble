@@ -23,7 +23,7 @@ namespace Client.Services
     private Prop currentProp;
     private Dictionary<Prop, LinkedList<Message>> groupMessages = new();
     private Dictionary<Command, Action<Response>> handlers = new();
-    private Socket listeningSocket;
+    private Socket? listeningSocket;
     private Task listeningTask;
     private int localPort;
     private string remoteIp = "127.0.0.1";
@@ -37,7 +37,7 @@ namespace Client.Services
     // function from interface to confirm sign
     public Action ConfirmSign { get; set; }
 
-    public Action DenySign { get; set; }
+    public Action<string> DenySign { get; set; }
 
     public CommunicationService()
     {
@@ -46,15 +46,6 @@ namespace Client.Services
       {
         localPort = rnd.Next(3000, 49000);
       } while (localPort == 5001); // 5001 = server port
-
-      // test
-      Contacts.Add(new Prop { Id = 3, Name = "3" });
-      contactMessages.Add(new Prop { Id = 3, Name = "3" }, new());
-      Contacts.Add(new Prop { Id = 2, Name = "2" });
-      contactMessages.Add(new Prop { Id = 2, Name = "2" }, new());
-
-      Groups.Add(new Prop { Id = 1, Name = "dfasd" });
-      groupMessages.Add(new Prop { Id = 1, Name = "dfasd" }, new());
 
       // Init handlers
       handlers.Add(Command.SignIn, SignInHandle);
@@ -104,11 +95,9 @@ namespace Client.Services
       {
         Request req = new() { Command = Command.SignIn, Data = new { Name = name, Password = password } };
 
-        OpenConnection();
+        if (!run) OpenConnection();
 
         SendData(req, remoteIp, remotePort);
-
-        listeningTask.Start();
       }
       catch (Exception ex)
       {
@@ -122,13 +111,9 @@ namespace Client.Services
       {
         Request req = new() { Command = Command.SignUp, Data = new { Name = name, Password = Hasher.Hash(password) } };
 
-        OpenConnection();
+        if (!run) OpenConnection();
 
         SendData(req, remoteIp, remotePort);
-
-        //Listen();
-
-        listeningTask.Start();
       }
       catch (Exception ex)
       {
@@ -143,6 +128,7 @@ namespace Client.Services
       IPEndPoint localIP = new IPEndPoint(IPAddress.Parse(remoteIp), localPort);
       listeningSocket.Bind(localIP);
       listeningTask = new(Listen);
+      listeningTask.Start();
     }
 
     private void CloseConnection()
@@ -177,81 +163,91 @@ namespace Client.Services
     }
 
     /// <summary>
-    /// ///////////
+    /// Loop that read incomming responses
     /// </summary>
     private void Listen()
     {
-      try
+      if (listeningSocket != null)
       {
-        while (run)
+        try
         {
-          StringBuilder builder = new StringBuilder();
-          int bytes = 0;
-          byte[] data = new byte[256];
-
-          // adress fromm where get
-          EndPoint remoteIp = new IPEndPoint(IPAddress.Any, 0);
-
-          do
+          while (run)
           {
-            bytes = listeningSocket.ReceiveFrom(data, ref remoteIp);
-            builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
+            StringBuilder builder = new StringBuilder();
+            int bytes = 0;
+            byte[] data = new byte[1024];
+
+            // adress fromm where get
+            EndPoint remoteIp = new IPEndPoint(IPAddress.Any, 0);
+
+            do
+            {
+              bytes = listeningSocket.ReceiveFrom(data, ref remoteIp);
+
+              builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
+            }
+            while (listeningSocket.Available > 0);
+
+            IPEndPoint remoteFullIp = (IPEndPoint)remoteIp;
+
+            Handle(builder.ToString());
+
+            // output
+            // AddToOutput(builder.ToString());
           }
-          while (listeningSocket.Available > 0);
-
-          IPEndPoint remoteFullIp = (IPEndPoint)remoteIp;
-
-          Handle(builder.ToString());
-
-          // output
-          // AddToOutput(builder.ToString());
         }
-      }
-      catch (SocketException socketEx)
-      {
-        if (socketEx.ErrorCode != 10004)
-          MessageBox.Show(socketEx.Message + socketEx.ErrorCode);
-      }
-      catch (Exception ex)
-      {
-        MessageBox.Show(ex.Message + ex.GetType().ToString());
-      }
-      finally
-      {
-        CloseConnection();
+        catch (SocketException socketEx)
+        {
+          if (socketEx.ErrorCode != 10004)
+            MessageBox.Show(socketEx.Message + socketEx.ErrorCode);
+        }
+        catch (Exception ex)
+        {
+          MessageBox.Show(ex.Message + ex.GetType().ToString());
+        }
+        finally
+        {
+          CloseConnection();
+        }
       }
     }
 
     // ip and port same all time
     private void SendData(Request message, string ip, int port)
     {
-      try
+      if (listeningSocket != null)
       {
-        // where to send
-        IPEndPoint remotePoint = new IPEndPoint(IPAddress.Parse(ip), port);
-        string requestStr = JsonConvert.SerializeObject(message);
-        byte[] data = Encoding.Unicode.GetBytes(requestStr);
-        listeningSocket.SendTo(data, remotePoint);
-      }
-      catch (Exception ex)
-      {
-        MessageBox.Show(ex.Message);
+        try
+        {
+          // where to send
+          IPEndPoint remotePoint = new IPEndPoint(IPAddress.Parse(ip), port);
+          string requestStr = JsonConvert.SerializeObject(message);
+          byte[] data = Encoding.Unicode.GetBytes(requestStr);
+          listeningSocket.SendTo(data, remotePoint);
+        }
+        catch (Exception ex)
+        {
+          MessageBox.Show(ex.Message);
+        }
       }
     }
 
     private void SendData(Request req)
     {
-      try
+      if (listeningSocket != null)
       {
-        // TODO: optimize
-        IPEndPoint remotePoint = new IPEndPoint(IPAddress.Parse(remoteIp), remotePort);
-        string requestStr = JsonConvert.SerializeObject(req);
-        byte[] data = Encoding.Unicode.GetBytes(requestStr);
-        listeningSocket.SendTo(data, remotePoint);
-      }
-      catch (Exception ex)
-      {
-        MessageBox.Show(ex.Message);
+        try
+        {
+          // TODO: optimize
+          IPEndPoint remotePoint = new(IPAddress.Parse(remoteIp), remotePort);
+          string requestStr = JsonConvert.SerializeObject(req);
+          byte[] data = Encoding.Unicode.GetBytes(requestStr);
+          listeningSocket.SendTo(data, remotePoint);
+        }
+        catch (Exception ex)
+        {
+          MessageBox.Show(ex.Message);
+        }
       }
     }
 
@@ -272,34 +268,41 @@ namespace Client.Services
     {
       if (res.Status == Status.OK)
       {
-        Prop user = res.Data.User;
+        Prop user = new();
+        user.Id = res.Data.User.Id;
+        user.Name = res.Data.User.Name;
         User = user;
 
-        IEnumerable<Prop> groups = res.Data.Groups;
+        var groups = res.Data.Groups;
         foreach (var group in groups)
         {
-          groupMessages.Add(group, new LinkedList<Message>());
-          Groups.Add(group);
+          Prop groupProp = new() { Id = group.Id, Name = group.Name };
+          groupMessages.Add(groupProp, new());
+
+          Application.Current.Dispatcher.Invoke(() => Groups.Add(groupProp));
         }
 
-        IEnumerable<Prop> invites = res.Data.Invites;
+        var invites = res.Data.Invites;
         foreach (var invite in invites)
         {
-          Invites.Add(invite);
+          Prop inviteProp = new() { Id = invite.Id, Name = invite.Name };
+          Application.Current.Dispatcher.Invoke(() => Invites.Add(inviteProp));
         }
 
-        IEnumerable<Prop> contacts = res.Data.Contacts;
+        var contacts = res.Data.Contacts;
         foreach (var contact in contacts)
         {
-          contactMessages.Add(contact, new LinkedList<Message>());
-          Contacts.Add(contact);
+          Prop contactProp = new() { Id = contact.Id, Name = contact.Name };
+          contactMessages.Add(contactProp, new());
+          Application.Current.Dispatcher.Invoke(() => Contacts.Add(contactProp));
         }
 
         ConfirmSign();
       }
       else
       {
-        DenySign();
+        string message = res.Data;
+        DenySign(message);
       }
     }
 
@@ -315,7 +318,8 @@ namespace Client.Services
       }
       else
       {
-        DenySign();
+        string message = res.Data;
+        DenySign(message);
       }
     }
 
@@ -339,43 +343,43 @@ namespace Client.Services
       SendData(req);
     }
 
-    private void RenameContact(string newName)
+    public void RenameContact(string newName)
     {
       Request req = new() { Command = Command.RenameContact, Data = new { To = currentProp.Id, From = User.Id, NewName = newName } };
       SendData(req);
     }
 
-    private void RenameGroup(string newName)
+    public void RenameGroup(string newName)
     {
       Request req = new() { Command = Command.RenameGroup, Data = new { Id = currentProp.Id, NewName = newName } };
       SendData(req);
     }
 
-    private void LeaveGroup(int groupId)
+    public void LeaveGroup(int groupId)
     {
       Request req = new() { Command = Command.LeaveGroup, Data = new { Group = groupId, User = User.Id } };
       SendData(req);
     }
 
-    private void RemoveContact(int to)
+    public void RemoveContact(int to)
     {
       Request req = new() { Command = Command.RemoveContact, Data = { To = to, From = User.Id } };
       SendData(req);
     }
 
-    private void AddGroup(string name)
+    public void AddGroup(string name)
     {
       Request req = new() { Command = Command.AddGroup, Data = new { Name = name, User = User.Id } };
       SendData(req);
     }
 
-    private void SendInvite(string name)
+    public void SendInvite(string name)
     {
       Request req = new() { Command = Command.SendInvite, Data = new { To = name, From = User.Id } };
       SendData(req);
     }
 
-    private void AcceptInvite(int id)
+    public void AcceptInvite(int id)
     {
       Request req = new() { Command = Command.AcceptInvite, Data = new { Id = id } };
       SendData(req);
@@ -383,13 +387,37 @@ namespace Client.Services
 
     public void Disconnect()
     {
-      Request req = new() { Command = Command.Disconnect, Data = User.Id };
+      Request req = new() { Command = Command.Disconnect, Data = new { Id = User.Id } };
       SendData(req);
+
+      contactMessages.Clear();
+      groupMessages.Clear();
+      Contacts.Clear();
+      CurrentMessages.Clear();
+      Groups.Clear();
+      Invites.Clear();
+
       CloseConnection();
     }
 
     private void GetMessageFromContactHandle(Response res)
     {
+      int id = res.Data.Id;
+      string messageStr = res.Data.Message;
+      Message message = new() { String = messageStr, IsIncoming = true };
+
+      foreach (var contactMessage in contactMessages)
+      {
+        if (contactMessage.Key.Id == id)
+        {
+          contactMessage.Value.AddLast(message);
+          if (currentProp.Id == id)
+          {
+            Application.Current.Dispatcher.Invoke(() => CurrentMessages.Add(message));
+          }
+          return;
+        }
+      }
     }
   }
 }

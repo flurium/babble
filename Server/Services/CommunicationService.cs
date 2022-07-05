@@ -12,9 +12,9 @@ namespace Server.Services
     private Dictionary<int, IPEndPoint> clients = new();
     private DatabaseService db = new();
     private Dictionary<Command, Action<Request, IPEndPoint>> handlers = new();
-    private Socket listeningSocket; // todo: nullable
+    private Socket? listeningSocket; // todo: nullable
     private string localIp = "127.0.0.1";
-    private int localPort = 5001;
+    private readonly int localPort = 5001;
     private bool run = false;
 
     public async void AcceptInviteHandle(Request req, IPEndPoint ip)
@@ -23,7 +23,7 @@ namespace Server.Services
       // req.Data = contact id
       try
       {
-        int id = req.Data;
+        int id = req.Data.Id;
         Contact contact = await db.AcceptInviteAsync(id);
 
         // to user to
@@ -61,6 +61,22 @@ namespace Server.Services
       }
     }
 
+    public async void EnterGroupHandle(Request req, IPEndPoint ip)
+    {
+      try
+      {
+        int uid = req.Data.Id;
+        string name = req.Data.Name;
+        await db.AddUserToGroupAsync(uid, name);
+
+        SendData(new Response { Command = Command.EnterGroup, Status = Status.OK, Data = "User added" }, ip);
+      }
+      catch (Exception ex)
+      {
+        SendData(new Response { Command = Command.EnterGroup, Status = Status.Bad, Data = ex.Message }, ip);
+      }
+    }
+
     public async void LeaveGroupHandle(Request req, IPEndPoint ip)
     {
       try
@@ -79,7 +95,7 @@ namespace Server.Services
 
     public void DisconnectHandle(Request req, IPEndPoint ip)
     {
-      int id = req.Data;
+      int id = req.Data.Id;
       clients.Remove(id);
     }
 
@@ -142,7 +158,7 @@ namespace Server.Services
 
         // to who will get invite
         IPEndPoint toIp;
-        if (clients.TryGetValue(contact.Id, out toIp))
+        if (clients.TryGetValue(contact.Id, out toIp!))
         {
           SendData(new Response { Command = Command.GetInvite, Status = Status.OK, Data = contact }, toIp);
         }
@@ -167,7 +183,7 @@ namespace Server.Services
         string message = req.Data.Message;
 
         IPEndPoint toIp;
-        if (clients.TryGetValue(to, out toIp))
+        if (clients.TryGetValue(to, out toIp!))
         {
           SendData(new Response { Command = Command.GetMessageFromContact, Status = Status.OK, Data = new { Id = from, Message = message } }, toIp);
         }
@@ -189,7 +205,7 @@ namespace Server.Services
         IEnumerable<int> ids = db.GetGroupMembersIds(group);
         foreach (int id in ids)
         {
-          if (clients.TryGetValue(id, out toIp))
+          if (clients.TryGetValue(id, out toIp!))
           {
             SendData(new Response { Command = Command.GetMessageFromGroup, Status = Status.OK, Data = new { Id = group, Message = message } }, toIp);
           }
@@ -287,55 +303,61 @@ namespace Server.Services
 
     public void Listen()
     {
-      IPAddress ip;
-      if (IPAddress.TryParse(localIp, out ip))
+      if (listeningSocket != null)
       {
-        IPEndPoint localIp = new IPEndPoint(ip, localPort);
-        listeningSocket.Bind(localIp);
-        try
+        IPAddress ip;
+        if (IPAddress.TryParse(localIp, out ip!))
         {
-          while (run)
+          IPEndPoint localIp = new(ip, localPort);
+          listeningSocket.Bind(localIp);
+          try
           {
-            StringBuilder builder = new StringBuilder();
-            int bytes = 0;
-            byte[] data = new byte[1024];
-            EndPoint clientIp = new IPEndPoint(IPAddress.Any, 0);
-
-            do
+            while (run)
             {
-              bytes = listeningSocket.ReceiveFrom(data, ref clientIp);
-              builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
-            } while (listeningSocket.Available > 0);
-            IPEndPoint clientFullIp = (IPEndPoint)clientIp;
+              StringBuilder builder = new StringBuilder();
+              int bytes = 0;
+              byte[] data = new byte[1024];
+              EndPoint clientIp = new IPEndPoint(IPAddress.Any, 0);
 
-            string request = builder.ToString();
-            Console.WriteLine(string.Format("{0}:{1} = {2}", clientIp.ToString(), clientFullIp.Port, request));
-            Handle(request, clientFullIp);
+              do
+              {
+                bytes = listeningSocket.ReceiveFrom(data, ref clientIp);
+                builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
+              } while (listeningSocket.Available > 0);
+              IPEndPoint clientFullIp = (IPEndPoint)clientIp;
+
+              string request = builder.ToString();
+              Console.WriteLine(string.Format("{0} = {1}", clientIp.ToString(), request));
+              Handle(request, clientFullIp);
+            }
           }
-        }
-        catch (SocketException socketEx)
-        {
-          if (socketEx.ErrorCode != 10004)
-            Console.WriteLine(socketEx.Message + socketEx.ErrorCode);
-        }
-        catch (Exception ex)
-        {
-          Console.WriteLine(ex.Message);
-        }
-        finally
-        {
-          CloseConnection();
+          catch (SocketException socketEx)
+          {
+            if (socketEx.ErrorCode != 10004)
+              Console.WriteLine(socketEx.Message + socketEx.ErrorCode);
+          }
+          catch (Exception ex)
+          {
+            Console.WriteLine(ex.Message);
+          }
+          finally
+          {
+            CloseConnection();
+          }
         }
       }
     }
 
     private void SendData(Response response, IPEndPoint ip)
     {
-      string responseStr = JsonConvert.SerializeObject(response);
-      byte[] data = Encoding.Unicode.GetBytes(responseStr);
+      if (listeningSocket != null)
+      {
+        string responseStr = JsonConvert.SerializeObject(response);
+        byte[] data = Encoding.Unicode.GetBytes(responseStr);
 
-      // send to one
-      listeningSocket.SendTo(data, ip);
+        // send to one
+        listeningSocket.SendTo(data, ip);
+      }
     }
 
     public CommunicationService()
@@ -353,6 +375,7 @@ namespace Server.Services
       handlers.Add(Command.RemoveContact, RemoveContactHandle);
       handlers.Add(Command.AddGroup, AddGroupHandle);
       handlers.Add(Command.LeaveGroup, LeaveGroupHandle);
+      handlers.Add(Command.EnterGroup, EnterGroupHandle);
       handlers.Add(Command.Disconnect, DisconnectHandle);
       handlers.Add(Command.RenameGroup, RenameGroupHandle);
     }
