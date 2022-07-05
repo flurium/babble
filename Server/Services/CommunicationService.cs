@@ -23,7 +23,7 @@ namespace Server.Services
       // req.Data = contact id
       try
       {
-        int id = req.Data;
+        int id = req.Data.Id;
         Contact contact = await db.AcceptInviteAsync(id);
 
         // to user to

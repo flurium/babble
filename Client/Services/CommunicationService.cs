@@ -175,7 +175,7 @@ namespace Client.Services
           {
             StringBuilder builder = new StringBuilder();
             int bytes = 0;
-            byte[] data = new byte[256];
+            byte[] data = new byte[1024];
 
             // adress fromm where get
             EndPoint remoteIp = new IPEndPoint(IPAddress.Any, 0);
@@ -183,6 +183,7 @@ namespace Client.Services
             do
             {
               bytes = listeningSocket.ReceiveFrom(data, ref remoteIp);
+
               builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
             }
             while (listeningSocket.Available > 0);
@@ -342,43 +343,43 @@ namespace Client.Services
       SendData(req);
     }
 
-    private void RenameContact(string newName)
+    public void RenameContact(string newName)
     {
       Request req = new() { Command = Command.RenameContact, Data = new { To = currentProp.Id, From = User.Id, NewName = newName } };
       SendData(req);
     }
 
-    private void RenameGroup(string newName)
+    public void RenameGroup(string newName)
     {
       Request req = new() { Command = Command.RenameGroup, Data = new { Id = currentProp.Id, NewName = newName } };
       SendData(req);
     }
 
-    private void LeaveGroup(int groupId)
+    public void LeaveGroup(int groupId)
     {
       Request req = new() { Command = Command.LeaveGroup, Data = new { Group = groupId, User = User.Id } };
       SendData(req);
     }
 
-    private void RemoveContact(int to)
+    public void RemoveContact(int to)
     {
       Request req = new() { Command = Command.RemoveContact, Data = { To = to, From = User.Id } };
       SendData(req);
     }
 
-    private void AddGroup(string name)
+    public void AddGroup(string name)
     {
       Request req = new() { Command = Command.AddGroup, Data = new { Name = name, User = User.Id } };
       SendData(req);
     }
 
-    private void SendInvite(string name)
+    public void SendInvite(string name)
     {
       Request req = new() { Command = Command.SendInvite, Data = new { To = name, From = User.Id } };
       SendData(req);
     }
 
-    private void AcceptInvite(int id)
+    public void AcceptInvite(int id)
     {
       Request req = new() { Command = Command.AcceptInvite, Data = new { Id = id } };
       SendData(req);
@@ -388,6 +389,14 @@ namespace Client.Services
     {
       Request req = new() { Command = Command.Disconnect, Data = new { Id = User.Id } };
       SendData(req);
+
+      contactMessages.Clear();
+      groupMessages.Clear();
+      Contacts.Clear();
+      CurrentMessages.Clear();
+      Groups.Clear();
+      Invites.Clear();
+
       CloseConnection();
     }
 

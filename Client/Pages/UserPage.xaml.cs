@@ -128,7 +128,7 @@ namespace Client
       string inviteContact = InviteContact.Text.Trim();
       if (inviteContact != "")
       {
-        // cs.SendInvite(inviteContact);
+        cs.SendInvite(inviteContact);
       }
     }
 
@@ -137,8 +137,15 @@ namespace Client
       string group = EnterGroup.Text.Trim();
       if (group != "")
       {
-        // cs.EnterGroup(group);
+        //cs.EnterGroup(group);
       }
+    }
+
+    private void AcceptInviteBtn_Click(object sender, RoutedEventArgs e)
+    {
+      int id = (int)((Button)sender).Tag;
+
+      cs.AcceptInvite(id);
     }
   }
 }

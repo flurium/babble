@@ -123,7 +123,14 @@
           <ListBox x:Name="InvitesList" ItemsSource="{Binding Invites}" Margin="0,-3,-2,0">
             <ListBox.ItemTemplate>
               <DataTemplate>
-                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="15,0,15,0" />
+                <Grid>
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="auto" />
+                  </Grid.ColumnDefinitions>
+                  <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="15,0,15,0" />
+                  <Button Tag="{Binding Id}" Click="AcceptInviteBtn_Click" Grid.Column="1">Accept</Button>
+                </Grid>
               </DataTemplate>
             </ListBox.ItemTemplate>
           </ListBox>
