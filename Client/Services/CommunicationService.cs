@@ -11,316 +11,313 @@ using System.Windows;
 
 namespace Client.Services
 {
-    public struct Message
+  public struct Message
+  {
+    public bool IsIncoming { get; set; }
+    public string String { get; set; }
+  }
+
+  public class CommunicationService
+  {
+    private const string remoteIp = "127.0.0.1";
+    private const int remotePort = 5001;
+    private readonly Dictionary<Prop, LinkedList<Message>> contactMessages = new();
+    private readonly Dictionary<Prop, LinkedList<Message>> groupMessages = new();
+    private readonly Dictionary<Command, Action<Response>> handlers = new();
+    private readonly int localPort;
+    private Prop currentProp;
+    private Socket? listeningSocket;
+    private Task listeningTask;
+    private bool run = false;
+
+    public CommunicationService()
     {
-        public bool IsIncoming { get; set; }
-        public string String { get; set; }
+      // open port
+      Random rnd = new();
+      do
+      {
+        localPort = rnd.Next(3000, 49000);
+      } while (localPort == 5001); // 5001 = server port
+
+      // Init handlers
+      handlers.Add(Command.SignIn, SignInHandle);
+      handlers.Add(Command.SignUp, SignUpHandle);
+      handlers.Add(Command.SendInvite, SendInviteHandle);
+      handlers.Add(Command.GetInvite, GetInviteHandle);
+      handlers.Add(Command.GetContact, GetContactHandle);
+      handlers.Add(Command.GetMessageFromContact, GetMessageFromContactHandle);
+      handlers.Add(Command.GetMessageFromGroup, GetMessageFromGroupHandle);
+      handlers.Add(Command.CreateGroup, CreateGroupHandle);
+      handlers.Add(Command.EnterGroup, EnterGroupHandle);
+      handlers.Add(Command.RemoveContact, RemoveContactHandle);
+      handlers.Add(Command.RenameContact, RenameContactHandle);
+      handlers.Add(Command.RenameGroup, RenameGroupHandle);
     }
 
-    public class CommunicationService
+    // function from interface to confirm sign
+    public Action ConfirmSign { get; set; }
+
+    // ObservableCollections must not be recreated
+    public ObservableCollection<Prop> Contacts { get; } = new();
+
+    public ObservableCollection<Message> CurrentMessages { get; } = new();
+    public Action<string> DenySign { get; set; }
+    public ObservableCollection<Prop> Groups { get; } = new();
+
+    public ObservableCollection<Prop> Invites { get; } = new();
+
+    public Prop User { get; private set; }
+
+    public void AcceptInvite(int id)
     {
-        private const string remoteIp = "127.0.0.1";
-        private const int remotePort = 5001;
-        private readonly Dictionary<Prop, LinkedList<Message>> contactMessages = new();
-        private readonly Dictionary<Prop, LinkedList<Message>> groupMessages = new();
-        private readonly Dictionary<Command, Action<Response>> handlers = new();
-        private readonly int localPort;
-        private Prop currentProp;
-        private Socket? listeningSocket;
-        private Task listeningTask;
-        private bool run = false;
+      Request req = new() { Command = Command.AcceptInvite, Data = new { Id = id } };
+      SendData(req);
 
-        public CommunicationService()
+      foreach (var invite in Invites)
+      {
+        if (invite.Id == id)
         {
-            // open port
-            Random rnd = new();
-            do
-            {
-                localPort = rnd.Next(3000, 49000);
-            } while (localPort == 5001); // 5001 = server port
-
-            // Init handlers
-            handlers.Add(Command.SignIn, SignInHandle);
-            handlers.Add(Command.SignUp, SignUpHandle);
-            handlers.Add(Command.SendInvite, SendInviteHandle);
-            handlers.Add(Command.GetInvite, GetInviteHandle);
-            handlers.Add(Command.GetContact, GetContactHandle);
-            handlers.Add(Command.GetMessageFromContact, GetMessageFromContactHandle);
-            handlers.Add(Command.GetMessageFromGroup, GetMessageFromGroupHandle);
-            handlers.Add(Command.CreateGroup, CreateGroupHandle);
-            handlers.Add(Command.EnterGroup, EnterGroupHandle);
-            handlers.Add(Command.RemoveContact, RemoveContactHandle);
-            handlers.Add(Command.RenameContact, RenameContactHandle);
-            handlers.Add(Command.RenameGroup, RenameGroupHandle);
-
+          Invites.Remove(invite);
+          return;
         }
+      }
+    }
 
-        // function from interface to confirm sign
-        public Action ConfirmSign { get; set; }
+    public void CreateGroup(string groupName)
+    {
+      Request req = new() { Command = Command.CreateGroup, Data = new { Group = groupName, User = User.Id } };
+      SendData(req);
+    }
 
-        // ObservableCollections must not be recreated
-        public ObservableCollection<Prop> Contacts { get; } = new();
+    public void Disconnect()
+    {
+      Request req = new() { Command = Command.Disconnect, Data = new { Id = User.Id } };
+      SendData(req);
 
-        public ObservableCollection<Message> CurrentMessages { get; } = new();
-        public Action<string> DenySign { get; set; }
-        public ObservableCollection<Prop> Groups { get; } = new();
+      contactMessages.Clear();
+      groupMessages.Clear();
+      Contacts.Clear();
+      CurrentMessages.Clear();
+      Groups.Clear();
+      Invites.Clear();
 
-        public ObservableCollection<Prop> Invites { get; } = new();
+      CloseConnection();
+    }
 
-        public Prop User { get; private set; }
+    public void LeaveGroup(int groupId)
+    {
+      Request req = new() { Command = Command.LeaveGroup, Data = new { Group = groupId, User = User.Id } };
+      SendData(req);
+    }
 
-        public void AcceptInvite(int id)
+    public void EnterGroup(string groupName)
+    {
+      Request req = new() { Command = Command.EnterGroup, Data = new { Group = groupName, User = User.Id } };
+      SendData(req);
+    }
+
+    public void RemoveContact(int to)
+    {
+      Request req = new() { Command = Command.RemoveContact, Data = { To = to, From = User.Id } };
+      SendData(req);
+    }
+
+    public void RenameContact(string newName)
+    {
+      Request req = new() { Command = Command.RenameContact, Data = new { To = currentProp.Id, From = User.Id, NewName = newName } };
+      SendData(req);
+    }
+
+    public void RenameGroup(string newName)
+    {
+      Request req = new() { Command = Command.RenameGroup, Data = new { Id = currentProp.Id, NewName = newName } };
+      SendData(req);
+    }
+
+    public void SendInvite(string name)
+    {
+      Request req = new() { Command = Command.SendInvite, Data = new { To = name, From = User.Id } };
+      SendData(req);
+    }
+
+    public void SendMessageToContact(string messageStr)
+    {
+      Message message = new() { String = messageStr, IsIncoming = false };
+      contactMessages[currentProp].AddLast(message);
+      CurrentMessages.Add(message);
+
+      Request req = new() { Command = Command.SendMessageToContact, Data = new { To = currentProp.Id, From = User.Id, Message = message.String } };
+      SendData(req);
+    }
+
+    public void SendMessageToGroup(string messageStr)
+    {
+      Message message = new() { String = messageStr, IsIncoming = false };
+      groupMessages[currentProp].AddLast(message);
+      CurrentMessages.Add(message);
+
+      Request req = new() { Command = Command.SendMessageToGroup, Data = new { To = currentProp.Id, From = User.Id, Message = message.String } };
+      SendData(req);
+    }
+
+    public void SetCurrentContact(Prop contact)
+    {
+      currentProp = contact;
+      // refresh CurrentMessages
+      CurrentMessages.Clear();
+      foreach (Message message in contactMessages[currentProp])
+      {
+        CurrentMessages.Add(message);
+      }
+    }
+
+    public void SetCurrentGroup(Prop group)
+    {
+      currentProp = group;
+      // refresh CurrentMessages
+      CurrentMessages.Clear();
+      foreach (Message message in groupMessages[currentProp])
+      {
+        CurrentMessages.Add(message);
+      }
+    }
+
+    public void SignIn(string name, string password)
+    {
+      try
+      {
+        Request req = new() { Command = Command.SignIn, Data = new { Name = name, Password = password } };
+
+        if (!run) OpenConnection();
+
+        SendData(req, remoteIp, remotePort);
+      }
+      catch (Exception ex)
+      {
+        MessageBox.Show(ex.Message);
+      }
+    }
+
+    public void SignUp(string name, string password)
+    {
+      try
+      {
+        Request req = new() { Command = Command.SignUp, Data = new { Name = name, Password = Hasher.Hash(password) } };
+
+        if (!run) OpenConnection();
+
+        SendData(req, remoteIp, remotePort);
+      }
+      catch (Exception ex)
+      {
+        MessageBox.Show(ex.Message);
+      }
+    }
+
+    private void CloseConnection()
+    {
+      if (listeningSocket != null)
+      {
+        run = false;
+        listeningSocket.Shutdown(SocketShutdown.Both);
+        listeningSocket.Close();
+        listeningSocket = null;
+      }
+    }
+
+    private void GetContactHandle(Response res)
+    {
+      if (res.Status == Status.OK)
+      {
+        Prop contact = new()
         {
-            Request req = new() { Command = Command.AcceptInvite, Data = new { Id = id } };
-            SendData(req);
+          Id = res.Data.Id,
+          Name = res.Data.Name
+        };
 
-            foreach (var invite in Invites)
-            {
-                if (invite.Id == id)
-                {
-                    Invites.Remove(invite);
-                    return;
-                }
-            }
-        }
-
-        public void CreateGroup(string groupName)
-        {
-            Request req = new() { Command = Command.CreateGroup, Data = new { Group = groupName, User = User.Id } };
-            SendData(req);
-        }
-
-        public void Disconnect()
-        {
-            Request req = new() { Command = Command.Disconnect, Data = new { Id = User.Id } };
-            SendData(req);
-
-            contactMessages.Clear();
-            groupMessages.Clear();
-            Contacts.Clear();
-            CurrentMessages.Clear();
-            Groups.Clear();
-            Invites.Clear();
-
-            CloseConnection();
-        }
-
-        public void LeaveGroup(int groupId)
-        {
-            Request req = new() { Command = Command.LeaveGroup, Data = new { Group = groupId, User = User.Id } };
-            SendData(req);
-        }
-
-        public void EnterGroup(string groupName)
-        {
-            Request req = new() { Command = Command.EnterGroup, Data = new { Group = groupName, User = User.Id } };
-            SendData(req);
-        }
-
-        public void RemoveContact(int to)
-        {
-            Request req = new() { Command = Command.RemoveContact, Data = { To = to, From = User.Id } };
-            SendData(req);
-        }
-
-        public void RenameContact(string newName)
-        {
-            Request req = new() { Command = Command.RenameContact, Data = new { To = currentProp.Id, From = User.Id, NewName = newName } };
-            SendData(req);
-        }
-
-        public void RenameGroup(string newName)
-        {
-            Request req = new() { Command = Command.RenameGroup, Data = new { Id = currentProp.Id, NewName = newName } };
-            SendData(req);
-        }
-
-        public void SendInvite(string name)
-        {
-            Request req = new() { Command = Command.SendInvite, Data = new { To = name, From = User.Id } };
-            SendData(req);
-        }
-
-        public void SendMessageToContact(string messageStr)
-        {
-            Message message = new() { String = messageStr, IsIncoming = false };
-            contactMessages[currentProp].AddLast(message);
-            CurrentMessages.Add(message);
-
-            Request req = new() { Command = Command.SendMessageToContact, Data = new { To = currentProp.Id, From = User.Id, Message = message.String } };
-            SendData(req);
-        }
-
-        public void SendMessageToGroup(string messageStr)
-        {
-            Message message = new() { String = messageStr, IsIncoming = false };
-            groupMessages[currentProp].AddLast(message);
-            CurrentMessages.Add(message);
-
-            Request req = new() { Command = Command.SendMessageToGroup, Data = new { To = currentProp.Id, From = User.Id, Message = message.String } };
-            SendData(req);
-        }
-
-        public void SetCurrentContact(Prop contact)
-        {
-            currentProp = contact;
-            // refresh CurrentMessages
-            CurrentMessages.Clear();
-            foreach (Message message in contactMessages[currentProp])
-            {
-                CurrentMessages.Add(message);
-            }
-        }
-
-        public void SetCurrentGroup(Prop group)
-        {
-            currentProp = group;
-            // refresh CurrentMessages
-            CurrentMessages.Clear();
-            foreach (Message message in groupMessages[currentProp])
-            {
-                CurrentMessages.Add(message);
-            }
-        }
-
-        public void SignIn(string name, string password)
-        {
-            try
-            {
-                Request req = new() { Command = Command.SignIn, Data = new { Name = name, Password = password } };
-
-                if (!run) OpenConnection();
-
-                SendData(req, remoteIp, remotePort);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
-
-        public void SignUp(string name, string password)
-        {
-            try
-            {
-                Request req = new() { Command = Command.SignUp, Data = new { Name = name, Password = Hasher.Hash(password) } };
-
-                if (!run) OpenConnection();
-
-                SendData(req, remoteIp, remotePort);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
-
-        private void CloseConnection()
-        {
-            if (listeningSocket != null)
-            {
-                run = false;
-                listeningSocket.Shutdown(SocketShutdown.Both);
-                listeningSocket.Close();
-                listeningSocket = null;
-            }
-        }
-
-        private void GetContactHandle(Response res)
-        {
-            if (res.Status == Status.OK)
-            {
-                Prop contact = new()
-                {
-                    Id = res.Data.Id,
-                    Name = res.Data.Name
-                };
-
-                // add contact to ui
-                contactMessages.Add(contact, new());
-                Application.Current.Dispatcher.Invoke(() => Contacts.Add(contact));
-            }
-            else
-            {
-                // show error
-                string message = (string)res.Data;
-                Application.Current.Dispatcher.Invoke(() => MessageBox.Show(message));
-            }
-        }
-
-        private void CreateGroupHandle(Response res)
-        {
-            if (res.Status == Status.OK)
-            {
-                Prop group = new()
-                {
-                    Id = res.Data.Id,
-                    Name = res.Data.Name
-                };
-
-                // add contact to ui
-                groupMessages.Add(group, new());
-                Application.Current.Dispatcher.Invoke(() => Groups.Add(group));
-            }
-            else
-            {
-                string message = (string)res.Data;
-                Application.Current.Dispatcher.Invoke(() => MessageBox.Show(message));
-                // show error
-            }
-        }
-
-        private void EnterGroupHandle(Response res)
-        {
-            if (res.Status == Status.OK)
-            {
-                Prop group = new()
-                {
-                    Id = res.Data.Id,
-                    Name = res.Data.Name
-                };
-
-                // add contact to ui
-                groupMessages.Add(group, new());
-                Application.Current.Dispatcher.Invoke(() => Groups.Add(group));
-            }
-            else
-            {
-                string message = (string)res.Data;
-                Application.Current.Dispatcher.Invoke(() => MessageBox.Show(message));
-                // show error
-            }
-        }
-
-
-        private void RemoveContactHandle(Response res)
-        {
-            if (res.Status == Status.OK)
-            {
-                Prop contact = new()
-                {
-                    Id = res.Data.Id
-                };
-
-   
-                 foreach(var cont in Contacts)
-                {
-                    if (cont.Id== contact.Id)
-                    {
-                        Contacts.Remove(cont);
-                        contactMessages.Remove(cont);
-                        break;
-                    }
-                }
-               
-                Application.Current.Dispatcher.Invoke(() => Contacts.Add(contact));
-        }
-            else
-            {
-                string message = (string)res.Data;
+        // add contact to ui
+        contactMessages.Add(contact, new());
+        Application.Current.Dispatcher.Invoke(() => Contacts.Add(contact));
+      }
+      else
+      {
+        // show error
+        string message = (string)res.Data;
         Application.Current.Dispatcher.Invoke(() => MessageBox.Show(message));
-            }
-}  
+      }
+    }
+
+    private void CreateGroupHandle(Response res)
+    {
+      if (res.Status == Status.OK)
+      {
+        Prop group = new()
+        {
+          Id = res.Data.Id,
+          Name = res.Data.Name
+        };
+
+        // add contact to ui
+        groupMessages.Add(group, new());
+        Application.Current.Dispatcher.Invoke(() => Groups.Add(group));
+      }
+      else
+      {
+        string message = (string)res.Data;
+        Application.Current.Dispatcher.Invoke(() => MessageBox.Show(message));
+        // show error
+      }
+    }
+
+    private void EnterGroupHandle(Response res)
+    {
+      if (res.Status == Status.OK)
+      {
+        Prop group = new()
+        {
+          Id = res.Data.Id,
+          Name = res.Data.Name
+        };
+
+        // add contact to ui
+        groupMessages.Add(group, new());
+        Application.Current.Dispatcher.Invoke(() => Groups.Add(group));
+      }
+      else
+      {
+        string message = (string)res.Data;
+        Application.Current.Dispatcher.Invoke(() => MessageBox.Show(message));
+        // show error
+      }
+    }
+
+    private void RemoveContactHandle(Response res)
+    {
+      if (res.Status == Status.OK)
+      {
+        Prop contact = new()
+        {
+          Id = res.Data.Id
+        };
+
+        foreach (var cont in Contacts)
+        {
+          if (cont.Id == contact.Id)
+          {
+            Contacts.Remove(cont);
+            contactMessages.Remove(cont);
+            break;
+          }
+        }
+
+        Application.Current.Dispatcher.Invoke(() => Contacts.Add(contact));
+      }
+      else
+      {
+        string message = (string)res.Data;
+        Application.Current.Dispatcher.Invoke(() => MessageBox.Show(message));
+      }
+    }
 
     private void GetInviteHandle(Response res)
     {
@@ -379,57 +376,63 @@ namespace Client.Services
         }
       }
     }
-    
+
     private void RenameContactHandle(Response res)
     {
-            if (res.Status == Status.OK)
-            {
-                int id = res.Data.Id;
-                string newName = res.Data.Name;
+      if (res.Status == Status.OK)
+      {
+        int id = res.Data.Id;
+        string newName = res.Data.Name;
 
-                for (int i = 0; i < Contacts.Count; i++)
-                {
-                    if (Contacts[i].Id == id)
-                    {
-                        Contacts[i] = new Prop { Id = id, Name = newName };
-                        break;
-                    }
-                }
-            }
-            else
-            {
+        for (int i = 0; i < Contacts.Count; i++)
+        {
+          if (Contacts[i].Id == id)
+          {
+            Prop newContact = new() { Id = id, Name = newName };
 
-            }
+            var messages = contactMessages[Contacts[i]];
+            contactMessages.Remove(Contacts[i]);
+            contactMessages.Add(newContact, messages);
 
+            Contacts[i] = newContact;
+            break;
+          }
+        }
+      }
+      else
+      {
+      }
     }
 
-        private void RenameGroupHandle(Response res)
+    private void RenameGroupHandle(Response res)
+    {
+      if (res.Status == Status.OK)
+      {
+        int id = res.Data.Id;
+        string newName = res.Data.Name;
+
+        for (int i = 0; i < Groups.Count; i++)
         {
-            if (res.Status == Status.OK)
-            {
-                int id = res.Data.Id;
-                string newName = res.Data.Name;
+          if (Groups[i].Id == id)
+          {
+            Prop newGroup = new() { Id = id, Name = newName };
 
-                for (int i = 0; i < Groups.Count; i++)
-                {
-                    if (Groups[i].Id == id)
-                    {
-                        Groups[i] = new Prop { Id = id, Name = newName };
-                        break;
-                    }
-                }
-            }
-            else
-            {
+            var messages = groupMessages[Groups[i]];
+            groupMessages.Remove(Groups[i]);
+            groupMessages.Add(newGroup, messages);
 
-            }
+            Groups[i] = newGroup;
+            break;
+          }
         }
+      }
+      else
+      {
+      }
+    }
 
-
-
-
-        // Treatment
-        private void Handle(string resStr)
+    // Treatment
+    private void Handle(string resStr)
     {
       Response res = JsonConvert.DeserializeObject<Response>(resStr);
       try
