@@ -21,8 +21,12 @@ namespace Client.Services
   {
     private const string remoteIp = "127.0.0.1";
     private const int remotePort = 5001;
-    private readonly Dictionary<Prop, LinkedList<Message>> contactMessages = new();
-    private readonly Dictionary<Prop, LinkedList<Message>> groupMessages = new();
+
+    // key = id
+    private readonly Dictionary<int, LinkedList<Message>> contactMessages = new();
+
+    private readonly Dictionary<int, LinkedList<Message>> groupMessages = new();
+
     private readonly Dictionary<Command, Action<Response>> handlers = new();
     private readonly int localPort;
     private Prop currentProp;
@@ -143,7 +147,7 @@ namespace Client.Services
     public void SendMessageToContact(string messageStr)
     {
       Message message = new() { String = messageStr, IsIncoming = false };
-      contactMessages[currentProp].AddLast(message);
+      contactMessages[currentProp.Id].AddLast(message);
       CurrentMessages.Add(message);
 
       Request req = new() { Command = Command.SendMessageToContact, Data = new { To = currentProp.Id, From = User.Id, Message = message.String } };
@@ -153,7 +157,7 @@ namespace Client.Services
     public void SendMessageToGroup(string messageStr)
     {
       Message message = new() { String = messageStr, IsIncoming = false };
-      groupMessages[currentProp].AddLast(message);
+      groupMessages[currentProp.Id].AddLast(message);
       CurrentMessages.Add(message);
 
       Request req = new() { Command = Command.SendMessageToGroup, Data = new { To = currentProp.Id, From = User.Id, Message = message.String } };
@@ -165,7 +169,7 @@ namespace Client.Services
       currentProp = contact;
       // refresh CurrentMessages
       CurrentMessages.Clear();
-      foreach (Message message in contactMessages[currentProp])
+      foreach (Message message in contactMessages[currentProp.Id])
       {
         CurrentMessages.Add(message);
       }
@@ -176,7 +180,7 @@ namespace Client.Services
       currentProp = group;
       // refresh CurrentMessages
       CurrentMessages.Clear();
-      foreach (Message message in groupMessages[currentProp])
+      foreach (Message message in groupMessages[currentProp.Id])
       {
         CurrentMessages.Add(message);
       }
@@ -236,7 +240,7 @@ namespace Client.Services
         };
 
         // add contact to ui
-        contactMessages.Add(contact, new());
+        contactMessages.Add(contact.Id, new());
         Application.Current.Dispatcher.Invoke(() => Contacts.Add(contact));
       }
       else
@@ -258,7 +262,7 @@ namespace Client.Services
         };
 
         // add contact to ui
-        groupMessages.Add(group, new());
+        groupMessages.Add(group.Id, new());
         Application.Current.Dispatcher.Invoke(() => Groups.Add(group));
       }
       else
@@ -280,7 +284,7 @@ namespace Client.Services
         };
 
         // add contact to ui
-        groupMessages.Add(group, new());
+        groupMessages.Add(group.Id, new());
         Application.Current.Dispatcher.Invoke(() => Groups.Add(group));
       }
       else
@@ -305,7 +309,7 @@ namespace Client.Services
           if (cont.Id == contact.Id)
           {
             Contacts.Remove(cont);
-            contactMessages.Remove(cont);
+            contactMessages.Remove(cont.Id);
             break;
           }
         }
@@ -345,7 +349,7 @@ namespace Client.Services
 
       foreach (var contactMessage in contactMessages)
       {
-        if (contactMessage.Key.Id == id)
+        if (contactMessage.Key == id)
         {
           contactMessage.Value.AddLast(message);
           if (currentProp.Id == id)
@@ -365,7 +369,7 @@ namespace Client.Services
 
       foreach (var groupMessage in groupMessages)
       {
-        if (groupMessage.Key.Id == id)
+        if (groupMessage.Key == id)
         {
           groupMessage.Value.AddLast(message);
           if (currentProp.Id == id)
@@ -390,10 +394,6 @@ namespace Client.Services
           {
             Prop newContact = new() { Id = id, Name = newName };
 
-            var messages = contactMessages[Contacts[i]];
-            contactMessages.Remove(Contacts[i]);
-            contactMessages.Add(newContact, messages);
-
             Contacts[i] = newContact;
             break;
           }
@@ -416,10 +416,6 @@ namespace Client.Services
           if (Groups[i].Id == id)
           {
             Prop newGroup = new() { Id = id, Name = newName };
-
-            var messages = groupMessages[Groups[i]];
-            groupMessages.Remove(Groups[i]);
-            groupMessages.Add(newGroup, messages);
 
             Groups[i] = newGroup;
             break;
@@ -570,7 +566,7 @@ namespace Client.Services
         foreach (var group in groups)
         {
           Prop groupProp = new() { Id = group.Id, Name = group.Name };
-          groupMessages.Add(groupProp, new());
+          groupMessages.Add(groupProp.Id, new());
 
           Application.Current.Dispatcher.Invoke(() => Groups.Add(groupProp));
         }
@@ -586,7 +582,7 @@ namespace Client.Services
         foreach (var contact in contacts)
         {
           Prop contactProp = new() { Id = contact.Id, Name = contact.Name };
-          contactMessages.Add(contactProp, new());
+          contactMessages.Add(contactProp.Id, new());
           Application.Current.Dispatcher.Invoke(() => Contacts.Add(contactProp));
         }
 
