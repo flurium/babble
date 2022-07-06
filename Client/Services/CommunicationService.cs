@@ -22,9 +22,10 @@ namespace Client.Services
     private const string remoteIp = "127.0.0.1";
     private const int remotePort = 5001;
 
-    // key = id
+    // key = contact id
     private readonly Dictionary<int, LinkedList<Message>> contactMessages = new();
 
+    // key = group id
     private readonly Dictionary<int, LinkedList<Message>> groupMessages = new();
 
     private readonly Dictionary<Command, Action<Response>> handlers = new();
