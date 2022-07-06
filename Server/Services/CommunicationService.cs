@@ -158,7 +158,7 @@ namespace Server.Services
 
         // to who will get invite
         IPEndPoint toIp;
-        if (clients.TryGetValue(contact.Id, out toIp!))
+        if (clients.TryGetValue(from, out toIp!))
         {
           SendData(new Response { Command = Command.GetInvite, Status = Status.OK, Data = contact }, toIp);
         }
