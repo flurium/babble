@@ -21,7 +21,7 @@ namespace Client.Services
   {
     private const string remoteIp = "127.0.0.1";
     private const int remotePort = 5001;
-    private State state;
+    private CommunicationState state;
 
     // key = contact id
     private readonly Dictionary<int, LinkedList<Message>> contactMessages = new();
@@ -74,7 +74,7 @@ namespace Client.Services
 
     public Prop User { get; private set; }
 
-    public void SetState(State state)
+    public void SetState(CommunicationState state)
     {
       this.state = state;
       state.SetCommunicationService(this);
