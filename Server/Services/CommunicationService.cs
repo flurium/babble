@@ -106,7 +106,7 @@ namespace Server.Services
         int from = req.Data.From;
         int to = req.Data.To;
         db.RemoveContact(from, to);
-        SendData(new Response { Command = Command.RemoveContact, Status = Status.OK, Data = "Contact is removed" }, ip);
+        SendData(new Response { Command = Command.RemoveContact, Status = Status.OK, Data = new { Id = to } }, ip);
       }
       catch (Exception ex)
       {
@@ -122,7 +122,7 @@ namespace Server.Services
         int to = req.Data.To;
         string newName = req.Data.NewName;
         db.RenameContact(from, to, newName);
-        SendData(new Response { Command = Command.RenameContact, Status = Status.OK, Data = "Contact renamed" }, ip);
+        SendData(new Response { Command = Command.RenameContact, Status = Status.OK, Data = new Prop { Id = to, Name = newName } }, ip);
       }
       catch (Exception ex)
       {
@@ -137,7 +137,7 @@ namespace Server.Services
         int id = req.Data.Id;
         string name = req.Data.Name;
         await db.RenameGroupAsync(id, name);
-        SendData(new Response { Command = Command.RenameGroup, Status = Status.OK, Data = "Group renamed" }, ip);
+        SendData(new Response { Command = Command.RenameGroup, Status = Status.OK, Data = new Prop { Id = id, Name = name } }, ip);
       }
       catch (Exception ex)
       {
