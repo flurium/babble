@@ -106,7 +106,7 @@ namespace Server.Services
         int from = req.Data.From;
         int to = req.Data.To;
         db.RemoveContact(from, to);
-        SendData(new Response { Command = Command.RemoveContact, Status = Status.OK, Data = "Contact is removed" }, ip);
+        SendData(new Response { Command = Command.RemoveContact, Status = Status.OK, Data = new { Id = to } }, ip);
       }
       catch (Exception ex)
       {
