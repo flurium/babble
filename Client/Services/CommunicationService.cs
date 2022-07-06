@@ -46,6 +46,9 @@ namespace Client.Services
       handlers.Add(Command.GetInvite, GetInviteHandle);
       handlers.Add(Command.GetContact, GetContactHandle);
       handlers.Add(Command.GetMessageFromContact, GetMessageFromContactHandle);
+      handlers.Add(Command.GetMessageFromGroup, GetMessageFromGroupHandle);
+      handlers.Add(Command.CreateGroup, CreateGroupHandle);
+      handlers.Add(Command.EnterGroup, EnterGroupHandle);
     }
 
     // function from interface to confirm sign
@@ -66,11 +69,20 @@ namespace Client.Services
     {
       Request req = new() { Command = Command.AcceptInvite, Data = new { Id = id } };
       SendData(req);
+
+      foreach (var invite in Invites)
+      {
+        if (invite.Id == id)
+        {
+          Invites.Remove(invite);
+          return;
+        }
+      }
     }
 
-    public void AddGroup(string name)
+    public void CreateGroup(string groupName)
     {
-      Request req = new() { Command = Command.AddGroup, Data = new { Name = name, User = User.Id } };
+      Request req = new() { Command = Command.CreateGroup, Data = new { Group = groupName, User = User.Id } };
       SendData(req);
     }
 
@@ -92,6 +104,12 @@ namespace Client.Services
     public void LeaveGroup(int groupId)
     {
       Request req = new() { Command = Command.LeaveGroup, Data = new { Group = groupId, User = User.Id } };
+      SendData(req);
+    }
+
+    public void EnterGroup(string groupName)
+    {
+      Request req = new() { Command = Command.EnterGroup, Data = new { Group = groupName, User = User.Id } };
       SendData(req);
     }
 
@@ -205,7 +223,66 @@ namespace Client.Services
     }
 
     private void GetContactHandle(Response res)
-    { }
+    {
+      if (res.Status == Status.OK)
+      {
+        Prop contact = new()
+        {
+          Id = res.Data.Id,
+          Name = res.Data.Name
+        };
+
+        // add contact to ui
+        contactMessages.Add(contact, new());
+        Application.Current.Dispatcher.Invoke(() => Contacts.Add(contact));
+      }
+      else
+      {
+        // show error
+      }
+    }
+
+    private void CreateGroupHandle(Response res)
+    {
+      if (res.Status == Status.OK)
+      {
+        Prop group = new()
+        {
+          Id = res.Data.Id,
+          Name = res.Data.Name
+        };
+
+        // add contact to ui
+        groupMessages.Add(group, new());
+        Application.Current.Dispatcher.Invoke(() => Groups.Add(group));
+      }
+      else
+      {
+        // show error
+      }
+    }
+
+    private void EnterGroupHandle(Response res)
+    {
+      if (res.Status == Status.OK)
+      {
+        Prop group = new()
+        {
+          Id = res.Data.Id,
+          Name = res.Data.Name
+        };
+
+        // add contact to ui
+        groupMessages.Add(group, new());
+        Application.Current.Dispatcher.Invoke(() => Groups.Add(group));
+      }
+      else
+      {
+        string message = (string)res.Data;
+        Application.Current.Dispatcher.Invoke(() => MessageBox.Show(message));
+        // show error
+      }
+    }
 
     private void GetInviteHandle(Response res)
     {
@@ -236,6 +313,26 @@ namespace Client.Services
         if (contactMessage.Key.Id == id)
         {
           contactMessage.Value.AddLast(message);
+          if (currentProp.Id == id)
+          {
+            Application.Current.Dispatcher.Invoke(() => CurrentMessages.Add(message));
+          }
+          return;
+        }
+      }
+    }
+
+    private void GetMessageFromGroupHandle(Response res)
+    {
+      int id = res.Data.Id;
+      string messageStr = res.Data.Message;
+      Message message = new() { String = messageStr, IsIncoming = true };
+
+      foreach (var groupMessage in groupMessages)
+      {
+        if (groupMessage.Key.Id == id)
+        {
+          groupMessage.Value.AddLast(message);
           if (currentProp.Id == id)
           {
             Application.Current.Dispatcher.Invoke(() => CurrentMessages.Add(message));

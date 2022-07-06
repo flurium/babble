@@ -16,7 +16,7 @@ namespace Server.Services
 
     Task RemoveContactAsync(int id);
 
-    Task<Prop> SendInviteAsync(int uidFrom, string unameTo);
+    Task<Contact> SendInviteAsync(int uidFrom, string unameTo);
 
     Task RenameContact(int uidFrom, int uidTo, string newName);
 
@@ -97,7 +97,7 @@ namespace Server.Services
       await db.SaveChangesAsync();
     }
 
-    public async Task<Prop> SendInviteAsync(int uidFrom, string unameTo)
+    public async Task<Contact> SendInviteAsync(int uidFrom, string unameTo)
     {
       User? userFrom = db.Users.Find(uidFrom);
       if (userFrom == null) throw new Exception("User From Not Found"); // user, who send invite, doesn't exist
@@ -111,7 +111,7 @@ namespace Server.Services
       var contact = db.Contacts.Add(new Contact { UserFrom = userFrom, UserTo = userTo, isAccepted = false });
 
       await db.SaveChangesAsync();
-      return new Prop { Id = contact.Entity.Id, Name = contact.Entity.UserFrom.Name };
+      return contact.Entity;
     }
 
     private async Task AcceptInviteAsync(User userFrom, User userTo)

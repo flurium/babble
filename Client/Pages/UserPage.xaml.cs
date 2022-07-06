@@ -40,11 +40,20 @@ namespace Client
       }
     }
 
+    private void ClearInputs()
+    {
+      ChatName.Text = "";
+      InviteContact.Text = "";
+      GroupInput.Text = "";
+      MessageWrite.Text = "";
+    }
+
     private void Exit_Click(object sender, RoutedEventArgs e)
     {
       NavigationService.GoBack();
       NavigationService.RemoveBackEntry();
       cs.Disconnect();
+      ClearInputs();
     }
 
     private void GoToContacts_Click(object sender, RoutedEventArgs e)
@@ -129,15 +138,17 @@ namespace Client
       if (inviteContact != "")
       {
         cs.SendInvite(inviteContact);
+        InviteContact.Text = "";
       }
     }
 
     private void EnterGroupBtn_Click(object sender, RoutedEventArgs e)
     {
-      string group = EnterGroup.Text.Trim();
+      string group = GroupInput.Text.Trim();
       if (group != "")
       {
-        //cs.EnterGroup(group);
+        cs.EnterGroup(group);
+        GroupInput.Text = "";
       }
     }
 
@@ -146,6 +157,15 @@ namespace Client
       int id = (int)((Button)sender).Tag;
 
       cs.AcceptInvite(id);
+    }
+
+    private void CreateGroupBtn_Click(object sender, RoutedEventArgs e)
+    {
+      string group = GroupInput.Text.Trim();
+      if (group != "")
+      {
+        cs.CreateGroup(group);
+      }
     }
   }
 }

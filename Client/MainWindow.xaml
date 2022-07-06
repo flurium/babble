@@ -6,7 +6,11 @@
         mc:Ignorable="d"
         Title="Babble" Foreground="#181c27"
         MinWidth="600" MinHeight="400"
+        Width="700"
         Closing="Window_Closing">
+  <Window.Icon>
+    <DrawingImage />
+  </Window.Icon>
   <Grid>
     <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden" />
   </Grid>

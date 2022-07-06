@@ -21,12 +21,12 @@ namespace Server.Services
 
     public Task<Contact> AcceptInviteAsync(int id) => contactService.AcceptInviteAsync(id);
 
-    public Task AddGroupAsync(int uid, string groupName) => groupService.AddGroupAsync(uid, groupName);
+    public Task<Prop> CreateGroupAsync(int uid, string groupName) => groupService.CreateGroupAsync(uid, groupName);
 
     public User AddUser(string name, string password) => userService.AddUser(name, password);
 
     // work with groups
-    public Task<bool> AddUserToGroupAsync(int uid, string groupName) => groupService.AddUserToGroupAsync(uid, groupName);
+    public Task<Prop> AddUserToGroupAsync(int uid, string groupName) => groupService.AddUserToGroupAsync(uid, groupName);
 
     public Contact GetContact(int uidFromm, int uidTo) => contactService.GetContact(uidFromm, uidTo);
 
@@ -54,6 +54,6 @@ namespace Server.Services
 
     public Task RenameGroupAsync(int id, string newName) => groupService.RenameGroupAsync(id, newName);
 
-    public Task<Prop> SendInviteAsync(int uidFrom, string unameTo) => contactService.SendInviteAsync(uidFrom, unameTo);
+    public Task<Contact> SendInviteAsync(int uidFrom, string unameTo) => contactService.SendInviteAsync(uidFrom, unameTo);
   }
 }

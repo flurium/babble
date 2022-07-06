@@ -45,19 +45,19 @@ namespace Server.Services
       }
     }
 
-    public async void AddGroupHandle(Request req, IPEndPoint ip)
+    public async void CreateGroupHandle(Request req, IPEndPoint ip)
     {
       try
       {
-        int uid = req.Data.Id;
-        string name = req.Data.Name;
-        await db.AddGroupAsync(uid, name);
+        int uid = req.Data.User;
+        string name = req.Data.Group;
+        Prop group = await db.CreateGroupAsync(uid, name);
 
-        SendData(new Response { Command = Command.AddGroup, Status = Status.OK, Data = "Group added" }, ip);
+        SendData(new Response { Command = Command.CreateGroup, Status = Status.OK, Data = group }, ip);
       }
       catch (Exception ex)
       {
-        SendData(new Response { Command = Command.AddGroup, Status = Status.Bad, Data = ex.Message }, ip);
+        SendData(new Response { Command = Command.CreateGroup, Status = Status.Bad, Data = ex.Message }, ip);
       }
     }
 
@@ -65,11 +65,11 @@ namespace Server.Services
     {
       try
       {
-        int uid = req.Data.Id;
-        string name = req.Data.Name;
-        await db.AddUserToGroupAsync(uid, name);
+        int uid = req.Data.User;
+        string groupName = req.Data.Group;
+        Prop group = await db.AddUserToGroupAsync(uid, groupName);
 
-        SendData(new Response { Command = Command.EnterGroup, Status = Status.OK, Data = "User added" }, ip);
+        SendData(new Response { Command = Command.EnterGroup, Status = Status.OK, Data = group }, ip);
       }
       catch (Exception ex)
       {
@@ -151,16 +151,16 @@ namespace Server.Services
       {
         int from = req.Data.From;
         string to = req.Data.To;
-        Prop contact = await db.SendInviteAsync(from, to);
+        Contact contact = await db.SendInviteAsync(from, to);
 
         // to who sended request
         SendData(new Response { Command = Command.SendInvite, Status = Status.OK, Data = "Invite is sent successfully" }, ip);
 
         // to who will get invite
         IPEndPoint toIp;
-        if (clients.TryGetValue(from, out toIp!))
+        if (clients.TryGetValue(contact.UserToId, out toIp!))
         {
-          SendData(new Response { Command = Command.GetInvite, Status = Status.OK, Data = contact }, toIp);
+          SendData(new Response { Command = Command.GetInvite, Status = Status.OK, Data = new Prop { Id = contact.Id, Name = contact.UserFrom.Name } }, toIp);
         }
       }
       catch (Exception ex)
@@ -198,14 +198,15 @@ namespace Server.Services
     {
       try
       {
-        int group = req.Data.Id;
+        int from = req.Data.From;
+        int group = req.Data.To;
         string message = req.Data.Message;
 
         IPEndPoint toIp;
         IEnumerable<int> ids = db.GetGroupMembersIds(group);
         foreach (int id in ids)
         {
-          if (clients.TryGetValue(id, out toIp!))
+          if (id != from && clients.TryGetValue(id, out toIp!))
           {
             SendData(new Response { Command = Command.GetMessageFromGroup, Status = Status.OK, Data = new { Id = group, Message = message } }, toIp);
           }
@@ -373,7 +374,7 @@ namespace Server.Services
       handlers.Add(Command.AcceptInvite, AcceptInviteHandle);
       handlers.Add(Command.RenameContact, RenameContactHandle);
       handlers.Add(Command.RemoveContact, RemoveContactHandle);
-      handlers.Add(Command.AddGroup, AddGroupHandle);
+      handlers.Add(Command.CreateGroup, CreateGroupHandle);
       handlers.Add(Command.LeaveGroup, LeaveGroupHandle);
       handlers.Add(Command.EnterGroup, EnterGroupHandle);
       handlers.Add(Command.Disconnect, DisconnectHandle);
