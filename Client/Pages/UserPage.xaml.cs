@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Navigation;
+using static Client.Services.CommunicationService;
 
 namespace Client
 {
@@ -34,7 +35,10 @@ namespace Client
       if (ContactsList.SelectedIndex != -1)
       {
         Prop contact = (Prop)ContactsList.SelectedItem;
-        cs.SetCurrentContact(contact);
+
+        cs.SetState(new ContactState());
+        cs.SetCurrentProp(contact);
+
         MessageWrite.Focus();
         ChatName.Text = contact.Name;
       }
@@ -75,7 +79,10 @@ namespace Client
       if (GroupsList.SelectedIndex != -1)
       {
         Prop group = (Prop)GroupsList.SelectedItem;
-        cs.SetCurrentGroup(group);
+
+        cs.SetState(new GroupState());
+        cs.SetCurrentProp(group);
+
         MessageWrite.Focus();
         ChatName.Text = group.Name;
       }
@@ -114,17 +121,7 @@ namespace Client
 
         // confirm rename
         string newName = ChatName.Text.Trim();
-        if (newName != "")
-        {
-          if (ListSection.SelectedIndex == 0 && ContactsList.SelectedIndex != -1)
-          {
-            cs.RenameContact(newName);
-          }
-          else if (ListSection.SelectedIndex == 1 && GroupsList.SelectedIndex != -1)
-          {
-            cs.RenameGroup(newName);
-          }
-        }
+        if (newName != "") cs.Rename(newName);
       }
       else
       {
@@ -140,18 +137,9 @@ namespace Client
       string message = MessageWrite.Text.Trim();
       if (message != "")
       {
-        if (ListSection.SelectedIndex == 0 && ContactsList.SelectedIndex != -1)
-        {
-          cs.SendMessageToContact(message);
-          MessageWrite.Text = "";
-          MessageWrite.Focus();
-        }
-        else if (ListSection.SelectedIndex == 1 && GroupsList.SelectedIndex != -1)
-        {
-          cs.SendMessageToGroup(message);
-          MessageWrite.Text = "";
-          MessageWrite.Focus();
-        }
+        cs.SendMessage(message);
+        MessageWrite.Text = "";
+        MessageWrite.Focus();
       }
     }
 

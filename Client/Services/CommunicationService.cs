@@ -17,14 +17,16 @@ namespace Client.Services
     public string String { get; set; }
   }
 
-  public class CommunicationService
+  public partial class CommunicationService
   {
     private const string remoteIp = "127.0.0.1";
     private const int remotePort = 5001;
+    private State state;
 
-    // key = id
+    // key = contact id
     private readonly Dictionary<int, LinkedList<Message>> contactMessages = new();
 
+    // key = group id
     private readonly Dictionary<int, LinkedList<Message>> groupMessages = new();
 
     private readonly Dictionary<Command, Action<Response>> handlers = new();
@@ -72,6 +74,12 @@ namespace Client.Services
 
     public Prop User { get; private set; }
 
+    public void SetState(State state)
+    {
+      this.state = state;
+      state.SetCommunicationService(this);
+    }
+
     public void AcceptInvite(int id)
     {
       Request req = new() { Command = Command.AcceptInvite, Data = new { Id = id } };
@@ -108,11 +116,7 @@ namespace Client.Services
       CloseConnection();
     }
 
-    public void LeaveGroup(int groupId)
-    {
-      Request req = new() { Command = Command.LeaveGroup, Data = new { Group = groupId, User = User.Id } };
-      SendData(req);
-    }
+    public void Leave(int id) => state.Leave(id);
 
     public void EnterGroup(string groupName)
     {
@@ -120,23 +124,7 @@ namespace Client.Services
       SendData(req);
     }
 
-    public void RemoveContact(int to)
-    {
-      Request req = new() { Command = Command.RemoveContact, Data = { To = to, From = User.Id } };
-      SendData(req);
-    }
-
-    public void RenameContact(string newName)
-    {
-      Request req = new() { Command = Command.RenameContact, Data = new { To = currentProp.Id, From = User.Id, NewName = newName } };
-      SendData(req);
-    }
-
-    public void RenameGroup(string newName)
-    {
-      Request req = new() { Command = Command.RenameGroup, Data = new { Id = currentProp.Id, NewName = newName } };
-      SendData(req);
-    }
+    public void Rename(string newName) => state.Rename(newName);
 
     public void SendInvite(string name)
     {
@@ -144,46 +132,12 @@ namespace Client.Services
       SendData(req);
     }
 
-    public void SendMessageToContact(string messageStr)
+    public void SendMessage(string messageStr) => state.SendMessage(messageStr);
+
+    public void SetCurrentProp(Prop prop)
     {
-      Message message = new() { String = messageStr, IsIncoming = false };
-      contactMessages[currentProp.Id].AddLast(message);
-      CurrentMessages.Add(message);
-
-      Request req = new() { Command = Command.SendMessageToContact, Data = new { To = currentProp.Id, From = User.Id, Message = message.String } };
-      SendData(req);
-    }
-
-    public void SendMessageToGroup(string messageStr)
-    {
-      Message message = new() { String = messageStr, IsIncoming = false };
-      groupMessages[currentProp.Id].AddLast(message);
-      CurrentMessages.Add(message);
-
-      Request req = new() { Command = Command.SendMessageToGroup, Data = new { To = currentProp.Id, From = User.Id, Message = message.String } };
-      SendData(req);
-    }
-
-    public void SetCurrentContact(Prop contact)
-    {
-      currentProp = contact;
-      // refresh CurrentMessages
-      CurrentMessages.Clear();
-      foreach (Message message in contactMessages[currentProp.Id])
-      {
-        CurrentMessages.Add(message);
-      }
-    }
-
-    public void SetCurrentGroup(Prop group)
-    {
-      currentProp = group;
-      // refresh CurrentMessages
-      CurrentMessages.Clear();
-      foreach (Message message in groupMessages[currentProp.Id])
-      {
-        CurrentMessages.Add(message);
-      }
+      currentProp = prop;
+      state.RefreshMessages();
     }
 
     public void SignIn(string name, string password)
