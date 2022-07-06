@@ -92,7 +92,7 @@
               </ListBox.ItemTemplate>
             </ListBox>
             <TextBox x:Name="InviteContact" Style="{StaticResource Input}" Grid.Row="1" Grid.Column="0"></TextBox>
-            <Button x:Name="SendInviteBtn" Click="SendInviteBtn_Click" Grid.Column="1" Grid.Row="1">Invite</Button>
+            <Button x:Name="SendInviteBtn" Click="SendInviteBtn_Click" FontSize="16" Grid.Column="1" Grid.Row="1">Invite</Button>
           </Grid>
         </TabItem>
 
@@ -100,22 +100,24 @@
           <Grid>
             <Grid.ColumnDefinitions>
               <ColumnDefinition />
-              <ColumnDefinition Width="50" />
+              <ColumnDefinition Width="45" />
+              <ColumnDefinition Width="35" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
               <RowDefinition />
               <RowDefinition Height="40" />
             </Grid.RowDefinitions>
 
-            <ListBox x:Name="GroupsList" ItemsSource="{Binding Groups}" SelectionChanged="GroupsList_SelectionChanged" Grid.Row="0" Grid.ColumnSpan="2" Margin="0,-3,-2,0">
+            <ListBox x:Name="GroupsList" ItemsSource="{Binding Groups}" SelectionChanged="GroupsList_SelectionChanged" Grid.Row="0" Grid.ColumnSpan="3" Margin="0,-3,-2,0">
               <ListBox.ItemTemplate>
                 <DataTemplate>
                   <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="15,0,15,0" />
                 </DataTemplate>
               </ListBox.ItemTemplate>
             </ListBox>
-            <TextBox x:Name="EnterGroup" Style="{StaticResource Input}" Grid.Row="1" Grid.Column="0"></TextBox>
-            <Button x:Name="EnterGroupBtn" Click="EnterGroupBtn_Click"  Grid.Column="1" Grid.Row="1">Enter</Button>
+            <TextBox x:Name="GroupInput" Style="{StaticResource Input}" Grid.Row="1" Grid.Column="0"></TextBox>
+            <Button Click="CreateGroupBtn_Click"  FontSize="12" Grid.Column="1" Grid.Row="1">Create</Button>
+            <Button x:Name="EnterGroupBtn" Click="EnterGroupBtn_Click"  FontSize="12" Grid.Column="2" Grid.Row="1">Enter</Button>
           </Grid>
         </TabItem>
 

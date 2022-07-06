@@ -8,9 +8,9 @@ namespace Server.Services
 
   public interface IGroupService
   {
-    Task AddGroupAsync(int uid, string groupName);
+    Task<Prop> CreateGroupAsync(int uid, string groupName);
 
-    Task<bool> AddUserToGroupAsync(int uid, string groupName);
+    Task<Prop> AddUserToGroupAsync(int uid, string groupName);
 
     IEnumerable<Prop> GetUserGroups(int uid);
 
@@ -27,33 +27,33 @@ namespace Server.Services
 
     public GroupService(BabbleContext db) => this.db = db;
 
-    public async Task AddGroupAsync(int uid, string groupName)
+    public async Task<Prop> CreateGroupAsync(int uid, string groupName)
     {
-      Group group = new Group { Name = groupName };
+      Group group = new() { Name = groupName };
       User? user = db.Users.Find(uid);
 
       if (user != null)
       {
-        db.Groups.Add(group);
+        group = db.Groups.Add(group).Entity;
         db.UserGroups.Add(new UserGroup { Group = group, User = user });
         await db.SaveChangesAsync();
 
-        //db.UserGroups.Add(new UserGroup { Group = group, UserId = uid });
+        return new Prop { Id = group.Id, Name = group.Name };
       }
+      throw new Exception("User not found!");
     }
 
-    public async Task<bool> AddUserToGroupAsync(int uid, string groupName)
+    public async Task<Prop> AddUserToGroupAsync(int uid, string groupName)
     {
       Group? group = db.Groups.FirstOrDefault(g => g.Name == groupName);
       User? user = db.Users.Find(uid);
 
-      if (group != null && user != null)
-      {
-        db.UserGroups.Add(new UserGroup { User = user, Group = group });
-        await db.SaveChangesAsync();
-        return true;
-      }
-      return false;
+      if (group == null) throw new Exception("Group is not found!");
+      if (user == null) throw new Exception("User is not found!");
+
+      db.UserGroups.Add(new UserGroup { User = user, Group = group });
+      await db.SaveChangesAsync();
+      return new Prop { Id = group.Id, Name = group.Name };
     }
 
     // return example [ {Id = 1, Name = "aboba"}, {Id = 4, Name = "adasd"} ]

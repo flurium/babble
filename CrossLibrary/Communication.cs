@@ -15,7 +15,7 @@
     RenameContact,
     RemoveContact,
     RenameGroup,
-    AddGroup,
+    CreateGroup,
     LeaveGroup,
     EnterGroup,
     Disconnect
