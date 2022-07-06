@@ -106,10 +106,33 @@ namespace Client
     private void RenameBtn_Click(object sender, RoutedEventArgs e)
     {
       ChatName.IsReadOnly = !ChatName.IsReadOnly;
-      RenameBtn.Content = ChatName.IsReadOnly ? "Rename" : "Confirm";
-      ChatName.Focus();
-      ChatName.CaretIndex = ChatName.Text.Length;
-      ChatName.FontSize = ChatName.FontSize == 14 ? 12 : 14;
+
+      if (ChatName.IsReadOnly)
+      {
+        RenameBtn.Content = "Rename";
+        ChatName.FontSize = 12;
+
+        // confirm rename
+        string newName = ChatName.Text.Trim();
+        if (newName != "")
+        {
+          if (ListSection.SelectedIndex == 0 && ContactsList.SelectedIndex != -1)
+          {
+            cs.RenameContact(newName);
+          }
+          else if (ListSection.SelectedIndex == 1 && GroupsList.SelectedIndex != -1)
+          {
+            cs.RenameGroup(newName);
+          }
+        }
+      }
+      else
+      {
+        RenameBtn.Content = "Confirm";
+        ChatName.FontSize = 14;
+        ChatName.Focus();
+        ChatName.CaretIndex = ChatName.Text.Length;
+      }
     }
 
     private void SendMessage()

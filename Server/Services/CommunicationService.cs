@@ -135,7 +135,7 @@ namespace Server.Services
       try
       {
         int id = req.Data.Id;
-        string name = req.Data.Name;
+        string name = req.Data.NewName;
         await db.RenameGroupAsync(id, name);
         SendData(new Response { Command = Command.RenameGroup, Status = Status.OK, Data = new Prop { Id = id, Name = name } }, ip);
       }
