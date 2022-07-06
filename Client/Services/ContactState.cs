@@ -4,7 +4,7 @@ namespace Client.Services
 {
   public partial class CommunicationService
   {
-    public class ContactState : State
+    public class ContactState : CommunicationState
     {
       public override void Leave(int id)
       {

@@ -8,7 +8,7 @@ namespace Client.Services
 {
   public partial class CommunicationService
   {
-    public abstract class State
+    public abstract class CommunicationState
     {
       protected CommunicationService cs;
 
