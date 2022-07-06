@@ -99,13 +99,13 @@ namespace Server.Services
       clients.Remove(id);
     }
 
-    public void RemoveContactHandle(Request req, IPEndPoint ip)
+    public async void RemoveContactHandle(Request req, IPEndPoint ip)
     {
       try
       {
         int from = req.Data.From;
         int to = req.Data.To;
-        db.RemoveContact(from, to);
+        await db.RemoveContact(from, to);
         SendData(new Response { Command = Command.RemoveContact, Status = Status.OK, Data = "Contact is removed" }, ip);
       }
       catch (Exception ex)
