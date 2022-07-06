@@ -358,6 +358,8 @@ namespace Server.Services
 
         // send to one
         listeningSocket.SendTo(data, ip);
+
+        Console.WriteLine(responseStr);
       }
     }
 
