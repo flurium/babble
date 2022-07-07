@@ -306,6 +306,7 @@ namespace Server.Services
     {
       if (listeningSocket != null)
       {
+        Console.ForegroundColor = ConsoleColor.Cyan;
         IPAddress ip;
         if (IPAddress.TryParse(localIp, out ip!))
         {
@@ -359,7 +360,9 @@ namespace Server.Services
         // send to one
         listeningSocket.SendTo(data, ip);
 
+        Console.ForegroundColor = ConsoleColor.Yellow;
         Console.WriteLine(responseStr);
+        Console.ForegroundColor = ConsoleColor.Cyan;
       }
     }
 
