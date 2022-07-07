@@ -496,15 +496,16 @@ namespace Client.Services
 
     private void SendInviteHandle(Response res)
     {
-      /*
-       Response sing = new Response();
-       sing.Command = Command.SignIn;
-       sing.Data = new
-       {
-           Name = name,
-           Password = password
-       };
-      */
+        if (res.Status == Status.OK)
+        {
+           
+        }
+        else
+        {
+            string message = res.Data;
+            MessageBox.Show(message);
+
+        }
     }
 
     private void SignInHandle(Response res)
