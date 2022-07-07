@@ -182,7 +182,7 @@
           </ListBox.ItemTemplate>
         </ListBox>
 
-        <TextBox KeyDown="MessageSend_KeyDown" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" x:Name="MessageWrite" Style="{StaticResource Input}"></TextBox>
+        <TextBox KeyDown="MessageSend_KeyDown" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" x:Name="MessageWrite" IsEnabled="False" Style="{StaticResource Input}"></TextBox>
         <Button Grid.Column="2" Grid.Row="2" x:Name="MessageSend" Click="MessageSend_Click">Send</Button>
       </Grid>
     </Border>

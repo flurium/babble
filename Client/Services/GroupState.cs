@@ -25,6 +25,15 @@ namespace Client.Services
       {
         Request req = new() { Command = Command.RenameGroup, Data = new { Id = cs.currentProp.Id, NewName = newName } };
         cs.SendData(req);
+
+        for (int i = 0; i < cs.Groups.Count; i++)
+        {
+          if (cs.Groups[i].Id == cs.currentProp.Id)
+          {
+            cs.Groups[i] = cs.currentProp;
+            break;
+          }
+        }
       }
 
       public override void SendMessage(string messageStr)

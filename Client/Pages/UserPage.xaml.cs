@@ -41,6 +41,7 @@ namespace Client
 
         MessageWrite.Focus();
         ChatName.Text = contact.Name;
+        MessageWrite.IsEnabled = true;
       }
     }
 
@@ -85,6 +86,7 @@ namespace Client
 
         MessageWrite.Focus();
         ChatName.Text = group.Name;
+        MessageWrite.IsEnabled = true;
       }
     }
 

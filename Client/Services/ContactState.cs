@@ -25,6 +25,16 @@ namespace Client.Services
       {
         Request req = new() { Command = Command.RenameContact, Data = new { To = cs.currentProp.Id, From = cs.User.Id, NewName = newName } };
         cs.SendData(req);
+
+        for (int i = 0; i < cs.Contacts.Count; i++)
+        {
+          if (cs.Contacts[i].Id == cs.currentProp.Id)
+          {
+            cs.currentProp = new Prop { Id = cs.currentProp.Id, Name = newName };
+            cs.Contacts[i] = cs.currentProp;
+            break;
+          }
+        }
       }
 
       public override void SendMessage(string messageStr)
