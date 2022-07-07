@@ -154,7 +154,7 @@ namespace Server.Services
         Contact contact = await db.SendInviteAsync(from, to);
 
         // to who sended request
-        SendData(new Response { Command = Command.SendInvite, Status = Status.OK, Data = "Invite is sent successfully" }, ip);
+        SendData(new Response { Command = Command.SendInvite, Status = Status.OK, Data = "Invite was send successfully" }, ip);
 
         // to who will get invite
         IPEndPoint toIp;
@@ -306,6 +306,7 @@ namespace Server.Services
     {
       if (listeningSocket != null)
       {
+        Console.ForegroundColor = ConsoleColor.Cyan;
         IPAddress ip;
         if (IPAddress.TryParse(localIp, out ip!))
         {
@@ -359,7 +360,9 @@ namespace Server.Services
         // send to one
         listeningSocket.SendTo(data, ip);
 
+        Console.ForegroundColor = ConsoleColor.Yellow;
         Console.WriteLine(responseStr);
+        Console.ForegroundColor = ConsoleColor.Cyan;
       }
     }
 
