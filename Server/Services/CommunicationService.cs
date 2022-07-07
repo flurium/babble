@@ -154,7 +154,7 @@ namespace Server.Services
         Contact contact = await db.SendInviteAsync(from, to);
 
         // to who sended request
-        SendData(new Response { Command = Command.SendInvite, Status = Status.OK, Data = "Invite is sent successfully" }, ip);
+        SendData(new Response { Command = Command.SendInvite, Status = Status.OK, Data = "Invite was send successfully" }, ip);
 
         // to who will get invite
         IPEndPoint toIp;
