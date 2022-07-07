@@ -496,16 +496,14 @@ namespace Client.Services
 
     private void SendInviteHandle(Response res)
     {
-        if (res.Status == Status.OK)
-        {
-           
-        }
-        else
-        {
-            string message = res.Data;
-            MessageBox.Show(message);
-
-        }
+      if (res.Status == Status.OK)
+      {
+      }
+      else
+      {
+        string message = res.Data;
+        MessageBox.Show(message);
+      }
     }
 
     private void SignInHandle(Response res)
