@@ -44,7 +44,6 @@ namespace Server.Services
       int uid = req.Data.User;
       string name = req.Data.Group;
       Prop group = await db.CreateGroupAsync(uid, name);
-
       SendData(new Response { Command = Command.CreateGroup, Status = Status.OK, Data = group }, ip);
     }
 
@@ -221,6 +220,7 @@ namespace Server.Services
       catch (Exception ex)
       {
         SendData(new Response { Command = req.Command, Status = Status.Bad, Data = ex.Message }, ip);
+        logger.LogRequest(req, ex);
       }
     }
 
