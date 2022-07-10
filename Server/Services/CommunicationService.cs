@@ -16,6 +16,7 @@ namespace Server.Services
     private string localIp = "127.0.0.1";
     private readonly int localPort = 5001;
     private bool run = false;
+    private ILogger logger = new Logger();
 
     public async void AcceptInviteHandle(Request req, IPEndPoint ip)
     {
