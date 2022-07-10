@@ -14,7 +14,7 @@ namespace Client
     public static SignInPage signIn;
     public static SignUpPage signUp;
     public static UserPage userChat;
-    private CommunicationService cs = new CommunicationService();
+    private CommunicationService cs = new();
 
     public MainWindow()
     {

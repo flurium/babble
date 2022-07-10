@@ -1,4 +1,4 @@
-﻿using Server.Data;
+﻿using Server.Data.Models;
 using Server.Models;
 
 namespace Server.Services
