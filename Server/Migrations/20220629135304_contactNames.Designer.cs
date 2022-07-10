@@ -3,13 +3,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Server.Data;
+using Server.Data.Models;
 
 #nullable disable
 
 namespace Server.Migrations
 {
-    [DbContext(typeof(BabbleContext))]
+  [DbContext(typeof(BabbleContext))]
     [Migration("20220629135304_contactNames")]
     partial class contactNames
     {
