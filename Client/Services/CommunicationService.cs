@@ -183,7 +183,6 @@ namespace Client.Services
       }
     }
 
-
     // Treatment
     private void Handle(string resStr)
     {
@@ -296,7 +295,5 @@ namespace Client.Services
         }
       }
     }
-
-   
   }
 }
