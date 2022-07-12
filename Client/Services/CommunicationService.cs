@@ -148,7 +148,7 @@ namespace Client.Services
 
         if (!run) OpenConnection();
 
-        SendData(req, remoteIp, remotePort);
+        SendData(req);
       }
       catch (Exception ex)
       {
@@ -164,7 +164,7 @@ namespace Client.Services
 
         if (!run) OpenConnection();
 
-        SendData(req, remoteIp, remotePort);
+        SendData(req);
       }
       catch (Exception ex)
       {
@@ -257,33 +257,12 @@ namespace Client.Services
       listeningTask.Start();
     }
 
-    // ip and port same all time
-    private void SendData(Request message, string ip, int port)
-    {
-      if (listeningSocket != null)
-      {
-        try
-        {
-          // where to send
-          IPEndPoint remotePoint = new IPEndPoint(IPAddress.Parse(ip), port);
-          string requestStr = JsonConvert.SerializeObject(message);
-          byte[] data = Encoding.Unicode.GetBytes(requestStr);
-          listeningSocket.SendTo(data, remotePoint);
-        }
-        catch (Exception ex)
-        {
-          MessageBox.Show(ex.Message);
-        }
-      }
-    }
-
     private void SendData(Request req)
     {
       if (listeningSocket != null)
       {
         try
         {
-          // TODO: optimize
           IPEndPoint remotePoint = new(IPAddress.Parse(remoteIp), remotePort);
           string requestStr = JsonConvert.SerializeObject(req);
           byte[] data = Encoding.Unicode.GetBytes(requestStr);
