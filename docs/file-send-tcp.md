@@ -5,7 +5,7 @@ graph TD;
     server[Server]
     
     from -. ask for file send<br/>buffer size .-> server
-    server == ClientFrom address<br/>buffer size ==> to
+    server == buffer size ==> to
     server -- ClientTo address ---> from
     
 ```
@@ -17,13 +17,15 @@ sequenceDiagram
     participant Server
     participant ClientTo
 
+    Note over ClientTo: TCP listener already started
+    
     ClientFrom ->> Server: Ask for file send, buffer size
-    alt is ClientTo online 
-        Server ->> ClientTo: buffer size + ClientFrom adress
-        Note left of ClientTo: Start TCP client to listen data
+    alt ClientTo is online 
+        Server ->> ClientTo: buffer size
+        Note left of ClientTo: Set TCP listener buffer
         Server ->> ClientFrom: ClientTo adress 
         ClientFrom ->> ClientTo: file message
-    else
+    else ClientTo is offline
         Server ->> ClientFrom: ClientTo is not online
     end
     
