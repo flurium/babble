@@ -8,15 +8,10 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using Client.Models;
 
 namespace Client.Services
 {
-  public struct Message
-  {
-    public bool IsIncoming { get; set; }
-    public string String { get; set; }
-  }
-
   public partial class CommunicationService
   {
     private const string remoteIp = "127.0.0.1";
