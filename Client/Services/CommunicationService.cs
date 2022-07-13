@@ -1,4 +1,5 @@
-﻿using CrossLibrary;
+﻿using Client.Models;
+using CrossLibrary;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,6 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using Client.Models;
 
 namespace Client.Services
 {
