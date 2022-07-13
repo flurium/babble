@@ -1,4 +1,5 @@
 ﻿using CrossLibrary;
+using System.Collections.Generic;
 
 namespace Client.Services
 {
@@ -35,6 +36,11 @@ namespace Client.Services
             break;
           }
         }
+      }
+
+      public override void SendFileMessage(string messageStr, List<string> filePaths)
+      {
+        throw new System.NotImplementedException();
       }
 
       public override void SendMessage(string messageStr)

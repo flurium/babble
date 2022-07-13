@@ -44,6 +44,7 @@ namespace Client.Services
       }
       finally
       {
+        runTcp = false;
         tcpListener.Stop();
       }
     }
