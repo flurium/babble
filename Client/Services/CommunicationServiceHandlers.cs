@@ -1,4 +1,5 @@
-﻿using CrossLibrary;
+﻿using Client.Models;
+using CrossLibrary;
 using System.Windows;
 
 namespace Client.Services
@@ -133,7 +134,7 @@ namespace Client.Services
     {
       int id = res.Data.Id;
       string messageStr = res.Data.Message;
-      Message message = new() { String = messageStr, IsIncoming = true };
+      Message message = new() { Text = messageStr, IsIncoming = true };
 
       foreach (var contactMessage in contactMessages)
       {
@@ -153,7 +154,7 @@ namespace Client.Services
     {
       int id = res.Data.Id;
       string messageStr = res.Data.Message;
-      Message message = new() { String = messageStr, IsIncoming = true };
+      Message message = new() { Text = messageStr, IsIncoming = true };
 
       foreach (var groupMessage in groupMessages)
       {
