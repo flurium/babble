@@ -15,7 +15,7 @@ namespace CrossLibrary
     // Creates a hash from a password
     public static string Hash(string password, int iterations)
     {
-      using (var rng = new RSACryptoServiceProvider())
+      using (var rng = new RNGCryptoServiceProvider())
       {
         byte[] salt;
         rng.GetBytes(salt = new byte[SaltSize]);
