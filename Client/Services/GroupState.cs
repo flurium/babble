@@ -1,4 +1,6 @@
-﻿using CrossLibrary;
+﻿using Client.Models;
+using CrossLibrary;
+using System.Collections.Generic;
 
 namespace Client.Services
 {
@@ -36,13 +38,18 @@ namespace Client.Services
         }
       }
 
+      public override void SendFileMessage(string messageStr, List<string> filePaths)
+      {
+        throw new System.NotImplementedException();
+      }
+
       public override void SendMessage(string messageStr)
       {
-        Message message = new() { String = messageStr, IsIncoming = false };
+        Message message = new() { Text = messageStr, IsIncoming = false };
         cs.groupMessages[cs.currentProp.Id].AddLast(message);
         cs.CurrentMessages.Add(message);
 
-        Request req = new() { Command = Command.SendMessageToGroup, Data = new { To = cs.currentProp.Id, From = cs.User.Id, Message = message.String } };
+        Request req = new() { Command = Command.SendMessageToGroup, Data = new { To = cs.currentProp.Id, From = cs.User.Id, Message = message.Text } };
         cs.SendData(req);
       }
     }

@@ -176,7 +176,7 @@
           <ListBox.ItemTemplate>
             <DataTemplate>
               <Grid Background="#f4f4f6">
-                <TextBlock Text="{Binding String}" Foreground="Black" Padding="10" TextWrapping="Wrap"></TextBlock>
+                <TextBlock Text="{Binding Text}" Foreground="Black" Padding="10" TextWrapping="Wrap"></TextBlock>
               </Grid>
             </DataTemplate>
           </ListBox.ItemTemplate>

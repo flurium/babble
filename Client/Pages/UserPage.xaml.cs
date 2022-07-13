@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Navigation;
 using static Client.Services.CommunicationService;
+using Client.Models;
 
 namespace Client
 {
@@ -13,12 +14,6 @@ namespace Client
   /// Логика взаимодействия для UserPage.xaml
   /// </summary>
   ///
-  public struct Message
-  {
-    public bool IsIncoming { get; set; }
-    public string String { get; set; }
-  }
-
   public partial class UserPage : Page
   {
     private CommunicationService cs;
