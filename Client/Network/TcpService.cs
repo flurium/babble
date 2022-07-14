@@ -4,7 +4,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Client.Services
+namespace Client.Network
 {
   internal class TcpService
   {
@@ -22,7 +22,7 @@ namespace Client.Services
       this.handle = handle;
     }
 
-    public int TcpBufferSize { get; set; } = 1024;
+    public int BufferSize { get; set; } = 1024;
 
     private void Listen()
     {
@@ -92,7 +92,7 @@ namespace Client.Services
     private string GetMessage()
     {
       int bytes;
-      byte[] buffer = new byte[TcpBufferSize];
+      byte[] buffer = new byte[BufferSize];
       StringBuilder builder = new();
       do
       {

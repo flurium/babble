@@ -1,8 +1,10 @@
-﻿namespace Client.Services
+﻿using Client.Network;
+
+namespace Client.Services
 {
   public partial class CommunicationService
   {
-    private TcpService tcpService;
+    private readonly TcpService tcpService;
 
     private void TcpHandle(string str)
     {
