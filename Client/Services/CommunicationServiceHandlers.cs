@@ -4,6 +4,9 @@ using System.Windows;
 
 namespace Client.Services
 {
+  /// <summary>
+  /// Processing responses from the server
+  /// </summary>
   public partial class CommunicationService
   {
     /// <summary>
