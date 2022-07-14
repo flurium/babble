@@ -1,6 +1,8 @@
 ﻿using Client.Services;
 using CrossLibrary;
+using Microsoft.Win32;
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -16,6 +18,7 @@ namespace Client
   public partial class UserPage : Page
   {
     private CommunicationService cs;
+    private List<string>? selectedFiles;
 
     public UserPage(CommunicationService cs)
     {
@@ -173,6 +176,41 @@ namespace Client
       {
         cs.CreateGroup(group);
       }
+    }
+
+    private void FileBth_Click(object sender, RoutedEventArgs e)
+    {
+      OpenFileDialog openFileDialog = new()
+      {
+        Multiselect = true,
+        Title = "Choose files"
+      };
+
+      if (openFileDialog.ShowDialog() == true)
+      {
+        SelectedFilesText.Text = "";
+        SelectedFilesText.Visibility = Visibility.Visible;
+        UnselectFilesBtn.Visibility = Visibility.Visible;
+
+        selectedFiles = new List<string>(openFileDialog.FileNames);
+        foreach (string file in selectedFiles)
+        {
+          SelectedFilesText.Text += string.Format("{0} ", file.Substring(file.LastIndexOf('\\') + 1));
+        }
+      }
+    }
+
+    private void ShowInFolderBtn_Click(object sender, RoutedEventArgs e)
+    {
+      //(Button)sender;
+    }
+
+    private void UnselectFilesBtn_Click(object sender, RoutedEventArgs e)
+    {
+      selectedFiles = null;
+      SelectedFilesText.Text = "";
+      SelectedFilesText.Visibility = Visibility.Collapsed;
+      UnselectFilesBtn.Visibility = Visibility.Collapsed;
     }
   }
 }
