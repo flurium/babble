@@ -4,10 +4,8 @@
   {
     SignIn,
     SignUp,
-    SendMessageToContact,
-    SendMessageToGroup,
-    GetMessageFromContact,
-    GetMessageFromGroup,
+    SendMessageToContact, SendMessageToGroup,
+    GetMessageFromContact, GetMessageFromGroup,
     SendInvite,
     GetInvite,
     AcceptInvite,
@@ -18,7 +16,9 @@
     CreateGroup,
     LeaveGroup,
     EnterGroup,
-    Disconnect
+    Disconnect,
+    SendFileMessageToContact, SendFileMessageToGroup,
+    GetFileMessageSize, GetClientAddress
   }
 
   public enum Status

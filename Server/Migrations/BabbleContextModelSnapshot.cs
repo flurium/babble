@@ -2,13 +2,13 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Server.Data;
+using Server.Data.Models;
 
 #nullable disable
 
 namespace Server.Migrations
 {
-    [DbContext(typeof(BabbleContext))]
+  [DbContext(typeof(BabbleContext))]
     partial class BabbleContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

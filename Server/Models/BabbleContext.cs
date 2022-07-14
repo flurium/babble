@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Server.Models;
 
-namespace Server.Data
+namespace Server.Data.Models
 {
   public class BabbleContext : DbContext
   {

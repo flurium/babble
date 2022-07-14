@@ -2,7 +2,7 @@
 flowchart LR
   client{{клієнт}}
   hasher{{хешер}}
-  server{{сервер}}
+  server{{администратор}}
   bd{{база данних}}
 
 

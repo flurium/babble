@@ -1,5 +1,5 @@
 ﻿using CrossLibrary;
-using Server.Data;
+using Server.Data.Models;
 using Server.Models;
 
 namespace Server.Services
@@ -100,10 +100,10 @@ namespace Server.Services
     public async Task<Contact> SendInviteAsync(int uidFrom, string unameTo)
     {
       User? userFrom = db.Users.Find(uidFrom);
-      if (userFrom == null) throw new Exception("User From Not Found"); // user, who send invite, doesn't exist
+      if (userFrom == null) throw new Exception("User Not Found"); // user, who send invite, doesn't exist
 
       User? userTo = db.Users.FirstOrDefault(u => u.Name == unameTo);
-      if (userTo == null) throw new Exception("User To Not Found"); // user, who should accept invite, doesn't exist
+      if (userTo == null) throw new Exception("User Not Found"); // user, who should accept invite, doesn't exist
 
       if (db.Contacts.Any(c => c.UserFromId == userFrom.Id && c.UserToId == userTo.Id || c.UserFromId == userTo.Id && c.UserToId == userFrom.Id))
         throw new Exception("Invite Already Exist");

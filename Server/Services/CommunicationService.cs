@@ -16,81 +16,53 @@ namespace Server.Services
     private string localIp = "127.0.0.1";
     private readonly int localPort = 5001;
     private bool run = false;
+    private ILogger logger = new Logger();
 
     public async void AcceptInviteHandle(Request req, IPEndPoint ip)
     {
       // ip = ip of user to
       // req.Data = contact id
-      try
-      {
-        int id = req.Data.Id;
-        Contact contact = await db.AcceptInviteAsync(id);
+      int id = req.Data.Id;
+      Contact contact = await db.AcceptInviteAsync(id);
 
-        // to user to
-        SendData(new Response { Command = Command.GetContact, Status = Status.OK, Data = new Prop { Id = contact.UserFromId, Name = contact.NameAtUserTo } }, ip);
+      // to user to
+      SendData(new Response { Command = Command.GetContact, Status = Status.OK, Data = new Prop { Id = contact.UserFromId, Name = contact.NameAtUserTo } }, ip);
 
-        // to user from
-        if (clients.ContainsKey(contact.UserFromId))
-        {
-          // only if user from online
-          SendData(
-            new Response { Command = Command.GetContact, Status = Status.OK, Data = new Prop { Id = contact.UserToId, Name = contact.NameAtUserFrom } },
-            clients[contact.UserFromId]
-          );
-        }
-      }
-      catch (Exception ex)
+      // to user from
+      if (clients.ContainsKey(contact.UserFromId))
       {
-        SendData(new Response { Command = Command.AcceptInvite, Status = Status.Bad, Data = ex.Message }, ip);
+        // only if user from online
+        SendData(
+          new Response { Command = Command.GetContact, Status = Status.OK, Data = new Prop { Id = contact.UserToId, Name = contact.NameAtUserFrom } },
+          clients[contact.UserFromId]
+        );
       }
     }
 
     public async void CreateGroupHandle(Request req, IPEndPoint ip)
     {
-      try
-      {
-        int uid = req.Data.User;
-        string name = req.Data.Group;
-        Prop group = await db.CreateGroupAsync(uid, name);
-
-        SendData(new Response { Command = Command.CreateGroup, Status = Status.OK, Data = group }, ip);
-      }
-      catch (Exception ex)
-      {
-        SendData(new Response { Command = Command.CreateGroup, Status = Status.Bad, Data = ex.Message }, ip);
-      }
+      int uid = req.Data.User;
+      string name = req.Data.Group;
+      Prop group = await db.CreateGroupAsync(uid, name);
+      SendData(new Response { Command = Command.CreateGroup, Status = Status.OK, Data = group }, ip);
     }
 
     public async void EnterGroupHandle(Request req, IPEndPoint ip)
     {
-      try
-      {
-        int uid = req.Data.User;
-        string groupName = req.Data.Group;
-        Prop group = await db.AddUserToGroupAsync(uid, groupName);
+      int uid = req.Data.User;
+      string groupName = req.Data.Group;
+      Prop group = await db.AddUserToGroupAsync(uid, groupName);
 
-        SendData(new Response { Command = Command.EnterGroup, Status = Status.OK, Data = group }, ip);
-      }
-      catch (Exception ex)
-      {
-        SendData(new Response { Command = Command.EnterGroup, Status = Status.Bad, Data = ex.Message }, ip);
-      }
+      SendData(new Response { Command = Command.EnterGroup, Status = Status.OK, Data = group }, ip);
     }
 
     public async void LeaveGroupHandle(Request req, IPEndPoint ip)
     {
-      try
-      {
-        int uid = req.Data.Id;
-        string name = req.Data.Name;
-        await db.RemoveUserFromGroupAsync(uid, name);
+      int uid = req.Data.Id;
+      string name = req.Data.Name;
+      await db.RemoveUserFromGroupAsync(uid, name);
 
-        SendData(new Response { Command = Command.LeaveGroup, Status = Status.OK, Data = "Group is removed" }, ip);
-      }
-      catch (Exception ex)
-      {
-        SendData(new Response { Command = Command.LeaveGroup, Status = Status.Bad, Data = ex.Message }, ip);
-      }
+      SendData(new Response { Command = Command.LeaveGroup, Status = Status.OK, Data = "Group is removed" }, ip);
     }
 
     public void DisconnectHandle(Request req, IPEndPoint ip)
@@ -101,120 +73,78 @@ namespace Server.Services
 
     public async void RemoveContactHandle(Request req, IPEndPoint ip)
     {
-      try
-      {
-        int from = req.Data.From;
-        int to = req.Data.To;
-        await db.RemoveContact(from, to);
-        SendData(new Response { Command = Command.RemoveContact, Status = Status.OK, Data = "Contact is removed" }, ip);
-      }
-      catch (Exception ex)
-      {
-        SendData(new Response { Command = Command.RemoveContact, Status = Status.Bad, Data = ex.Message }, ip);
-      }
+      int from = req.Data.From;
+      int to = req.Data.To;
+      await db.RemoveContact(from, to);
+      SendData(new Response { Command = Command.RemoveContact, Status = Status.OK, Data = "Contact is removed" }, ip);
     }
 
     public void RenameContactHandle(Request req, IPEndPoint ip)
     {
-      try
-      {
-        int from = req.Data.From;
-        int to = req.Data.To;
-        string newName = req.Data.NewName;
-        db.RenameContact(from, to, newName);
-        SendData(new Response { Command = Command.RenameContact, Status = Status.OK, Data = new Prop { Id = to, Name = newName } }, ip);
-      }
-      catch (Exception ex)
-      {
-        SendData(new Response { Command = Command.RenameContact, Status = Status.Bad, Data = ex.Message }, ip);
-      }
+      int from = req.Data.From;
+      int to = req.Data.To;
+      string newName = req.Data.NewName;
+      db.RenameContact(from, to, newName);
+      SendData(new Response { Command = Command.RenameContact, Status = Status.OK, Data = new Prop { Id = to, Name = newName } }, ip);
     }
 
     public async void RenameGroupHandle(Request req, IPEndPoint ip)
     {
-      try
-      {
-        int id = req.Data.Id;
-        string name = req.Data.NewName;
-        await db.RenameGroupAsync(id, name);
-        SendData(new Response { Command = Command.RenameGroup, Status = Status.OK, Data = new Prop { Id = id, Name = name } }, ip);
-      }
-      catch (Exception ex)
-      {
-        SendData(new Response { Command = Command.RenameContact, Status = Status.Bad, Data = ex.Message }, ip);
-      }
+      int id = req.Data.Id;
+      string name = req.Data.NewName;
+      await db.RenameGroupAsync(id, name);
+      SendData(new Response { Command = Command.RenameGroup, Status = Status.OK, Data = new Prop { Id = id, Name = name } }, ip);
     }
 
     public async void SendInviteHandle(Request req, IPEndPoint ip)
     {
-      try
-      {
-        int from = req.Data.From;
-        string to = req.Data.To;
-        Contact contact = await db.SendInviteAsync(from, to);
+      int from = req.Data.From;
+      string to = req.Data.To;
+      Contact contact = await db.SendInviteAsync(from, to);
 
-        // to who sended request
-        SendData(new Response { Command = Command.SendInvite, Status = Status.OK, Data = "Invite is sent successfully" }, ip);
+      // to who sended request
+      SendData(new Response { Command = Command.SendInvite, Status = Status.OK, Data = "Invite was send successfully" }, ip);
 
-        // to who will get invite
-        IPEndPoint toIp;
-        if (clients.TryGetValue(contact.UserToId, out toIp!))
-        {
-          SendData(new Response { Command = Command.GetInvite, Status = Status.OK, Data = new Prop { Id = contact.Id, Name = contact.UserFrom.Name } }, toIp);
-        }
-      }
-      catch (Exception ex)
+      // to who will get invite
+      IPEndPoint toIp;
+      if (clients.TryGetValue(contact.UserToId, out toIp!))
       {
-        SendData(new Response { Command = Command.SendInvite, Status = Status.Bad, Data = ex.Message }, ip);
+        SendData(new Response { Command = Command.GetInvite, Status = Status.OK, Data = new Prop { Id = contact.Id, Name = contact.UserFrom.Name } }, toIp);
       }
     }
 
     public void SendMessageToContactHandle(Request req, IPEndPoint ip)
     {
-      try
+      // to user who sent
+      //SendData(new Response { Command = Command.SendMessageToContact, Status = Status.OK, Data = "Message sent" }, ip);
+
+      // to user for whom sent
+
+      int from = req.Data.From;
+      int to = req.Data.To;
+      string message = req.Data.Message;
+
+      IPEndPoint toIp;
+      if (clients.TryGetValue(to, out toIp!))
       {
-        // to user who sent
-        //SendData(new Response { Command = Command.SendMessageToContact, Status = Status.OK, Data = "Message sent" }, ip);
-
-        // to user for whom sent
-
-        int from = req.Data.From;
-        int to = req.Data.To;
-        string message = req.Data.Message;
-
-        IPEndPoint toIp;
-        if (clients.TryGetValue(to, out toIp!))
-        {
-          SendData(new Response { Command = Command.GetMessageFromContact, Status = Status.OK, Data = new { Id = from, Message = message } }, toIp);
-        }
-      }
-      catch (Exception ex)
-      {
-        SendData(new Response { Command = Command.SendMessageToContact, Status = Status.Bad, Data = ex.Message }, ip);
+        SendData(new Response { Command = Command.GetMessageFromContact, Status = Status.OK, Data = new { Id = from, Message = message } }, toIp);
       }
     }
 
     public void SendMessageToGroupHandle(Request req, IPEndPoint ip)
     {
-      try
-      {
-        int from = req.Data.From;
-        int group = req.Data.To;
-        string message = req.Data.Message;
+      int from = req.Data.From;
+      int group = req.Data.To;
+      string message = req.Data.Message;
 
-        IPEndPoint toIp;
-        IEnumerable<int> ids = db.GetGroupMembersIds(group);
-        foreach (int id in ids)
-        {
-          if (id != from && clients.TryGetValue(id, out toIp!))
-          {
-            SendData(new Response { Command = Command.GetMessageFromGroup, Status = Status.OK, Data = new { Id = group, Message = message } }, toIp);
-          }
-        }
-      }
-      catch (Exception ex)
+      IPEndPoint toIp;
+      IEnumerable<int> ids = db.GetGroupMembersIds(group);
+      foreach (int id in ids)
       {
-        SendData(new Response { Command = Command.SendMessageToGroup, Status = Status.Bad, Data = ex.Message }, ip);
+        if (id != from && clients.TryGetValue(id, out toIp!))
+        {
+          SendData(new Response { Command = Command.GetMessageFromGroup, Status = Status.OK, Data = new { Id = group, Message = message } }, toIp);
+        }
       }
     }
 
@@ -260,32 +190,23 @@ namespace Server.Services
 
     public void SignUpHandle(Request req, IPEndPoint ip)
     {
-      Response res;
-      try
-      {
-        string name = req.Data.Name;
-        string password = req.Data.Password;
-        User user = db.AddUser(name, password);
-        // add user to connected clients
-        clients.TryAdd(user.Id, ip);
+      string name = req.Data.Name;
+      string password = req.Data.Password;
+      User user = db.AddUser(name, password);
 
-        res = new Response
+      // add user to connected clients
+      clients.TryAdd(user.Id, ip);
+
+      SendData(new Response
+      {
+        Command = Command.SignUp,
+        Status = Status.OK,
+        Data = new Prop
         {
-          Command = Command.SignUp,
-          Status = Status.OK,
-          Data = new Prop
-          {
-            Id = user.Id,
-            Name = user.Name
-          }
-        };
-      }
-      catch (Exception ex)
-      {
-        res = new Response { Command = Command.SignUp, Status = Status.Bad, Data = ex.Message };
-      }
-
-      SendData(res, ip);
+          Id = user.Id,
+          Name = user.Name
+        }
+      }, ip);
     }
 
     private void Handle(string reqStr, IPEndPoint ip)
@@ -299,6 +220,7 @@ namespace Server.Services
       catch (Exception ex)
       {
         SendData(new Response { Command = req.Command, Status = Status.Bad, Data = ex.Message }, ip);
+        logger.LogRequest(req, ex);
       }
     }
 
@@ -306,6 +228,7 @@ namespace Server.Services
     {
       if (listeningSocket != null)
       {
+        Console.ForegroundColor = ConsoleColor.Cyan;
         IPAddress ip;
         if (IPAddress.TryParse(localIp, out ip!))
         {
@@ -336,10 +259,13 @@ namespace Server.Services
           {
             if (socketEx.ErrorCode != 10004)
               Console.WriteLine(socketEx.Message + socketEx.ErrorCode);
+
+            logger.LogException(socketEx);
           }
           catch (Exception ex)
           {
             Console.WriteLine(ex.Message);
+            logger.LogException(ex);
           }
           finally
           {
@@ -359,7 +285,9 @@ namespace Server.Services
         // send to one
         listeningSocket.SendTo(data, ip);
 
+        Console.ForegroundColor = ConsoleColor.Yellow;
         Console.WriteLine(responseStr);
+        Console.ForegroundColor = ConsoleColor.Cyan;
       }
     }
 
