@@ -6,6 +6,11 @@ namespace Client.Services
 {
   public partial class CommunicationService
   {
+    /// <summary>
+    /// Handler for incoming contacts from the server.
+    /// Create new entries in "Dictionary contactMessages" and "ObservableCollection<Prop> Contacts"
+    /// </summary>
+    /// <param name="res"></param>
     private void GetContactHandle(Response res)
     {
       if (res.Status == Status.OK)
@@ -28,6 +33,11 @@ namespace Client.Services
       }
     }
 
+    /// <summary>
+    /// Group сreation handler. Adding a group to
+    /// "Dictionary groupMessages" and "ObservableCollection<Prop> Groups"
+    /// </summary>
+    /// <param name="res"></param>
     private void CreateGroupHandle(Response res)
     {
       if (res.Status == Status.OK)
@@ -44,12 +54,17 @@ namespace Client.Services
       }
       else
       {
+        // show error
         string message = (string)res.Data;
         Application.Current.Dispatcher.Invoke(() => MessageBox.Show(message));
-        // show error
       }
     }
 
+    /// <summary>
+    /// Group exit handler.
+    /// Removing a group from "Dictionary groupMessages" and "ObservableCollection<Prop> Groups"
+    /// </summary>
+    /// <param name="res"></param>
     private void EnterGroupHandle(Response res)
     {
       if (res.Status == Status.OK)
@@ -72,6 +87,12 @@ namespace Client.Services
       }
     }
 
+    /// <summary>
+    /// Deleting a contact handler.
+    /// From the "Dictionary contactMessages" and "ObservableCollection<Prop> Contacts".
+    /// </summary>
+    /// <remarks>Accepts response from the contact id in the Data.Id</remarks>
+    /// <param name="res"></param>
     private void RemoveContactHandle(Response res)
     {
       if (res.Status == Status.OK)
@@ -100,6 +121,11 @@ namespace Client.Services
       }
     }
 
+    /// <summary>
+    /// Accepting an invitation from the server.
+    /// Placement of the invitation in  "ObservableCollection<Prop> Invites"
+    /// </summary>
+    /// <param name="res"></param>
     private void GetInviteHandle(Response res)
     {
       if (res.Status == Status.OK)
@@ -130,6 +156,11 @@ namespace Client.Services
       }
     }
 
+    /// <summary>
+    /// Accepting a message from a contact from the north.
+    /// Inserting a message into "Dictionary contactMessages" and " ObservableCollection<Message> CurrentMessages"
+    /// </summary>
+    /// <param name="res"></param>
     private void GetMessageFromContactHandle(Response res)
     {
       int id = res.Data.Id;
@@ -150,6 +181,11 @@ namespace Client.Services
       }
     }
 
+    /// <summary>
+    /// Accepting a message from a group from the north.
+    /// Inserting a message into "Dictionary groupMessages" and " ObservableCollection<Message> CurrentMessages"
+    /// </summary>
+    /// <param name="res"></param>
     private void GetMessageFromGroupHandle(Response res)
     {
       int id = res.Data.Id;
@@ -170,6 +206,11 @@ namespace Client.Services
       }
     }
 
+    /// <summary>
+    /// Processing a message from the server about renaming a contact.
+    /// Search for a contact in the ObservableCollection<Prop> Contacts and change the Сontacts.Name
+    /// </summary>
+    /// <param name="res"></param>
     private void RenameContactHandle(Response res)
     {
       if (res.Status == Status.OK)
@@ -193,6 +234,11 @@ namespace Client.Services
       }
     }
 
+    /// <summary>
+    /// Processing a message from the server about renaming a group.
+    /// Search for a group in the ObservableCollection<Prop> Groups and change the Groups.Name
+    /// </summary>
+    /// <param name="res"></param>
     private void RenameGroupHandle(Response res)
     {
       if (res.Status == Status.OK)
@@ -216,6 +262,11 @@ namespace Client.Services
       }
     }
 
+    /// <summary>
+    /// Login processing from the server.
+    /// Obtaining data about contacts, groups and invites, entering into the appropriate arrays.
+    /// </summary>
+    /// <param name="res"></param>
     private void SignInHandle(Response res)
     {
       if (res.Status == Status.OK)
@@ -258,6 +309,11 @@ namespace Client.Services
       }
     }
 
+    /// <summary>
+    /// Processing a registration request from the server.
+    /// Creating a new user.
+    /// </summary>
+    /// <param name="res"></param>
     private void SignUpHandle(Response res)
     {
       if (res.Status == Status.OK)
