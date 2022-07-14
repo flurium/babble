@@ -151,6 +151,8 @@ namespace Client.Services
     {
       if (res.Status == Status.OK)
       {
+        string message = res.Data.Message;
+        MessageBox.Show(message);
       }
       else
       {
