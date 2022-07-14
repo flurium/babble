@@ -6,7 +6,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Navigation;
 using static Client.Services.CommunicationService;
-using Client.Models;
 
 namespace Client
 {
