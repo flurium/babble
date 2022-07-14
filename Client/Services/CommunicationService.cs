@@ -40,6 +40,9 @@ namespace Client.Services
         localPort = rnd.Next(3000, 49000);
       } while (localPort == 5001); // 5001 = server port
 
+      // init tcp service
+      tcpService = new(localPort, TcpHandle);
+
       // Init handlers
       handlers.Add(Command.SignIn, SignInHandle);
       handlers.Add(Command.SignUp, SignUpHandle);
@@ -207,8 +210,8 @@ namespace Client.Services
             int bytes = 0;
             byte[] data = new byte[1024];
 
-            // adress fromm where get
-            EndPoint remoteIp = new IPEndPoint(IPAddress.Any, 0);
+            // adress from where get
+            EndPoint remoteIp = new IPEndPoint(IPAddress.Any, remotePort);
 
             do
             {
@@ -244,12 +247,16 @@ namespace Client.Services
 
     private void OpenConnection()
     {
+      // run udp service
       run = true;
       listeningSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
       IPEndPoint localIP = new IPEndPoint(IPAddress.Parse(remoteIp), localPort);
       listeningSocket.Bind(localIP);
       listeningTask = new(Listen);
       listeningTask.Start();
+
+      // run tcp service
+      tcpService.Start();
     }
 
     private void SendData(Request req)

@@ -4,6 +4,10 @@ namespace Client.Services
 {
   public partial class CommunicationService
   {
+    /// <summary>
+    /// Base state abstraction. Inside of CommunicationService class,
+    /// because need access to private fields.
+    /// </summary>
     public abstract class CommunicationState
     {
       protected CommunicationService cs;
