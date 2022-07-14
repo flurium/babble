@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using CrossLibrary;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Client.Services
 {
@@ -16,6 +18,31 @@ namespace Client.Services
       {
         this.cs = cs;
       }
+
+      // base functions
+      /// <summary>
+      /// Base rename function, must be called from children.
+      /// </summary>
+      /// <param name="data">Data in request. Must have NewName property.</param>
+      /// <param name="collection">Collection that must be updated.</param>
+      /// <param name="command"></param>
+      protected void Rename(dynamic data, ref ObservableCollection<Prop> collection, Command command)
+      {
+        Request req = new() { Command = command, Data = data };
+        cs.SendData(req);
+
+        for (int i = 0; i < collection.Count; i++)
+        {
+          if (collection[i].Id == cs.currentProp.Id)
+          {
+            cs.currentProp = new Prop { Id = cs.currentProp.Id, Name = data.NewName };
+            collection[i] = cs.currentProp;
+            break;
+          }
+        }
+      }
+
+      // abstracts (will be overrided)
 
       public abstract void Rename(string newName);
 

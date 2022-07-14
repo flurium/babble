@@ -28,6 +28,12 @@ namespace Client.Services
 
       public override void Rename(string newName)
       {
+        // want
+        //RenameBase(newName);
+        var data = new { Id = cs.currentProp.Id, NewName = newName };
+
+        //Rename(data, ref cs.groups, Command.RenameGroup);
+
         Request req = new() { Command = Command.RenameGroup, Data = new { Id = cs.currentProp.Id, NewName = newName } };
         cs.SendData(req);
 
@@ -35,6 +41,7 @@ namespace Client.Services
         {
           if (cs.Groups[i].Id == cs.currentProp.Id)
           {
+            cs.currentProp = new Prop { Id = cs.currentProp.Id, Name = newName };
             cs.Groups[i] = cs.currentProp;
             break;
           }

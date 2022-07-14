@@ -68,6 +68,7 @@ namespace Client.Services
 
     public ObservableCollection<Message> CurrentMessages { get; } = new();
     public Action<string> DenySign { get; set; }
+
     public ObservableCollection<Prop> Groups { get; } = new();
 
     public ObservableCollection<Prop> Invites { get; } = new();
