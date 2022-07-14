@@ -1,12 +1,5 @@
-﻿using CrossLibrary;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Net;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Client.Models;
+using CrossLibrary;
 using System.Windows;
 
 namespace Client.Services
@@ -175,7 +168,7 @@ namespace Client.Services
     {
       int id = res.Data.Id;
       string messageStr = res.Data.Message;
-      Message message = new() { String = messageStr, IsIncoming = true };
+      Message message = new() { Text = messageStr, IsIncoming = true };
 
       foreach (var contactMessage in contactMessages)
       {
@@ -200,7 +193,7 @@ namespace Client.Services
     {
       int id = res.Data.Id;
       string messageStr = res.Data.Message;
-      Message message = new() { String = messageStr, IsIncoming = true };
+      Message message = new() { Text = messageStr, IsIncoming = true };
 
       foreach (var groupMessage in groupMessages)
       {

@@ -1,4 +1,6 @@
-﻿namespace Client.Services
+﻿using System.Collections.Generic;
+
+namespace Client.Services
 {
   public partial class CommunicationService
   {
@@ -19,6 +21,8 @@
       public abstract void Leave(int id);
 
       public abstract void SendMessage(string messageStr);
+
+      public abstract void SendFileMessage(string messageStr, List<string> filePaths);
 
       public abstract void RefreshMessages();
     }

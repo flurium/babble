@@ -1,4 +1,5 @@
-﻿using CrossLibrary;
+﻿using Client.Models;
+using CrossLibrary;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -11,12 +12,6 @@ using System.Windows;
 
 namespace Client.Services
 {
-  public struct Message
-  {
-    public bool IsIncoming { get; set; }
-    public string String { get; set; }
-  }
-
   public partial class CommunicationService
   {
     private const string remoteIp = "127.0.0.1";
