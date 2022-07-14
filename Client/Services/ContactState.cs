@@ -1,6 +1,9 @@
 ﻿using Client.Models;
 using CrossLibrary;
+using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 namespace Client.Services
 {
@@ -41,7 +44,33 @@ namespace Client.Services
 
       public override void SendFileMessage(string messageStr, List<string> filePaths)
       {
-        throw new System.NotImplementedException();
+        Message message = new() { IsIncoming = false, Text = messageStr, Files = new() };
+
+        LinkedList<object> files = new();
+        foreach (string filePath in filePaths)
+        {
+          bool isImage = MessageFile.ImageExtentions.Contains(Path.GetExtension(filePath).ToLower());
+
+          byte[] data = File.ReadAllBytes(filePath);
+          files.AddLast(new { IsImage = isImage, Bytes = data });
+
+          message.Files.Add(new MessageFile { IsImage = isImage, Path = filePath });
+        }
+
+        // add to ui
+        cs.contactMessages[cs.currentProp.Id].AddLast(message);
+        cs.CurrentMessages.Add(message);
+
+        // File request which will be sended to another client
+        Request fileReq = new() { Command = Command.SendFileMessageToContact, Data = new { From = cs.User.Id, Message = message.Text, Files = files } };
+        string fileReqStr = JsonConvert.SerializeObject(fileReq);
+        byte[] fileReqData = Encoding.Unicode.GetBytes(fileReqStr);
+
+        // send data size
+        Request req = new() { Command = Command.GetFileMessageSize, Data = new { To = cs.currentProp.Id, Size = fileReqData.LongLength } };
+        cs.SendData(req);
+
+        cs.pendingSendFile = fileReqData;
       }
 
       public override void SendMessage(string messageStr)
