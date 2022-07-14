@@ -136,7 +136,7 @@ namespace Client
       string message = MessageWrite.Text.Trim();
       if (message != "")
       {
-        cs.SendMessage(message);
+        cs.SendMessage(message, selectedFiles);
         MessageWrite.Text = "";
         MessageWrite.Focus();
       }

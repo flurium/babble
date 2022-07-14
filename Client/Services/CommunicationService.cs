@@ -31,6 +31,8 @@ namespace Client.Services
     private Task listeningTask;
     private bool run = false;
 
+    private byte[] pendingSendFile;
+
     public CommunicationService()
     {
       // open port
@@ -130,7 +132,17 @@ namespace Client.Services
       SendData(req);
     }
 
-    public void SendMessage(string messageStr) => state.SendMessage(messageStr);
+    public void SendMessage(string messageStr, List<string>? filePaths)
+    {
+      if (filePaths == null)
+      {
+        state.SendMessage(messageStr);
+      }
+      else
+      {
+        state.SendFileMessage(messageStr, filePaths);
+      }
+    }
 
     public void SetCurrentProp(Prop prop)
     {
@@ -265,9 +277,25 @@ namespace Client.Services
       {
         try
         {
-          IPEndPoint remotePoint = new(IPAddress.Parse(remoteIp), remotePort);
           string requestStr = JsonConvert.SerializeObject(req);
           byte[] data = Encoding.Unicode.GetBytes(requestStr);
+
+          SendData(data);
+        }
+        catch (Exception ex)
+        {
+          MessageBox.Show(ex.Message);
+        }
+      }
+    }
+
+    private void SendData(byte[] data)
+    {
+      if (listeningSocket != null)
+      {
+        try
+        {
+          IPEndPoint remotePoint = new(IPAddress.Parse(remoteIp), remotePort);
           listeningSocket.SendTo(data, remotePoint);
         }
         catch (Exception ex)
