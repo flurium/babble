@@ -25,7 +25,7 @@ namespace Client.Services
         private readonly int localPort;
         private Prop currentProp;
 
-        private UdpService udpService;
+        private readonly UdpService udpService;
 
         private byte[] pendingSendFile;
         private bool run = false;
@@ -47,20 +47,20 @@ namespace Client.Services
 
             // Init handlers
             handlers = new()
-      {
-        {Command.SignIn, SignInHandle },
-        {Command.SignUp, SignUpHandle},
-        {Command.SendInvite, SendInviteHandle},
-        {Command.GetInvite, GetInviteHandle},
-        {Command.GetContact, GetContactHandle},
-        {Command.GetMessageFromContact, GetMessageFromContactHandle},
-        {Command.GetMessageFromGroup, GetMessageFromGroupHandle},
-        {Command.CreateGroup, CreateGroupHandle},
-        {Command.EnterGroup, EnterGroupHandle},
-        {Command.RemoveContact, RemoveContactHandle},
-        {Command.RenameContact, RenameContactHandle},
-        {Command.RenameGroup, RenameGroupHandle}
-      };
+            {
+                {Command.SignIn, SignInHandle },
+                {Command.SignUp, SignUpHandle},
+                {Command.SendInvite, SendInviteHandle},
+                {Command.GetInvite, GetInviteHandle},
+                {Command.GetContact, GetContactHandle},
+                {Command.GetMessageFromContact, GetMessageFromContactHandle},
+                {Command.GetMessageFromGroup, GetMessageFromGroupHandle},
+                {Command.CreateGroup, CreateGroupHandle},
+                {Command.EnterGroup, EnterGroupHandle},
+                {Command.RemoveContact, RemoveContactHandle},
+                {Command.RenameContact, RenameContactHandle},
+                {Command.RenameGroup, RenameGroupHandle}
+            };
         }
 
         // function from interface to confirm sign
@@ -115,9 +115,9 @@ namespace Client.Services
 
             contactMessages.Clear();
             groupMessages.Clear();
-            Contacts.Clear();
+            contacts.Clear();
             CurrentMessages.Clear();
-            Groups.Clear();
+            groups.Clear();
             Invites.Clear();
 
             // stop services

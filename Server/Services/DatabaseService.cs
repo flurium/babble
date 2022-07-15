@@ -6,10 +6,10 @@ namespace Server.Services
 {
     public class DatabaseService : IUserService, IGroupService, IContactService
     {
-        private ContactService contactService;
-        private BabbleContext db;
-        private GroupService groupService;
-        private UserService userService;
+        private readonly ContactService contactService;
+        private readonly BabbleContext db;
+        private readonly GroupService groupService;
+        private readonly UserService userService;
 
         public DatabaseService()
         {

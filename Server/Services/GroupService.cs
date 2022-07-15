@@ -23,7 +23,7 @@ namespace Server.Services
 
     public class GroupService : IGroupService
     {
-        private BabbleContext db;
+        private readonly BabbleContext db;
 
         public GroupService(BabbleContext db) => this.db = db;
 

@@ -9,14 +9,14 @@ namespace Server.Services
 {
     public class CommunicationService
     {
-        private Dictionary<int, IPEndPoint> clients = new();
-        private DatabaseService db = new();
-        private Dictionary<Command, Action<Request, IPEndPoint>> handlers = new();
+        private readonly Dictionary<int, IPEndPoint> clients = new();
+        private readonly DatabaseService db = new();
+        private readonly Dictionary<Command, Action<Request, IPEndPoint>> handlers = new();
         private Socket? listeningSocket;
-        private string localIp = "127.0.0.1";
+        private readonly string localIp = "127.0.0.1";
         private readonly int localPort = 5001;
-        private bool run = false;
-        private ILogger logger = new Logger();
+        private readonly bool run = false;
+        private readonly ILogger logger = new Logger();
 
         public async void AcceptInviteHandle(Request req, IPEndPoint ip)
         {

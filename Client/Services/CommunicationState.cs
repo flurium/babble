@@ -18,7 +18,6 @@ namespace Client.Services
         {
             protected CommunicationService cs;
 
-
             public void SetCommunicationService(CommunicationService cs)
             {
                 this.cs = cs;
