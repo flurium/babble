@@ -324,5 +324,13 @@ namespace Server.Services
                 listeningSocket = null;
             }
         }
+
+        public Logger Logger
+        {
+            get => default;
+            set
+            {
+            }
+        }
     }
 }

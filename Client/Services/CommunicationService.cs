@@ -21,11 +21,11 @@ namespace Client.Services
         // key = group id
         private Dictionary<int, LinkedList<Message>> groupMessages = new();
 
-        private readonly Dictionary<Command, Action<Response>> handlers;
-        private readonly int localPort;
+        private Dictionary<Command, Action<Response>> handlers;
+        private int localPort;
         private Prop currentProp;
 
-        private readonly UdpService udpService;
+        private UdpService udpService;
 
         private byte[] pendingSendFile;
         private bool run = false;
@@ -155,11 +155,16 @@ namespace Client.Services
             }
         }
 
-        public void SetCurrentProp(Prop prop)
+        public Prop CurrentProp
         {
-            currentProp = prop;
-            state.RefreshMessages();
+            get => currentProp;
+            set
+            {
+                currentProp = value;
+                state.RefreshMessages();
+            }
         }
+
 
         public void SignIn(string name, string password)
         {
@@ -217,7 +222,7 @@ namespace Client.Services
             tcpService.Start();
         }
 
-        private void SendData(Request req) => udpService.Send(req);
+        internal void SendData(Request req) => udpService.Send(req);
 
         private void SendData(byte[] data) => udpService.Send(data);
     }
