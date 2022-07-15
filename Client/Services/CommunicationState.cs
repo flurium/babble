@@ -1,6 +1,10 @@
-﻿using CrossLibrary;
+﻿using Client.Models;
+using CrossLibrary;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
+using System.Text;
 
 namespace Client.Services
 {
@@ -19,9 +23,11 @@ namespace Client.Services
         this.cs = cs;
       }
 
-      // base functions
+      // Base functions
+
       /// <summary>
       /// Base rename function, must be called from children.
+      /// data must have NewName property.
       /// </summary>
       /// <param name="data">Data in request. Must have NewName property.</param>
       /// <param name="collection">Collection that must be updated.</param>
@@ -40,6 +46,56 @@ namespace Client.Services
             break;
           }
         }
+      }
+
+      protected void RefreshMessages(ref Dictionary<int, LinkedList<Message>> dictionary)
+      {
+        cs.CurrentMessages.Clear();
+        foreach (Message message in dictionary[cs.currentProp.Id])
+        {
+          cs.CurrentMessages.Add(message);
+        }
+      }
+
+      protected void SendMessage(string messageStr, ref Dictionary<int, LinkedList<Message>> dictionary, Command command)
+      {
+        Message message = new() { Text = messageStr, IsIncoming = false };
+        dictionary[cs.currentProp.Id].AddLast(message);
+        cs.CurrentMessages.Add(message);
+
+        Request req = new() { Command = command, Data = new { To = cs.currentProp.Id, From = cs.User.Id, Message = message.Text } };
+        cs.SendData(req);
+      }
+
+      protected void SendFileMessage(string messageStr, List<string> filePaths, ref Dictionary<int, LinkedList<Message>> dictionary, Command command)
+      {
+        Message message = new() { IsIncoming = false, Text = messageStr, Files = new() };
+
+        LinkedList<object> files = new();
+        foreach (string filePath in filePaths)
+        {
+          bool isImage = MessageFile.ImageExtentions.Contains(Path.GetExtension(filePath).ToLower());
+
+          byte[] data = File.ReadAllBytes(filePath);
+          files.AddLast(new { IsImage = isImage, Bytes = data });
+
+          message.Files.Add(new MessageFile { IsImage = isImage, Path = filePath });
+        }
+
+        // add to ui
+        dictionary[cs.currentProp.Id].AddLast(message);
+        cs.CurrentMessages.Add(message);
+
+        // File request which will be sended to another client
+        Request fileReq = new() { Command = command, Data = new { From = cs.User.Id, Message = message.Text, Files = files } };
+        string fileReqStr = JsonConvert.SerializeObject(fileReq);
+        byte[] fileReqData = Encoding.Unicode.GetBytes(fileReqStr);
+
+        // send data size
+        Request req = new() { Command = Command.GetFileMessageSize, Data = new { To = cs.currentProp.Id, Size = fileReqData.LongLength } };
+        cs.SendData(req);
+
+        cs.pendingSendFile = fileReqData;
       }
 
       // abstracts (will be overrided)
