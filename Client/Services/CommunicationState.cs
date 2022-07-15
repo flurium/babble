@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
+using static CrossLibrary.Globals;
 
 namespace Client.Services
 {
@@ -89,7 +90,7 @@ namespace Client.Services
         // File request which will be sended to another client
         Request fileReq = new() { Command = command, Data = new { From = cs.User.Id, Message = message.Text, Files = files } };
         string fileReqStr = JsonConvert.SerializeObject(fileReq);
-        byte[] fileReqData = Encoding.Unicode.GetBytes(fileReqStr);
+        byte[] fileReqData = CommunicationEncoding.GetBytes(fileReqStr);
 
         // send data size
         Request req = new() { Command = Command.GetFileMessageSize, Data = new { To = cs.currentProp.Id, Size = fileReqData.LongLength } };
