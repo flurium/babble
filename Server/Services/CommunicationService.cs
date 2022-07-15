@@ -1,3 +1,10 @@
+using CrossLibrary;
+using Newtonsoft.Json;
+using Server.Models;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+using static CrossLibrary.Globals;
 namespace Server.Services
 {
     public class CommunicationService
@@ -231,7 +238,7 @@ namespace Server.Services
                     {
                         while (run)
                         {
-                            StringBuilder builder = new StringBuilder();
+                            StringBuilder builder = new();
                             int bytes = 0;
                             byte[] data = new byte[1024];
                             EndPoint clientIp = new IPEndPoint(IPAddress.Any, 0);
