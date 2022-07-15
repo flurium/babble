@@ -25,7 +25,7 @@ namespace Server.Services
 
     public class ContactService : IContactService
     {
-        private BabbleContext db;
+        private readonly BabbleContext db;
 
         public ContactService(BabbleContext db) => this.db = db;
 

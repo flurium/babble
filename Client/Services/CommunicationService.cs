@@ -16,16 +16,16 @@ namespace Client.Services
         private CommunicationState state;
 
         // key = contact id
-        private readonly Dictionary<int, LinkedList<Message>> contactMessages = new();
+        private Dictionary<int, LinkedList<Message>> contactMessages = new();
 
         // key = group id
-        private readonly Dictionary<int, LinkedList<Message>> groupMessages = new();
+        private Dictionary<int, LinkedList<Message>> groupMessages = new();
 
         private readonly Dictionary<Command, Action<Response>> handlers;
         private readonly int localPort;
         private Prop currentProp;
 
-        private UdpService udpService;
+        private readonly UdpService udpService;
 
         private byte[] pendingSendFile;
         private bool run = false;
@@ -47,31 +47,35 @@ namespace Client.Services
 
             // Init handlers
             handlers = new()
-      {
-        {Command.SignIn, SignInHandle },
-        {Command.SignUp, SignUpHandle},
-        {Command.SendInvite, SendInviteHandle},
-        {Command.GetInvite, GetInviteHandle},
-        {Command.GetContact, GetContactHandle},
-        {Command.GetMessageFromContact, GetMessageFromContactHandle},
-        {Command.GetMessageFromGroup, GetMessageFromGroupHandle},
-        {Command.CreateGroup, CreateGroupHandle},
-        {Command.EnterGroup, EnterGroupHandle},
-        {Command.RemoveContact, RemoveContactHandle},
-        {Command.RenameContact, RenameContactHandle},
-        {Command.RenameGroup, RenameGroupHandle}
-      };
+            {
+                {Command.SignIn, SignInHandle },
+                {Command.SignUp, SignUpHandle},
+                {Command.SendInvite, SendInviteHandle},
+                {Command.GetInvite, GetInviteHandle},
+                {Command.GetContact, GetContactHandle},
+                {Command.GetMessageFromContact, GetMessageFromContactHandle},
+                {Command.GetMessageFromGroup, GetMessageFromGroupHandle},
+                {Command.CreateGroup, CreateGroupHandle},
+                {Command.EnterGroup, EnterGroupHandle},
+                {Command.RemoveContact, RemoveContactHandle},
+                {Command.RenameContact, RenameContactHandle},
+                {Command.RenameGroup, RenameGroupHandle}
+            };
         }
 
         // function from interface to confirm sign
         public Action ConfirmSign { get; set; }
 
         // ObservableCollections must not be recreated
-        public ObservableCollection<Prop> Contacts { get; } = new();
+
+        private ObservableCollection<Prop> contacts = new();
+        public ObservableCollection<Prop> Contacts { get => contacts; }
 
         public ObservableCollection<Message> CurrentMessages { get; } = new();
         public Action<string> DenySign { get; set; }
-        public ObservableCollection<Prop> Groups { get; } = new();
+
+        private ObservableCollection<Prop> groups = new();
+        public ObservableCollection<Prop> Groups { get => groups; }
 
         public ObservableCollection<Prop> Invites { get; } = new();
 
@@ -111,9 +115,9 @@ namespace Client.Services
 
             contactMessages.Clear();
             groupMessages.Clear();
-            Contacts.Clear();
+            contacts.Clear();
             CurrentMessages.Clear();
-            Groups.Clear();
+            groups.Clear();
             Invites.Clear();
 
             // stop services

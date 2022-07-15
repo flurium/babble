@@ -26,7 +26,7 @@ namespace Client.Services
 
                 // add contact to ui
                 contactMessages.Add(contact.Id, new());
-                Application.Current.Dispatcher.Invoke(() => Contacts.Add(contact));
+                Application.Current.Dispatcher.Invoke(() => contacts.Add(contact));
             }
             else
             {
@@ -53,7 +53,7 @@ namespace Client.Services
 
                 // add contact to ui
                 groupMessages.Add(group.Id, new());
-                Application.Current.Dispatcher.Invoke(() => Groups.Add(group));
+                Application.Current.Dispatcher.Invoke(() => groups.Add(group));
             }
             else
             {
@@ -80,7 +80,7 @@ namespace Client.Services
 
                 // add contact to ui
                 groupMessages.Add(group.Id, new());
-                Application.Current.Dispatcher.Invoke(() => Groups.Add(group));
+                Application.Current.Dispatcher.Invoke(() => groups.Add(group));
             }
             else
             {
@@ -105,17 +105,17 @@ namespace Client.Services
                     Id = res.Data.Id
                 };
 
-                foreach (var cont in Contacts)
+                foreach (var cont in contacts)
                 {
                     if (cont.Id == contact.Id)
                     {
-                        Contacts.Remove(cont);
+                        contacts.Remove(cont);
                         contactMessages.Remove(cont.Id);
                         break;
                     }
                 }
 
-                Application.Current.Dispatcher.Invoke(() => Contacts.Add(contact));
+                Application.Current.Dispatcher.Invoke(() => contacts.Add(contact));
             }
             else
             {
@@ -223,13 +223,12 @@ namespace Client.Services
                 int id = res.Data.Id;
                 string newName = res.Data.Name;
 
-                for (int i = 0; i < Contacts.Count; i++)
+                for (int i = 0; i < contacts.Count; i++)
                 {
-                    if (Contacts[i].Id == id)
+                    if (contacts[i].Id == id)
                     {
                         Prop newContact = new() { Id = id, Name = newName };
-
-                        Contacts[i] = newContact;
+                        contacts[i] = newContact;
                         break;
                     }
                 }
@@ -251,13 +250,12 @@ namespace Client.Services
                 int id = res.Data.Id;
                 string newName = res.Data.Name;
 
-                for (int i = 0; i < Groups.Count; i++)
+                for (int i = 0; i < groups.Count; i++)
                 {
-                    if (Groups[i].Id == id)
+                    if (groups[i].Id == id)
                     {
                         Prop newGroup = new() { Id = id, Name = newName };
-
-                        Groups[i] = newGroup;
+                        groups[i] = newGroup;
                         break;
                     }
                 }
@@ -276,9 +274,11 @@ namespace Client.Services
         {
             if (res.Status == Status.OK)
             {
-                Prop user = new();
-                user.Id = res.Data.User.Id;
-                user.Name = res.Data.User.Name;
+                Prop user = new()
+                {
+                    Id = res.Data.User.Id,
+                    Name = res.Data.User.Name
+                };
                 User = user;
 
                 var groups = res.Data.Groups;
@@ -286,8 +286,7 @@ namespace Client.Services
                 {
                     Prop groupProp = new() { Id = group.Id, Name = group.Name };
                     groupMessages.Add(groupProp.Id, new());
-
-                    Application.Current.Dispatcher.Invoke(() => Groups.Add(groupProp));
+                    Application.Current.Dispatcher.Invoke(() => groups.Add(groupProp));
                 }
 
                 var invites = res.Data.Invites;
@@ -302,7 +301,7 @@ namespace Client.Services
                 {
                     Prop contactProp = new() { Id = contact.Id, Name = contact.Name };
                     contactMessages.Add(contactProp.Id, new());
-                    Application.Current.Dispatcher.Invoke(() => Contacts.Add(contactProp));
+                    Application.Current.Dispatcher.Invoke(() => contacts.Add(contactProp));
                 }
 
                 ConfirmSign();
@@ -323,9 +322,11 @@ namespace Client.Services
         {
             if (res.Status == Status.OK)
             {
-                Prop user = new();
-                user.Id = res.Data.Id;
-                user.Name = res.Data.Name;
+                Prop user = new()
+                {
+                    Id = res.Data.Id,
+                    Name = res.Data.Name
+                };
                 User = user;
                 ConfirmSign();
             }
