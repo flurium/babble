@@ -17,6 +17,38 @@ namespace Server.Data.Models
         public DbSet<UserGroup> UserGroups { get; set; }
         public DbSet<User> Users { get; set; }
 
+        public UserGroup UserGroup
+        {
+            get => default;
+            set
+            {
+            }
+        }
+
+        public Group Group
+        {
+            get => default;
+            set
+            {
+            }
+        }
+
+        public Contact Contact
+        {
+            get => default;
+            set
+            {
+            }
+        }
+
+        public User User
+        {
+            get => default;
+            set
+            {
+            }
+        }
+
         protected override void OnConfiguring(DbContextOptionsBuilder options)
             => options.UseSqlite($"Data Source={DbPath}");
 

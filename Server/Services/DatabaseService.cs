@@ -19,6 +19,38 @@ namespace Server.Services
             contactService = new ContactService(db);
         }
 
+        public BabbleContext BabbleContext
+        {
+            get => default;
+            set
+            {
+            }
+        }
+
+        public UserService UserService
+        {
+            get => default;
+            set
+            {
+            }
+        }
+
+        public ContactService ContactService
+        {
+            get => default;
+            set
+            {
+            }
+        }
+
+        public GroupService GroupService
+        {
+            get => default;
+            set
+            {
+            }
+        }
+
         public Task<Contact> AcceptInviteAsync(int id) => contactService.AcceptInviteAsync(id);
 
         public Task<Prop> CreateGroupAsync(int uid, string groupName) => groupService.CreateGroupAsync(uid, groupName);
