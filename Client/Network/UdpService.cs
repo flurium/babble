@@ -15,16 +15,12 @@ namespace Client.Network
         private readonly Action<string> handle;
         private Task listenTask;
         private readonly int localPort;
-        private readonly string remoteAddress;
         private EndPoint remoteIp;
-        private readonly int remotePort;
         private bool run = false;
         private Socket socket;
 
-        public UdpService(string remoteAddress, int remotePort, int localPort, Action<string> handle)
+        public UdpService(int localPort, Action<string> handle)
         {
-            this.remoteAddress = remoteAddress;
-            this.remotePort = remotePort;
             this.localPort = localPort;
             this.handle = handle;
         }
@@ -48,7 +44,7 @@ namespace Client.Network
         {
             try
             {
-                IPEndPoint remoteIP = new(IPAddress.Parse(remoteAddress), remotePort);
+                IPEndPoint remoteIP = new(IPAddress.Parse(ServerIp), ServerPort);
                 socket.SendTo(data, remoteIP);
             }
             catch (Exception ex)
@@ -77,7 +73,7 @@ namespace Client.Network
             socket.Close();
         }
 
-        private string GetMessage()
+        private string Receive()
         {
             int bytes;
             byte[] buffer = new byte[BufferSize];
@@ -102,7 +98,7 @@ namespace Client.Network
                 while (run)
                 {
                     remoteIp = new IPEndPoint(IPAddress.Any, localPort);
-                    string message = GetMessage();
+                    string message = Receive();
 
                     //var fullIp = (IPEndPoint)ip;
 

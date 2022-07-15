@@ -34,7 +34,7 @@ namespace Client
                 Prop contact = (Prop)ContactsList.SelectedItem;
 
                 cs.SetState(new ContactState());
-                cs.SetCurrentProp(contact);
+                cs.CurrentProp = contact;
 
                 MessageWrite.Focus();
                 ChatName.Text = contact.Name;
@@ -79,7 +79,7 @@ namespace Client
                 Prop group = (Prop)GroupsList.SelectedItem;
 
                 cs.SetState(new GroupState());
-                cs.SetCurrentProp(group);
+                cs.CurrentProp = group;
 
                 MessageWrite.Focus();
                 ChatName.Text = group.Name;
