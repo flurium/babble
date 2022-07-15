@@ -54,6 +54,9 @@ namespace Client.Network
       socket.Close();
     }
 
+    /// <summary>
+    /// Loop that read incomming responses
+    /// </summary>
     private void Listen()
     {
       try
@@ -83,20 +86,20 @@ namespace Client.Network
       }
     }
 
-    public void SendMessage(Request req)
+    public void Send(Request req)
     {
       try
       {
         string reqStr = JsonConvert.SerializeObject(req);
         byte[] data = CommunicationEncoding.GetBytes(reqStr);
-        SendMessage(data);
+        Send(data);
       }
       catch (Exception ex)
       {
       }
     }
 
-    public void SendMessage(byte[] data)
+    public void Send(byte[] data)
     {
       try
       {
