@@ -9,6 +9,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using static CrossLibrary.Globals;
 
 namespace Client.Services
 {
@@ -233,7 +234,7 @@ namespace Client.Services
             {
               bytes = listeningSocket.ReceiveFrom(data, ref remoteIp);
 
-              builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
+              builder.Append(CommunicationEncoding.GetString(data, 0, bytes));
             }
             while (listeningSocket.Available > 0);
 
@@ -282,7 +283,7 @@ namespace Client.Services
         try
         {
           string requestStr = JsonConvert.SerializeObject(req);
-          byte[] data = Encoding.Unicode.GetBytes(requestStr);
+          byte[] data = CommunicationEncoding.GetBytes(requestStr);
 
           SendData(data);
         }

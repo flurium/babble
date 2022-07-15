@@ -4,6 +4,7 @@ using Server.Models;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using static CrossLibrary.Globals;
 
 namespace Server.Services
 {
@@ -246,7 +247,7 @@ namespace Server.Services
               do
               {
                 bytes = listeningSocket.ReceiveFrom(data, ref clientIp);
-                builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
+                builder.Append(CommunicationEncoding.GetString(data, 0, bytes));
               } while (listeningSocket.Available > 0);
               IPEndPoint clientFullIp = (IPEndPoint)clientIp;
 
@@ -280,7 +281,7 @@ namespace Server.Services
       if (listeningSocket != null)
       {
         string responseStr = JsonConvert.SerializeObject(response);
-        byte[] data = Encoding.Unicode.GetBytes(responseStr);
+        byte[] data = CommunicationEncoding.GetBytes(responseStr);
 
         // send to one
         listeningSocket.SendTo(data, ip);

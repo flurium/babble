@@ -1,5 +1,6 @@
 ﻿using CrossLibrary;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Client.Services
 {
