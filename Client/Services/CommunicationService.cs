@@ -1,13 +1,4 @@
-﻿using Client.Models;
-using Client.Network;
-using CrossLibrary;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Windows;
-
-namespace Client.Services
+﻿namespace Client.Services
 {
     public partial class CommunicationService
     {
@@ -16,10 +7,10 @@ namespace Client.Services
         private CommunicationState state;
 
         // key = contact id
-        private readonly Dictionary<int, LinkedList<Message>> contactMessages = new();
+        private Dictionary<int, LinkedList<Message>> contactMessages = new();
 
         // key = group id
-        private readonly Dictionary<int, LinkedList<Message>> groupMessages = new();
+        private Dictionary<int, LinkedList<Message>> groupMessages = new();
 
         private readonly Dictionary<Command, Action<Response>> handlers;
         private readonly int localPort;
@@ -67,11 +58,15 @@ namespace Client.Services
         public Action ConfirmSign { get; set; }
 
         // ObservableCollections must not be recreated
-        public ObservableCollection<Prop> Contacts { get; } = new();
+
+        private ObservableCollection<Prop> contacts = new();
+        public ObservableCollection<Prop> Contacts { get => contacts; }
 
         public ObservableCollection<Message> CurrentMessages { get; } = new();
         public Action<string> DenySign { get; set; }
-        public ObservableCollection<Prop> Groups { get; } = new();
+
+        private ObservableCollection<Prop> groups = new();
+        public ObservableCollection<Prop> Groups { get => groups; }
 
         public ObservableCollection<Prop> Invites { get; } = new();
 
