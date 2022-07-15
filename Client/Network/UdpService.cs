@@ -12,12 +12,12 @@ namespace Client.Network
 {
     public class UdpService
     {
-        private Action<string> handle;
+        private readonly Action<string> handle;
         private Task listenTask;
-        private int localPort;
-        private string remoteAddress;
+        private readonly int localPort;
+        private readonly string remoteAddress;
         private EndPoint remoteIp;
-        private int remotePort;
+        private readonly int remotePort;
         private bool run = false;
         private Socket socket;
 

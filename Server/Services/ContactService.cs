@@ -25,7 +25,7 @@ namespace Server.Services
 
     public class ContactService : IContactService
     {
-        private BabbleContext db;
+        private readonly BabbleContext db;
 
         public ContactService(BabbleContext db) => this.db = db;
 
@@ -114,16 +114,5 @@ namespace Server.Services
             return contact.Entity;
         }
 
-        private async Task AcceptInviteAsync(User userFrom, User userTo)
-        {
-            Contact? contact = db.Contacts.FirstOrDefault(c => c.UserFromId == userFrom.Id && c.UserToId == userTo.Id);
-            if (contact != null)
-            {
-                contact.isAccepted = true;
-                contact.NameAtUserFrom = userTo.Name;
-                contact.NameAtUserTo = userFrom.Name;
-                await db.SaveChangesAsync();
-            }
-        }
     }
 }

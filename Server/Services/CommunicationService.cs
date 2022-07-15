@@ -1,15 +1,22 @@
+using CrossLibrary;
+using Newtonsoft.Json;
+using Server.Models;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+using static CrossLibrary.Globals;
 namespace Server.Services
 {
     public class CommunicationService
     {
-        private Dictionary<int, IPEndPoint> clients = new();
-        private DatabaseService db = new();
-        private Dictionary<Command, Action<Request, IPEndPoint>> handlers = new();
+        private readonly Dictionary<int, IPEndPoint> clients = new();
+        private readonly DatabaseService db = new();
+        private readonly Dictionary<Command, Action<Request, IPEndPoint>> handlers = new();
         private Socket? listeningSocket;
-        private string localIp = "127.0.0.1";
+        private readonly string localIp = "127.0.0.1";
         private readonly int localPort = 5001;
-        private bool run = false;
-        private ILogger logger = new Logger();
+        private readonly bool run = false;
+        private readonly ILogger logger = new Logger();
 
         public async void AcceptInviteHandle(Request req, IPEndPoint ip)
         {
@@ -231,7 +238,7 @@ namespace Server.Services
                     {
                         while (run)
                         {
-                            StringBuilder builder = new StringBuilder();
+                            StringBuilder builder = new();
                             int bytes = 0;
                             byte[] data = new byte[1024];
                             EndPoint clientIp = new IPEndPoint(IPAddress.Any, 0);

@@ -18,7 +18,7 @@ namespace Server
 
         private static async void Test()
         {
-            DatabaseService db = new DatabaseService();
+            DatabaseService db = new();
 
             try
             {

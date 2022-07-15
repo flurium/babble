@@ -10,7 +10,7 @@ namespace Client.Pages
     /// </summary>
     public partial class SignInPage : Page
     {
-        private CommunicationService cs;
+        private readonly CommunicationService cs;
 
         public SignInPage(CommunicationService cs)
         {

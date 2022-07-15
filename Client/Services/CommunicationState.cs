@@ -1,4 +1,12 @@
-﻿namespace Client.Services
+﻿using Client.Models;
+using CrossLibrary;
+using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
+using static CrossLibrary.Globals;
+
+namespace Client.Services
 {
     public partial class CommunicationService
     {

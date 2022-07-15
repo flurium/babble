@@ -17,7 +17,7 @@ namespace Client
     ///
     public partial class UserPage : Page
     {
-        private CommunicationService cs;
+        private readonly CommunicationService cs;
         private List<string>? selectedFiles;
 
         public UserPage(CommunicationService cs)

@@ -8,9 +8,9 @@ namespace Client.Network
 {
     internal class TcpService
     {
-        private Action<string> handle;
+        private readonly Action<string> handle;
         private Task listenTask;
-        private int port;
+        private readonly int port;
         private bool run = false;
         private TcpClient tcpClient;
         private TcpListener tcpListener;

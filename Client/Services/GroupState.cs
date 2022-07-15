@@ -1,4 +1,7 @@
-﻿namespace Client.Services
+﻿using CrossLibrary;
+using System.Collections.Generic;
+
+namespace Client.Services
 {
     public partial class CommunicationService
     {
