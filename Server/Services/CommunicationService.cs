@@ -12,7 +12,7 @@ namespace Server.Services
     private Dictionary<int, IPEndPoint> clients = new();
     private DatabaseService db = new();
     private Dictionary<Command, Action<Request, IPEndPoint>> handlers = new();
-    private Socket? listeningSocket; // todo: nullable
+    private Socket? listeningSocket;
     private string localIp = "127.0.0.1";
     private readonly int localPort = 5001;
     private bool run = false;
