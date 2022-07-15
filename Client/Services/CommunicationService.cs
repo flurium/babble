@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using static CrossLibrary.Globals;
+using Client.Network;
 
 namespace Client.Services
 {
@@ -32,6 +33,8 @@ namespace Client.Services
     private Task listeningTask;
     private bool run = false;
 
+    private UdpService udpService;
+
     private byte[] pendingSendFile;
 
     public CommunicationService()
@@ -42,6 +45,9 @@ namespace Client.Services
       {
         localPort = rnd.Next(3000, 49000);
       } while (localPort == 5001); // 5001 = server port
+
+      // init udp service
+      udpService = new(remoteIp, remotePort, localPort, Handle);
 
       // init tcp service
       tcpService = new(localPort, TcpHandle);

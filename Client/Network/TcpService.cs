@@ -9,7 +9,7 @@ namespace Client.Network
   internal class TcpService
   {
     private Action<string> handle;
-    private Task listeningTask;
+    private Task listenTask;
     private int port;
     private bool run = false;
     private TcpClient tcpClient;
@@ -22,7 +22,7 @@ namespace Client.Network
       this.handle = handle;
     }
 
-    public int BufferSize { get; set; } = 1024;
+    public long BufferSize { get; set; } = 1024;
 
     private void Listen()
     {
@@ -83,8 +83,8 @@ namespace Client.Network
 
     public void Start()
     {
-      listeningTask = new(Listen);
-      listeningTask.Start();
+      listenTask = new(Listen);
+      listenTask.Start();
     }
 
     public void Stop() => run = false;
