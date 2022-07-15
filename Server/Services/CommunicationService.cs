@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using static CrossLibrary.Globals;
+
 namespace Server.Services
 {
     public class CommunicationService
@@ -13,8 +14,6 @@ namespace Server.Services
         private readonly DatabaseService db = new();
         private readonly Dictionary<Command, Action<Request, IPEndPoint>> handlers = new();
         private Socket? listeningSocket;
-        private readonly string localIp = "127.0.0.1";
-        private readonly int localPort = 5001;
         private readonly bool run = false;
         private readonly ILogger logger = new Logger();
 
@@ -230,10 +229,10 @@ namespace Server.Services
             {
                 Console.ForegroundColor = ConsoleColor.Cyan;
                 IPAddress ip;
-                if (IPAddress.TryParse(localIp, out ip!))
+                if (IPAddress.TryParse(ServerIp, out ip!))
                 {
-                    IPEndPoint localIp = new(ip, localPort);
-                    listeningSocket.Bind(localIp);
+                    IPEndPoint localIpEndPoint = new(ip, ServerPort);
+                    listeningSocket.Bind(localIpEndPoint);
                     try
                     {
                         while (run)

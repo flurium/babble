@@ -2,26 +2,26 @@
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="Server.Services.CommunicationService">
     <Position X="4.25" Y="0.75" Width="2.5" />
-    <AssociationLine Name="Logger" Type="Server.Services.Logger" FixedFromPoint="true">
-      <Path>
-        <Point X="4.25" Y="2.562" />
-        <Point X="2.75" Y="2.562" />
-      </Path>
-      <MemberNameLabel ManuallyPlaced="true">
-        <Position X="0.407" Y="0.117" />
-      </MemberNameLabel>
-    </AssociationLine>
     <AssociationLine Name="db" Type="Server.Services.DatabaseService" FixedFromPoint="true">
       <Path>
-        <Point X="6.75" Y="1.438" />
-        <Point X="8.25" Y="1.438" />
+        <Point X="6.75" Y="1.394" />
+        <Point X="8.25" Y="1.394" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true">
         <Position X="0.56" Y="0.089" />
       </MemberNameLabel>
     </AssociationLine>
+    <AssociationLine Name="Logger" Type="Server.Services.Logger" FixedFromPoint="true">
+      <Path>
+        <Point X="4.25" Y="2.445" />
+        <Point X="2.75" Y="2.445" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.407" Y="0.117" />
+      </MemberNameLabel>
+    </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAhABgBgQIIQAkADAAAAARAgAAAAEAJQCAAACABAEAA=</HashCode>
+      <HashCode>AABABgBgAIIQAkADAAAAARAgAAAAEAJQCAAACABAEAA=</HashCode>
       <FileName>Services\CommunicationService.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>

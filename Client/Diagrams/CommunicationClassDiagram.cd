@@ -23,33 +23,33 @@
         </TypeIdentifier>
       </Class>
     </NestedTypes>
-    <AssociationLine Name="tcpService" Type="Client.Network.TcpService" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="11" Y="1.688" />
-        <Point X="12.875" Y="1.688" />
-        <Point X="12.875" Y="2.25" />
-      </Path>
-      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
-        <Position X="0.327" Y="0.668" Height="0.182" Width="1.168" />
-      </MemberNameLabel>
-    </AssociationLine>
     <AssociationLine Name="udpService" Type="Client.Network.UdpService" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="8.25" Y="1.688" />
-        <Point X="6.74" Y="1.688" />
+        <Point X="8.25" Y="1.667" />
+        <Point X="6.74" Y="1.667" />
         <Point X="6.74" Y="2.25" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true">
         <Position X="-1.253" Y="0.684" />
       </MemberNameLabel>
     </AssociationLine>
+    <AssociationLine Name="tcpService" Type="Client.Network.TcpService" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="11" Y="1.667" />
+        <Point X="12.875" Y="1.667" />
+        <Point X="12.875" Y="2.25" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
+        <Position X="0.327" Y="0.668" Height="0.182" Width="1.168" />
+      </MemberNameLabel>
+    </AssociationLine>
     <TypeIdentifier>
-      <HashCode>RgxBJkSIAIAgCgKBISAAAUAAEQEAgBLUCAAAIAZAsSQ=</HashCode>
+      <HashCode>RgxBBkSIAIAgCgKBASAAAUAAEQEAgBLUCAAAIAZAsSQ=</HashCode>
       <FileName>Services\CommunicationService.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
-      <Field Name="tcpService" />
       <Field Name="udpService" />
+      <Field Name="tcpService" />
     </ShowAsAssociation>
   </Class>
   <Class Name="Client.Network.TcpService">
@@ -62,7 +62,7 @@
   <Class Name="Client.Network.UdpService">
     <Position X="5.5" Y="2.25" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AAgAIgAAACAAAEAAKEAAAAAAAAAAAACQIAECAAAAAAA=</HashCode>
+      <HashCode>AAgAAgAAACAAAEAAKEAAAAAAAAAAAAAQIAECAAAAAAA=</HashCode>
       <FileName>Network\UdpService.cs</FileName>
     </TypeIdentifier>
   </Class>

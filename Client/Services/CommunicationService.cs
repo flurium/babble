@@ -6,13 +6,12 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows;
+using static CrossLibrary.Globals;
 
 namespace Client.Services
 {
     public partial class CommunicationService
     {
-        private const string remoteIp = "127.0.0.1";
-        private const int remotePort = 5001;
         private CommunicationState state;
 
         // key = contact id
@@ -37,10 +36,10 @@ namespace Client.Services
             do
             {
                 localPort = rnd.Next(3000, 49000);
-            } while (localPort == 5001); // 5001 = server port
+            } while (localPort == ServerPort);
 
             // init udp service
-            udpService = new(remoteIp, remotePort, localPort, Handle);
+            udpService = new(localPort, Handle);
 
             // init tcp service
             tcpService = new(localPort, TcpHandle);
