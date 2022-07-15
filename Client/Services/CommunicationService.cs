@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using static CrossLibrary.Globals;
+using Client.Network;
 
 namespace Client.Services
 {
@@ -28,11 +29,11 @@ namespace Client.Services
     private readonly Dictionary<Command, Action<Response>> handlers = new();
     private readonly int localPort;
     private Prop currentProp;
-    private Socket? listeningSocket;
-    private Task listeningTask;
-    private bool run = false;
+
+    private UdpService udpService;
 
     private byte[] pendingSendFile;
+    private bool run = false;
 
     public CommunicationService()
     {
@@ -42,6 +43,9 @@ namespace Client.Services
       {
         localPort = rnd.Next(3000, 49000);
       } while (localPort == 5001); // 5001 = server port
+
+      // init udp service
+      udpService = new(remoteIp, remotePort, localPort, Handle);
 
       // init tcp service
       tcpService = new(localPort, TcpHandle);
@@ -114,7 +118,11 @@ namespace Client.Services
       Groups.Clear();
       Invites.Clear();
 
-      CloseConnection();
+      // stop services
+      tcpService.Stop();
+      udpService.Stop();
+
+      run = false;
     }
 
     public void Leave(int id) => state.Leave(id);
@@ -183,17 +191,6 @@ namespace Client.Services
       }
     }
 
-    private void CloseConnection()
-    {
-      if (listeningSocket != null)
-      {
-        run = false;
-        listeningSocket.Shutdown(SocketShutdown.Both);
-        listeningSocket.Close();
-        listeningSocket = null;
-      }
-    }
-
     // Treatment
     private void Handle(string resStr)
     {
@@ -208,102 +205,18 @@ namespace Client.Services
       }
     }
 
-    /// <summary>
-    /// Loop that read incomming responses
-    /// </summary>
-    private void Listen()
-    {
-      if (listeningSocket != null)
-      {
-        try
-        {
-          while (run)
-          {
-            StringBuilder builder = new StringBuilder();
-            int bytes = 0;
-            byte[] data = new byte[1024];
-
-            // adress from where get
-            EndPoint remoteIp = new IPEndPoint(IPAddress.Any, remotePort);
-
-            do
-            {
-              bytes = listeningSocket.ReceiveFrom(data, ref remoteIp);
-
-              builder.Append(CommunicationEncoding.GetString(data, 0, bytes));
-            }
-            while (listeningSocket.Available > 0);
-
-            IPEndPoint remoteFullIp = (IPEndPoint)remoteIp;
-
-            Handle(builder.ToString());
-
-            // output
-            // AddToOutput(builder.ToString());
-          }
-        }
-        catch (SocketException socketEx)
-        {
-          if (socketEx.ErrorCode != 10004)
-            MessageBox.Show(socketEx.Message + socketEx.ErrorCode);
-        }
-        catch (Exception ex)
-        {
-          MessageBox.Show(ex.Message + ex.GetType().ToString());
-        }
-        finally
-        {
-          CloseConnection();
-        }
-      }
-    }
-
     private void OpenConnection()
     {
-      // run udp service
       run = true;
-      listeningSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-      IPEndPoint localIP = new IPEndPoint(IPAddress.Parse(remoteIp), localPort);
-      listeningSocket.Bind(localIP);
-      listeningTask = new(Listen);
-      listeningTask.Start();
+      // run udp service
+      udpService.Start();
 
       // run tcp service
       tcpService.Start();
     }
 
-    private void SendData(Request req)
-    {
-      if (listeningSocket != null)
-      {
-        try
-        {
-          string requestStr = JsonConvert.SerializeObject(req);
-          byte[] data = CommunicationEncoding.GetBytes(requestStr);
+    private void SendData(Request req) => udpService.Send(req);
 
-          SendData(data);
-        }
-        catch (Exception ex)
-        {
-          MessageBox.Show(ex.Message);
-        }
-      }
-    }
-
-    private void SendData(byte[] data)
-    {
-      if (listeningSocket != null)
-      {
-        try
-        {
-          IPEndPoint remotePoint = new(IPAddress.Parse(remoteIp), remotePort);
-          listeningSocket.SendTo(data, remotePoint);
-        }
-        catch (Exception ex)
-        {
-          MessageBox.Show(ex.Message);
-        }
-      }
-    }
+    private void SendData(byte[] data) => udpService.Send(data);
   }
 }
