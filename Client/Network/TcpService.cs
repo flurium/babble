@@ -24,38 +24,6 @@ namespace Client.Network
 
         public long BufferSize { get; set; } = 1024;
 
-        private void Listen()
-        {
-            try
-            {
-                tcpListener = new(IPAddress.Any, port);
-                tcpListener.Start();
-                run = true;
-
-                while (run)
-                {
-                    try
-                    {
-                        tcpClient = tcpListener.AcceptTcpClient();
-                        tcpStream = tcpClient.GetStream();
-
-                        // get message only one time
-                        string message = GetMessage();
-                        handle(message);
-                    }
-                    finally
-                    {
-                        if (tcpStream != null) tcpStream.Close();
-                        if (tcpClient != null) tcpClient.Close();
-                    }
-                }
-            }
-            finally
-            {
-                tcpListener.Stop();
-            }
-        }
-
         /// <summary>
         /// Connect to another client and send file message. Get nothing.
         /// </summary>
@@ -101,6 +69,38 @@ namespace Client.Network
             } while (tcpStream.DataAvailable);
 
             return builder.ToString();
+        }
+
+        private void Listen()
+        {
+            try
+            {
+                tcpListener = new(IPAddress.Any, port);
+                tcpListener.Start();
+                run = true;
+
+                while (run)
+                {
+                    try
+                    {
+                        tcpClient = tcpListener.AcceptTcpClient();
+                        tcpStream = tcpClient.GetStream();
+
+                        // get message only one time
+                        string message = GetMessage();
+                        handle(message);
+                    }
+                    finally
+                    {
+                        if (tcpStream != null) tcpStream.Close();
+                        if (tcpClient != null) tcpClient.Close();
+                    }
+                }
+            }
+            finally
+            {
+                tcpListener.Stop();
+            }
         }
     }
 }
