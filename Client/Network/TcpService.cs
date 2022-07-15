@@ -30,7 +30,7 @@ namespace Client.Network
         /// <param name="message"></param>
         /// <param name="ip">Ip address of client to send.</param>
         /// <param name="port">Port of client to send.</param>
-        public void SendMessage(string message, string ip, int port)
+        public void Send(string message, string ip, int port)
         {
             TcpClient outcomeClient = new();
             NetworkStream? outcomeStream = null;
@@ -57,7 +57,7 @@ namespace Client.Network
 
         public void Stop() => run = false;
 
-        private string GetMessage()
+        private string Receive()
         {
             int bytes;
             byte[] buffer = new byte[BufferSize];
@@ -87,7 +87,7 @@ namespace Client.Network
                         tcpStream = tcpClient.GetStream();
 
                         // get message only one time
-                        string message = GetMessage();
+                        string message = Receive();
                         handle(message);
                     }
                     finally

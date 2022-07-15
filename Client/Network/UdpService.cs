@@ -77,7 +77,7 @@ namespace Client.Network
             socket.Close();
         }
 
-        private string GetMessage()
+        private string Receive()
         {
             int bytes;
             byte[] buffer = new byte[BufferSize];
@@ -102,7 +102,7 @@ namespace Client.Network
                 while (run)
                 {
                     remoteIp = new IPEndPoint(IPAddress.Any, localPort);
-                    string message = GetMessage();
+                    string message = Receive();
 
                     //var fullIp = (IPEndPoint)ip;
 
