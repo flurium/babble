@@ -18,7 +18,7 @@ namespace Client.Services.Network.Base
         }
 
         public long BufferSize { get; set; } = 1024;
-        protected Destination Destination { get; set; }
+        public Destination Destination { get; set; }
 
         public abstract void Send(byte[] data);
 

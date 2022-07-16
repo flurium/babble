@@ -20,11 +20,11 @@ namespace Client.Services
         // key = group id
         private Dictionary<int, LinkedList<Message>> groupMessages = new();
 
-        private Dictionary<Command, Action<Response>> handlers;
         private int localPort;
         private Prop currentProp;
 
-        private UdpService udpService;
+        private UdpHandler udpHandler;
+        //private UdpService udpService;
 
         private byte[] pendingSendFile;
         private bool run = false;
@@ -39,27 +39,11 @@ namespace Client.Services
             } while (localPort == ServerDestination.Port);
 
             // init udp service
-            udpService = new(localPort, Handle);
+            udpHandler = new(localPort, this);
+            //udpService = new(localPort, Handle);
 
             // init tcp service
             tcpService = new(localPort, TcpHandle);
-
-            // Init handlers
-            handlers = new()
-            {
-                {Command.SignIn, SignInHandle },
-                {Command.SignUp, SignUpHandle},
-                {Command.SendInvite, SendInviteHandle},
-                {Command.GetInvite, GetInviteHandle},
-                {Command.GetContact, GetContactHandle},
-                {Command.GetMessageFromContact, GetMessageFromContactHandle},
-                {Command.GetMessageFromGroup, GetMessageFromGroupHandle},
-                {Command.CreateGroup, CreateGroupHandle},
-                {Command.EnterGroup, EnterGroupHandle},
-                {Command.RemoveContact, RemoveContactHandle},
-                {Command.RenameContact, RenameContactHandle},
-                {Command.RenameGroup, RenameGroupHandle}
-            };
         }
 
         // function from interface to confirm sign
@@ -196,32 +180,20 @@ namespace Client.Services
             }
         }
 
-        // Treatment
-        private void Handle(string resStr)
-        {
-            Response res = JsonConvert.DeserializeObject<Response>(resStr);
-            try
-            {
-                handlers[res.Command](res);
-            }
-            catch (Exception ex)
-            {
-                // Show error
-            }
-        }
-
         private void OpenConnection()
         {
             run = true;
             // run udp service
-            udpService.Start();
+            udpHandler.Start();
+            //udpService.Start();
 
             // run tcp service
             tcpService.Start();
         }
 
-        internal void SendData(Request req) => udpService.Send(req);
+        //internal void SendData(Request req) => udpService.Send(req);
+        public void SendData(Request req) => udpHandler.Send(req.ToStrBytes());
 
-        private void SendData(byte[] data) => udpService.Send(data);
+        private void SendData(byte[] data) => udpHandler.Send(data);
     }
 }

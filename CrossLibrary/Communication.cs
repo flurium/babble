@@ -1,4 +1,7 @@
-﻿namespace CrossLibrary
+﻿using Newtonsoft.Json;
+using static CrossLibrary.Globals;
+
+namespace CrossLibrary
 {
     public enum Command
     {
@@ -37,6 +40,12 @@
     {
         public Command Command { get; set; }
         public dynamic Data { get; set; }
+
+        public byte[] ToStrBytes()
+        {
+            string str = JsonConvert.SerializeObject(this);
+            return CommunicationEncoding.GetBytes(str);
+        }
     }
 
     public struct Response
