@@ -24,22 +24,22 @@
     </NestedTypes>
     <AssociationLine Name="udpService" Type="Client.Network.UdpService" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="8.25" Y="1.967" />
-        <Point X="5.74" Y="1.967" />
-        <Point X="5.74" Y="2.25" />
+        <Point X="11" Y="1.75" />
+        <Point X="13.49" Y="1.75" />
+        <Point X="13.49" Y="2.25" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true">
-        <Position X="-1.684" Y="0.425" />
+        <Position X="0.213" Y="0.138" />
       </MemberNameLabel>
     </AssociationLine>
     <AssociationLine Name="tcpService" Type="Client.Network.TcpService" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="11" Y="1.967" />
-        <Point X="13.625" Y="1.967" />
-        <Point X="13.625" Y="2.25" />
+        <Point X="11" Y="1.625" />
+        <Point X="16.625" Y="1.625" />
+        <Point X="16.625" Y="2.25" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
-        <Position X="0.72" Y="0.39" Height="0.182" Width="1.168" />
+        <Position X="0.222" Y="0.198" Height="0.182" Width="0.938" />
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
@@ -52,17 +52,24 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="Client.Network.TcpService">
-    <Position X="12.75" Y="2.25" Width="1.75" />
+    <Position X="15.75" Y="2.25" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AAAAAgAAACAAAEAACEAAAAAAIAAAAAgUIAACEAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAACAAAEAAAEAAAAAAIAAAAAAUIAAAEAAAAAA=</HashCode>
       <FileName>Network\TcpService.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Client.Network.UdpService">
-    <Position X="4.5" Y="2.25" Width="1.75" />
+    <Position X="12.25" Y="2.25" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AAgAAgAAACAAAEAAKEAAAAAAAAAAAAAQIAECAAAAAAA=</HashCode>
+      <HashCode>AAAAAAABACAAAEAAAEAAAAAAAAAAAAAQIAEAAAAAAAA=</HashCode>
       <FileName>Network\UdpService.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Client.Network.ProtocolService">
+    <Position X="14.25" Y="7" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAgAAACAAAEAACAAAAAAAAAAAAAgQIAACAAAAAAA=</HashCode>
+      <FileName>Network\ProtocolService.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Segoe UI" Size="9" />

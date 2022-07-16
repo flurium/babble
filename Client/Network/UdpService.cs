@@ -10,22 +10,14 @@ using static CrossLibrary.Globals;
 
 namespace Client.Network
 {
-    public class UdpService
+    public class UdpService : ProtocolService
     {
-        private readonly Action<string> handle;
-        private Task listenTask;
-        private readonly int localPort;
-        private EndPoint remoteIp;
-        private bool run = false;
+        private EndPoint remoteEndPoint;
         private Socket socket;
 
-        public UdpService(int localPort, Action<string> handle)
-        {
-            this.localPort = localPort;
-            this.handle = handle;
-        }
-
-        public long BufferSize { get; set; } = 1024;
+        /// <param name="port">Locac port</param>
+        /// <param name="handle">Delegate to handle incomming message strings</param>
+        public UdpService(int port, Action<string> handle) : base(port, handle) { }
 
         public void Send(Request req)
         {
@@ -52,13 +44,13 @@ namespace Client.Network
             }
         }
 
-        public void Start()
+        public override void Start()
         {
             if (!run)
             {
                 run = true;
                 socket = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-                IPEndPoint localIp = new(IPAddress.Parse("127.0.0.1"), localPort);
+                IPEndPoint localIp = new(IPAddress.Parse("127.0.0.1"), port);
                 socket.Bind(localIp);
 
                 listenTask = new(Listen);
@@ -66,21 +58,21 @@ namespace Client.Network
             }
         }
 
-        public void Stop()
+        public override void Stop()
         {
             run = false;
             socket.Shutdown(SocketShutdown.Both);
             socket.Close();
         }
 
-        private string Receive()
+        protected override string Receive()
         {
             int bytes;
             byte[] buffer = new byte[BufferSize];
             StringBuilder builder = new();
             do
             {
-                bytes = socket.ReceiveFrom(buffer, ref remoteIp);
+                bytes = socket.ReceiveFrom(buffer, ref remoteEndPoint);
 
                 builder.Append(CommunicationEncoding.GetString(buffer, 0, bytes));
             } while (socket.Available > 0);
@@ -91,13 +83,13 @@ namespace Client.Network
         /// <summary>
         /// Loop that read incomming responses
         /// </summary>
-        private void Listen()
+        protected override void Listen()
         {
             try
             {
                 while (run)
                 {
-                    remoteIp = new IPEndPoint(IPAddress.Any, localPort);
+                    remoteEndPoint = new IPEndPoint(IPAddress.Any, port);
                     string message = Receive();
 
                     //var fullIp = (IPEndPoint)ip;

@@ -6,23 +6,16 @@ using System.Threading.Tasks;
 
 namespace Client.Network
 {
-    internal class TcpService
+    internal class TcpService : ProtocolService
     {
-        private readonly Action<string> handle;
-        private Task listenTask;
-        private readonly int port;
-        private bool run = false;
         private TcpClient tcpClient;
         private TcpListener tcpListener;
         private NetworkStream tcpStream;
 
-        public TcpService(int port, Action<string> handle)
-        {
-            this.port = port;
-            this.handle = handle;
-        }
+        /// <param name="port">Local port</param>
+        /// <param name="handle">Delegate to handle incomming message strings<</param>
+        public TcpService(int port, Action<string> handle) : base(port, handle) { }
 
-        public long BufferSize { get; set; } = 1024;
 
         /// <summary>
         /// Connect to another client and send file message. Get nothing.
@@ -49,15 +42,15 @@ namespace Client.Network
             }
         }
 
-        public void Start()
+        public override void Start()
         {
             listenTask = new(Listen);
             listenTask.Start();
         }
 
-        public void Stop() => run = false;
+        public override void Stop() => run = false;
 
-        private string Receive()
+        protected override string Receive()
         {
             int bytes;
             byte[] buffer = new byte[BufferSize];
@@ -71,7 +64,7 @@ namespace Client.Network
             return builder.ToString();
         }
 
-        private void Listen()
+        protected override void Listen()
         {
             try
             {
