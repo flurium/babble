@@ -1,4 +1,4 @@
-﻿using Client.Network;
+﻿using Client.Services.Network.Tcp;
 
 namespace Client.Services
 {

@@ -1,5 +1,5 @@
 ﻿using Client.Models;
-using Client.Network;
+using Client.Services.Network.Udp;
 using CrossLibrary;
 using Newtonsoft.Json;
 using System;
@@ -36,7 +36,7 @@ namespace Client.Services
             do
             {
                 localPort = rnd.Next(3000, 49000);
-            } while (localPort == ServerPort);
+            } while (localPort == ServerDestination.Port);
 
             // init udp service
             udpService = new(localPort, Handle);
@@ -163,7 +163,6 @@ namespace Client.Services
                 state.RefreshMessages();
             }
         }
-
 
         public void SignIn(string name, string password)
         {

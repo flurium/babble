@@ -229,9 +229,9 @@ namespace Server.Services
             {
                 Console.ForegroundColor = ConsoleColor.Cyan;
                 IPAddress ip;
-                if (IPAddress.TryParse(ServerIp, out ip!))
+                if (IPAddress.TryParse(ServerDestination.Ip, out ip!))
                 {
-                    IPEndPoint localIpEndPoint = new(ip, ServerPort);
+                    IPEndPoint localIpEndPoint = new(ip, ServerDestination.Port);
                     listeningSocket.Bind(localIpEndPoint);
                     try
                     {

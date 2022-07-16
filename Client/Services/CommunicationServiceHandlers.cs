@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows;
-using System.Windows.Threading;
 
 namespace Client.Services
 {
@@ -45,15 +44,12 @@ namespace Client.Services
             }
         }
 
-
-
         /// <summary>
         /// Handler for incoming contacts from the server.
         /// Create new entries in "Dictionary contactMessages" and "ObservableCollection<Prop> Contacts"
         /// </summary>
         /// <param name="res"></param>
         private void GetContactHandle(Response res) => NewChatHandle(res, ref contactMessages, ref contacts);
-
 
         /// <summary>
         /// Group сreation handler. Adding a group to
@@ -68,7 +64,6 @@ namespace Client.Services
         /// </summary>
         /// <param name="res"></param>
         private void EnterGroupHandle(Response res) => NewChatHandle(res, ref groupMessages, ref groups);
-
 
         /// <summary>
         /// Deleting a contact handler.
@@ -163,14 +158,12 @@ namespace Client.Services
         /// <param name="res"></param>
         private void GetMessageFromContactHandle(Response res) => GetMessageHandle(res, ref contactMessages);
 
-
         /// <summary>
         /// Accepting a message from a group from the north.
         /// Inserting a message into "Dictionary groupMessages" and " ObservableCollection<Message> CurrentMessages"
         /// </summary>
         /// <param name="res"></param>
         private void GetMessageFromGroupHandle(Response res) => GetMessageHandle(res, ref groupMessages);
-
 
         private void RenameHandle(Response res, ref ObservableCollection<Prop> collection)
         {
@@ -201,14 +194,12 @@ namespace Client.Services
         /// <param name="res"></param>
         private void RenameContactHandle(Response res) => RenameHandle(res, ref contacts);
 
-
         /// <summary>
         /// Processing a message from the server about renaming a group.
         /// Search for a group in the ObservableCollection<Prop> Groups and change the Groups.Name
         /// </summary>
         /// <param name="res"></param>
         private void RenameGroupHandle(Response res) => RenameHandle(res, ref groups);
-
 
         /// <summary>
         /// Login processing from the server.

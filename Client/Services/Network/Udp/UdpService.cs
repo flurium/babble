@@ -1,14 +1,14 @@
-﻿using CrossLibrary;
+﻿using Client.Services.Network.Base;
+using CrossLibrary;
 using Newtonsoft.Json;
 using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using static CrossLibrary.Globals;
 
-namespace Client.Network
+namespace Client.Services.Network.Udp
 {
     public class UdpService : ProtocolService
     {
@@ -17,7 +17,10 @@ namespace Client.Network
 
         /// <param name="port">Locac port</param>
         /// <param name="handle">Delegate to handle incomming message strings</param>
-        public UdpService(int port, Action<string> handle) : base(port, handle) { }
+        public UdpService(int port, Action<string> handle) : base(port, handle)
+        {
+            Destination = ServerDestination;
+        }
 
         public void Send(Request req)
         {
@@ -32,11 +35,11 @@ namespace Client.Network
             }
         }
 
-        public void Send(byte[] data)
+        public override void Send(byte[] data)
         {
             try
             {
-                IPEndPoint remoteIP = new(IPAddress.Parse(ServerIp), ServerPort);
+                IPEndPoint remoteIP = new(IPAddress.Parse(Destination.Ip), Destination.Port);
                 socket.SendTo(data, remoteIP);
             }
             catch (Exception ex)
@@ -66,21 +69,6 @@ namespace Client.Network
                 socket.Shutdown(SocketShutdown.Both);
                 socket.Close();
             }
-        }
-
-        protected override string Receive()
-        {
-            int bytes;
-            byte[] buffer = new byte[BufferSize];
-            StringBuilder builder = new();
-            do
-            {
-                bytes = socket.ReceiveFrom(buffer, ref remoteEndPoint);
-
-                builder.Append(CommunicationEncoding.GetString(buffer, 0, bytes));
-            } while (socket.Available > 0);
-
-            return builder.ToString();
         }
 
         /// <summary>
@@ -113,6 +101,21 @@ namespace Client.Network
             {
                 Stop();
             }
+        }
+
+        protected override string Receive()
+        {
+            int bytes;
+            byte[] buffer = new byte[BufferSize];
+            StringBuilder builder = new();
+            do
+            {
+                bytes = socket.ReceiveFrom(buffer, ref remoteEndPoint);
+
+                builder.Append(CommunicationEncoding.GetString(buffer, 0, bytes));
+            } while (socket.Available > 0);
+
+            return builder.ToString();
         }
     }
 }

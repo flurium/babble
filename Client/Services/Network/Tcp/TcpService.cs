@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Client.Services.Network.Base;
+using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace Client.Network
+namespace Client.Services.Network.Tcp
 {
     internal class TcpService : ProtocolService
     {
@@ -16,23 +16,36 @@ namespace Client.Network
         /// <param name="handle">Delegate to handle incomming message strings<</param>
         public TcpService(int port, Action<string> handle) : base(port, handle) { }
 
+        //public void Send(string message)
+        //{
+        //    TcpClient outcomeClient = new();
+        //    NetworkStream? outcomeStream = null;
+        //    try
+        //    {
+        //        outcomeClient.Connect(Destination.Ip, Destination.Port);
+        //        outcomeStream = outcomeClient.GetStream();
+
+        //        byte[] data = CommunicationEncoding.GetBytes(message);
+        //        outcomeStream.Write(data, 0, data.Length);
+        //    }
+        //    finally
+        //    {
+        //        if (outcomeStream != null) outcomeStream.Close();
+        //        outcomeClient.Close();
+        //    }
+        //}
 
         /// <summary>
         /// Connect to another client and send file message. Get nothing.
         /// </summary>
-        /// <param name="message"></param>
-        /// <param name="ip">Ip address of client to send.</param>
-        /// <param name="port">Port of client to send.</param>
-        public void Send(string message, string ip, int port)
+        public override void Send(byte[] data)
         {
             TcpClient outcomeClient = new();
             NetworkStream? outcomeStream = null;
             try
             {
-                outcomeClient.Connect(ip, port);
+                outcomeClient.Connect(Destination.Ip, Destination.Port);
                 outcomeStream = outcomeClient.GetStream();
-
-                byte[] data = Encoding.Unicode.GetBytes(message);
                 outcomeStream.Write(data, 0, data.Length);
             }
             finally
@@ -54,19 +67,6 @@ namespace Client.Network
         public override void Stop()
         {
             run = false;
-        }
-        protected override string Receive()
-        {
-            int bytes;
-            byte[] buffer = new byte[BufferSize];
-            StringBuilder builder = new();
-            do
-            {
-                bytes = tcpStream.Read(buffer, 0, buffer.Length);
-                builder.Append(Encoding.Unicode.GetString(buffer, 0, bytes));
-            } while (tcpStream.DataAvailable);
-
-            return builder.ToString();
         }
 
         protected override void Listen()
@@ -94,12 +94,25 @@ namespace Client.Network
                         if (tcpClient != null) tcpClient.Close();
                     }
                 }
-
             }
             finally
             {
                 tcpListener.Stop();
             }
+        }
+
+        protected override string Receive()
+        {
+            int bytes;
+            byte[] buffer = new byte[BufferSize];
+            StringBuilder builder = new();
+            do
+            {
+                bytes = tcpStream.Read(buffer, 0, buffer.Length);
+                builder.Append(Encoding.Unicode.GetString(buffer, 0, bytes));
+            } while (tcpStream.DataAvailable);
+
+            return builder.ToString();
         }
     }
 }

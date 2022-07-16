@@ -45,4 +45,10 @@
         public dynamic Data { get; set; }
         public Status Status { get; set; }
     }
+
+    public struct Destination
+    {
+        public string Ip { get; set; }
+        public int Port { get; set; }
+    }
 }

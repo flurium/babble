@@ -113,6 +113,5 @@ namespace Server.Services
             await db.SaveChangesAsync();
             return contact.Entity;
         }
-
     }
 }
