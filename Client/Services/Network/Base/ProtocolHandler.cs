@@ -1,5 +1,4 @@
-﻿using Client.Services.Network.Base;
-using System;
+﻿using System;
 
 namespace Client.Services.Network.Base
 {

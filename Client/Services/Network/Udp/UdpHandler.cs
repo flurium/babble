@@ -183,7 +183,6 @@ namespace Client.Services
 
             private void GetMessageFromGroupHandle(Response res) => GetMessageHandle(res, ref cs.groupMessages);
 
-
             private void UpdateCollectionProp(Prop prop, int i, ref ObservableCollection<Prop> collection) => collection[i] = prop;
 
             /// <summary>
