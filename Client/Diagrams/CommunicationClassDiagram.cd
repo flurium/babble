@@ -24,8 +24,8 @@
     </NestedTypes>
     <AssociationLine Name="udpService" Type="Client.Network.UdpService" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="11" Y="1.75" />
-        <Point X="13.49" Y="1.75" />
+        <Point X="11" Y="1.792" />
+        <Point X="13.49" Y="1.792" />
         <Point X="13.49" Y="2.25" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true">
@@ -34,16 +34,16 @@
     </AssociationLine>
     <AssociationLine Name="tcpService" Type="Client.Network.TcpService" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="11" Y="1.625" />
-        <Point X="16.625" Y="1.625" />
-        <Point X="16.625" Y="2.25" />
+        <Point X="11" Y="1.66" />
+        <Point X="16.125" Y="1.66" />
+        <Point X="16.125" Y="2.25" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
         <Position X="0.222" Y="0.198" Height="0.182" Width="0.938" />
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>RgxBBkSIAIAgCgKBASAAAUAAEQEAgBLUCAAAIAZAsSQ=</HashCode>
+      <HashCode>RgxBBkSIIISgCgKBASAAAUAAEQFAgBLUCAAAIAZAsTQ=</HashCode>
       <FileName>Services\CommunicationService.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -52,7 +52,7 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="Client.Network.TcpService">
-    <Position X="15.75" Y="2.25" Width="1.75" />
+    <Position X="15.25" Y="2.25" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAACAAAEAAAEAAAAAAIAAAAAAUIAAAEAAAAAA=</HashCode>
       <FileName>Network\TcpService.cs</FileName>
@@ -66,7 +66,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="Client.Network.ProtocolService">
-    <Position X="14.25" Y="7" Width="1.5" />
+    <Position X="14" Y="7" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAgAAACAAAEAACAAAAAAAAAAAAAgQIAACAAAAAAA=</HashCode>
       <FileName>Network\ProtocolService.cs</FileName>

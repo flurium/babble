@@ -44,12 +44,17 @@ namespace Client.Network
 
         public override void Start()
         {
-            listenTask = new(Listen);
-            listenTask.Start();
+            if (!run)
+            {
+                listenTask = new(Listen);
+                listenTask.Start();
+            }
         }
 
-        public override void Stop() => run = false;
-
+        public override void Stop()
+        {
+            run = false;
+        }
         protected override string Receive()
         {
             int bytes;
@@ -89,6 +94,7 @@ namespace Client.Network
                         if (tcpClient != null) tcpClient.Close();
                     }
                 }
+
             }
             finally
             {

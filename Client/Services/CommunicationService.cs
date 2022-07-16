@@ -120,8 +120,8 @@ namespace Client.Services
             Invites.Clear();
 
             // stop services
-            tcpService.Stop();
-            udpService.Stop();
+            //tcpService.Stop();
+            //udpService.Stop();
 
             run = false;
         }

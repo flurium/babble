@@ -60,9 +60,12 @@ namespace Client.Network
 
         public override void Stop()
         {
-            run = false;
-            socket.Shutdown(SocketShutdown.Both);
-            socket.Close();
+            if (run)
+            {
+                run = false;
+                socket.Shutdown(SocketShutdown.Both);
+                socket.Close();
+            }
         }
 
         protected override string Receive()
