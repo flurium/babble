@@ -3,7 +3,6 @@
   <Class Name="Client.Services.CommunicationService">
     <Position X="8.25" Y="1" Width="2.75" />
     <Compartments>
-      <Compartment Name="Methods" Collapsed="true" />
       <Compartment Name="Nested Types" Collapsed="false" />
     </Compartments>
     <NestedTypes>
@@ -25,22 +24,22 @@
     </NestedTypes>
     <AssociationLine Name="udpService" Type="Client.Network.UdpService" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="8.25" Y="1.667" />
-        <Point X="6.74" Y="1.667" />
-        <Point X="6.74" Y="2.25" />
+        <Point X="8.25" Y="1.967" />
+        <Point X="5.74" Y="1.967" />
+        <Point X="5.74" Y="2.25" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true">
-        <Position X="-1.253" Y="0.684" />
+        <Position X="-1.684" Y="0.425" />
       </MemberNameLabel>
     </AssociationLine>
     <AssociationLine Name="tcpService" Type="Client.Network.TcpService" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="11" Y="1.667" />
-        <Point X="12.875" Y="1.667" />
-        <Point X="12.875" Y="2.25" />
+        <Point X="11" Y="1.967" />
+        <Point X="13.625" Y="1.967" />
+        <Point X="13.625" Y="2.25" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
-        <Position X="0.327" Y="0.668" Height="0.182" Width="1.168" />
+        <Position X="0.72" Y="0.39" Height="0.182" Width="1.168" />
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
@@ -53,14 +52,14 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="Client.Network.TcpService">
-    <Position X="12" Y="2.25" Width="1.75" />
+    <Position X="12.75" Y="2.25" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAAgAAACAAAEAACEAAAAAAIAAAAAgUIAACEAAAAAA=</HashCode>
       <FileName>Network\TcpService.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Client.Network.UdpService">
-    <Position X="5.5" Y="2.25" Width="1.75" />
+    <Position X="4.5" Y="2.25" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAgAAgAAACAAAEAAKEAAAAAAAAAAAAAQIAECAAAAAAA=</HashCode>
       <FileName>Network\UdpService.cs</FileName>
