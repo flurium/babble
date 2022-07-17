@@ -12,7 +12,7 @@ namespace Client.Services
     {
         /// <summary>
         /// Base state abstraction. Inside of CommunicationService class,
-        /// because need access to private fields. 
+        /// because need access to private fields.
         /// Need access to: currentProp, contactMessages, groupMessages, contacts, groups, pendingSendFile
         /// </summary>
         public abstract class CommunicationState
@@ -36,6 +36,7 @@ namespace Client.Services
             protected void Rename(dynamic data, ref ObservableCollection<Prop> collection, Command command)
             {
                 Request req = new() { Command = command, Data = data };
+
                 cs.SendData(req);
 
                 for (int i = 0; i < collection.Count; i++)

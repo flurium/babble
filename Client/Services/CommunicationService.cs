@@ -1,7 +1,6 @@
 ﻿using Client.Models;
-using Client.Network;
+using Client.Services.Network.Base;
 using CrossLibrary;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -20,11 +19,12 @@ namespace Client.Services
         // key = group id
         private Dictionary<int, LinkedList<Message>> groupMessages = new();
 
-        private Dictionary<Command, Action<Response>> handlers;
         private int localPort;
         private Prop currentProp;
 
-        private UdpService udpService;
+        private IProtocolService udpHandler;
+        private IProtocolService tcpHandler;
+        //private UdpService udpService;
 
         private byte[] pendingSendFile;
         private bool run = false;
@@ -36,30 +36,14 @@ namespace Client.Services
             do
             {
                 localPort = rnd.Next(3000, 49000);
-            } while (localPort == ServerPort);
+            } while (localPort == ServerDestination.Port);
 
             // init udp service
-            udpService = new(localPort, Handle);
+            udpHandler = new UdpHandler(localPort, this);
+            //udpService = new(localPort, Handle);
 
             // init tcp service
-            tcpService = new(localPort, TcpHandle);
-
-            // Init handlers
-            handlers = new()
-            {
-                {Command.SignIn, SignInHandle },
-                {Command.SignUp, SignUpHandle},
-                {Command.SendInvite, SendInviteHandle},
-                {Command.GetInvite, GetInviteHandle},
-                {Command.GetContact, GetContactHandle},
-                {Command.GetMessageFromContact, GetMessageFromContactHandle},
-                {Command.GetMessageFromGroup, GetMessageFromGroupHandle},
-                {Command.CreateGroup, CreateGroupHandle},
-                {Command.EnterGroup, EnterGroupHandle},
-                {Command.RemoveContact, RemoveContactHandle},
-                {Command.RenameContact, RenameContactHandle},
-                {Command.RenameGroup, RenameGroupHandle}
-            };
+            tcpHandler = new TcpHandler(localPort);
         }
 
         // function from interface to confirm sign
@@ -120,8 +104,8 @@ namespace Client.Services
             Invites.Clear();
 
             // stop services
-            tcpService.Stop();
-            udpService.Stop();
+            //tcpService.Stop();
+            //udpService.Stop();
 
             run = false;
         }
@@ -164,7 +148,6 @@ namespace Client.Services
             }
         }
 
-
         public void SignIn(string name, string password)
         {
             try
@@ -197,32 +180,21 @@ namespace Client.Services
             }
         }
 
-        // Treatment
-        private void Handle(string resStr)
-        {
-            Response res = JsonConvert.DeserializeObject<Response>(resStr);
-            try
-            {
-                handlers[res.Command](res);
-            }
-            catch (Exception ex)
-            {
-                // Show error
-            }
-        }
-
         private void OpenConnection()
         {
             run = true;
             // run udp service
-            udpService.Start();
+            udpHandler.Start();
+            //udpService.Start();
 
             // run tcp service
-            tcpService.Start();
+
+            //tcpHandler.Start();
         }
 
-        internal void SendData(Request req) => udpService.Send(req);
+        //internal void SendData(Request req) => udpService.Send(req);
+        public void SendData(Request req) => udpHandler.Send(req.ToStrBytes());
 
-        private void SendData(byte[] data) => udpService.Send(data);
+        private void SendData(byte[] data) => udpHandler.Send(data);
     }
 }

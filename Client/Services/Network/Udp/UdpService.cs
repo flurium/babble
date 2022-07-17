@@ -1,31 +1,26 @@
-﻿using CrossLibrary;
+﻿using Client.Services.Network.Base;
+using CrossLibrary;
 using Newtonsoft.Json;
 using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using static CrossLibrary.Globals;
 
-namespace Client.Network
+namespace Client.Services.Network.Udp
 {
-    public class UdpService
+    public class UdpService : ProtocolService
     {
-        private readonly Action<string> handle;
-        private Task listenTask;
-        private readonly int localPort;
-        private EndPoint remoteIp;
-        private bool run = false;
+        private EndPoint remoteEndPoint;
         private Socket socket;
 
-        public UdpService(int localPort, Action<string> handle)
+        /// <param name="port">Locac port</param>
+        /// <param name="handle">Delegate to handle incomming message strings</param>
+        public UdpService(int port, Action<string> handle) : base(port, handle)
         {
-            this.localPort = localPort;
-            this.handle = handle;
+            Destination = ServerDestination;
         }
-
-        public long BufferSize { get; set; } = 1024;
 
         public void Send(Request req)
         {
@@ -40,11 +35,11 @@ namespace Client.Network
             }
         }
 
-        public void Send(byte[] data)
+        public override void Send(byte[] data)
         {
             try
             {
-                IPEndPoint remoteIP = new(IPAddress.Parse(ServerIp), ServerPort);
+                IPEndPoint remoteIP = new(IPAddress.Parse(Destination.Ip), Destination.Port);
                 socket.SendTo(data, remoteIP);
             }
             catch (Exception ex)
@@ -52,13 +47,13 @@ namespace Client.Network
             }
         }
 
-        public void Start()
+        public override void Start()
         {
             if (!run)
             {
                 run = true;
                 socket = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-                IPEndPoint localIp = new(IPAddress.Parse("127.0.0.1"), localPort);
+                IPEndPoint localIp = new(IPAddress.Parse("127.0.0.1"), port);
                 socket.Bind(localIp);
 
                 listenTask = new(Listen);
@@ -66,38 +61,26 @@ namespace Client.Network
             }
         }
 
-        public void Stop()
+        public override void Stop()
         {
-            run = false;
-            socket.Shutdown(SocketShutdown.Both);
-            socket.Close();
-        }
-
-        private string Receive()
-        {
-            int bytes;
-            byte[] buffer = new byte[BufferSize];
-            StringBuilder builder = new();
-            do
+            if (run)
             {
-                bytes = socket.ReceiveFrom(buffer, ref remoteIp);
-
-                builder.Append(CommunicationEncoding.GetString(buffer, 0, bytes));
-            } while (socket.Available > 0);
-
-            return builder.ToString();
+                run = false;
+                socket.Shutdown(SocketShutdown.Both);
+                socket.Close();
+            }
         }
 
         /// <summary>
         /// Loop that read incomming responses
         /// </summary>
-        private void Listen()
+        protected override void Listen()
         {
             try
             {
                 while (run)
                 {
-                    remoteIp = new IPEndPoint(IPAddress.Any, localPort);
+                    remoteEndPoint = new IPEndPoint(IPAddress.Any, port);
                     string message = Receive();
 
                     //var fullIp = (IPEndPoint)ip;
@@ -118,6 +101,21 @@ namespace Client.Network
             {
                 Stop();
             }
+        }
+
+        protected override string Receive()
+        {
+            int bytes;
+            byte[] buffer = new byte[BufferSize];
+            StringBuilder builder = new();
+            do
+            {
+                bytes = socket.ReceiveFrom(buffer, ref remoteEndPoint);
+
+                builder.Append(CommunicationEncoding.GetString(buffer, 0, bytes));
+            } while (socket.Available > 0);
+
+            return builder.ToString();
         }
     }
 }
