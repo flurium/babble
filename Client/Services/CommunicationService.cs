@@ -1,4 +1,5 @@
 ﻿using Client.Models;
+using Client.Services.Network.Base;
 using CrossLibrary;
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,8 @@ namespace Client.Services
         private int localPort;
         private Prop currentProp;
 
-        private UdpHandler udpHandler;
+        private IProtocolService udpHandler;
+        private IProtocolService tcpHandler;
         //private UdpService udpService;
 
         private byte[] pendingSendFile;
@@ -37,11 +39,11 @@ namespace Client.Services
             } while (localPort == ServerDestination.Port);
 
             // init udp service
-            udpHandler = new(localPort, this);
+            udpHandler = new UdpHandler(localPort, this);
             //udpService = new(localPort, Handle);
 
             // init tcp service
-            tcpService = new(localPort, TcpHandle);
+            tcpHandler = new TcpHandler(localPort);
         }
 
         // function from interface to confirm sign
@@ -186,7 +188,8 @@ namespace Client.Services
             //udpService.Start();
 
             // run tcp service
-            tcpService.Start();
+
+            //tcpHandler.Start();
         }
 
         //internal void SendData(Request req) => udpService.Send(req);

@@ -1,19 +1,21 @@
 ﻿using Client.Services.Network.Base;
+using Client.Services.Network.Tcp;
 using System;
 
-namespace Client.Services.Network.Tcp
+namespace Client.Services
 {
-    public class TcpHandler : ProtocolHandler
+    public partial class CommunicationService
     {
-        public TcpHandler(int port) : base(port)
+        public class TcpHandler : ProtocolHandler
         {
-        }
+            public TcpHandler(int port) : base(port) { }
 
-        protected override ProtocolService CreateProtocolService(int port, Action<string> handle) => new TcpService(port, handle);
+            protected override ProtocolService CreateProtocolService(int port, Action<string> handle) => new TcpService(port, handle);
 
-        protected override void Handle(string str)
-        {
-            throw new NotImplementedException();
+            protected override void Handle(string str)
+            {
+                //throw new NotImplementedException();
+            }
         }
     }
 }
