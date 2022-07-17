@@ -8,6 +8,11 @@ using static CrossLibrary.Globals;
 
 namespace Server.Services
 {
+    /// <summary>
+    /// Receiving requests from the client,
+    /// communicating with the database and
+    /// sending responses back to the client
+    /// </summary>
     public class CommunicationService
     {
         private readonly Dictionary<int, IPEndPoint> clients = new();
@@ -17,6 +22,13 @@ namespace Server.Services
         private readonly bool run = false;
         private readonly ILogger logger = new Logger();
 
+        /// <summary>
+        /// Handler for accepting invite by user id.
+        /// Send two responses
+        /// <see cref="DatabaseService.AcceptInviteAsync(int)">Appropriate method from DBService</see>
+        /// </summary>
+        /// <param name="req">Request contains id</param>
+        /// <param name="ip">UserTo IP</param>
         public async void AcceptInviteHandle(Request req, IPEndPoint ip)
         {
             // ip = ip of user to
@@ -30,7 +42,7 @@ namespace Server.Services
             // to user from
             if (clients.ContainsKey(contact.UserFromId))
             {
-                // only if user from online
+                // only if user from is online
                 SendData(
                   new Response { Command = Command.GetContact, Status = Status.OK, Data = new Prop { Id = contact.UserToId, Name = contact.NameAtUserFrom } },
                   clients[contact.UserFromId]
@@ -38,6 +50,12 @@ namespace Server.Services
             }
         }
 
+        /// <summary>
+        /// Handler for creating new group by user id and name of group.
+        /// <see cref="DatabaseService.CreateGroupAsync(int, string)">Appropriate method from DBService</see>
+        /// </summary>
+        /// <param name="req">Request contains user id and new name of group</param>
+        /// <param name="ip">UserTo IP</param>
         public async void CreateGroupHandle(Request req, IPEndPoint ip)
         {
             int uid = req.Data.User;
@@ -46,6 +64,12 @@ namespace Server.Services
             SendData(new Response { Command = Command.CreateGroup, Status = Status.OK, Data = group }, ip);
         }
 
+        /// <summary>
+        /// Handler for adding new user to existing group.
+        /// <see cref="DatabaseService.AddUserToGroupAsync(int, string)">Appropriate method from DBService</see>
+        /// </summary>
+        /// <param name="req">Request contains user id and name of group</param>
+        /// <param name="ip">UserTo IP</param>
         public async void EnterGroupHandle(Request req, IPEndPoint ip)
         {
             int uid = req.Data.User;
@@ -55,6 +79,12 @@ namespace Server.Services
             SendData(new Response { Command = Command.EnterGroup, Status = Status.OK, Data = group }, ip);
         }
 
+        /// <summary>
+        /// Handler for removing user from existing group.
+        /// <see cref="DatabaseService.RemoveUserFromGroupAsync(int, string)">Appropriate method from DBService</see>
+        /// </summary>
+        /// <param name="req">Request contains user id and name of group</param>
+        /// <param name="ip">UserTo IP</param>
         public async void LeaveGroupHandle(Request req, IPEndPoint ip)
         {
             int uid = req.Data.Id;
@@ -64,12 +94,23 @@ namespace Server.Services
             SendData(new Response { Command = Command.LeaveGroup, Status = Status.OK, Data = "Group is removed" }, ip);
         }
 
+        /// <summary>
+        /// Handler for disconnecting.
+        /// </summary>
+        /// <param name="req">Request contains user id</param>
+        /// <param name="ip">User IP</param>
         public void DisconnectHandle(Request req, IPEndPoint ip)
         {
             int id = req.Data.Id;
             clients.Remove(id);
         }
 
+        /// <summary>
+        /// Handler for removing contact from user's contact list.
+        /// <see cref="DatabaseService.RemoveContact(int, int)">Appropriate method from DBService</see>
+        /// </summary>
+        /// <param name="req">Request contains two user ids</param>
+        /// <param name="ip">UserTo IP</param>
         public async void RemoveContactHandle(Request req, IPEndPoint ip)
         {
             int from = req.Data.From;
@@ -78,6 +119,12 @@ namespace Server.Services
             SendData(new Response { Command = Command.RemoveContact, Status = Status.OK, Data = "Contact is removed" }, ip);
         }
 
+        /// <summary>
+        /// Handler for renaming contact in user's contact list.
+        /// <see cref="DatabaseService.RenameContact(int, int, string)">Appropriate method from DBService</see>
+        /// </summary>
+        /// <param name="req">Request contains two user ids and new contact name</param>
+        /// <param name="ip">UserTo IP</param>
         public void RenameContactHandle(Request req, IPEndPoint ip)
         {
             int from = req.Data.From;
@@ -87,6 +134,12 @@ namespace Server.Services
             SendData(new Response { Command = Command.RenameContact, Status = Status.OK, Data = new Prop { Id = to, Name = newName } }, ip);
         }
 
+        /// <summary>
+        /// Handler for renaming group in user's group list.
+        /// <see cref="DatabaseService.RenameGroupAsync(int, string)">Appropriate method from DBService</see>
+        /// </summary>
+        /// <param name="req">Request contains user id and new group name</param>
+        /// <param name="ip">UserTo IP</param>
         public async void RenameGroupHandle(Request req, IPEndPoint ip)
         {
             int id = req.Data.Id;
@@ -95,13 +148,20 @@ namespace Server.Services
             SendData(new Response { Command = Command.RenameGroup, Status = Status.OK, Data = new Prop { Id = id, Name = name } }, ip);
         }
 
+        /// <summary>
+        /// Handler for sending invitations between users.
+        /// Send two responses
+        /// <see cref="DatabaseService.SendInviteAsync(int, string)">Appropriate method from DBService</see>
+        /// </summary>
+        /// <param name="req">Request contains two user ids</param>
+        /// <param name="ip">UserTo IP</param>
         public async void SendInviteHandle(Request req, IPEndPoint ip)
         {
             int from = req.Data.From;
             string to = req.Data.To;
             Contact contact = await db.SendInviteAsync(from, to);
 
-            // to who sended request
+            // to who sent request
             SendData(new Response { Command = Command.SendInvite, Status = Status.OK, Data = new { Message = "Invite was send successfully" } }, ip);
 
             // to who will get invite
@@ -112,6 +172,11 @@ namespace Server.Services
             }
         }
 
+        /// <summary>
+        /// Handler for sending messages between users.
+        /// </summary>
+        /// <param name="req">Request contains two user ids and text message</param>
+        /// <param name="ip">UserTo IP</param>
         public void SendMessageToContactHandle(Request req, IPEndPoint ip)
         {
             // to user who sent
@@ -130,6 +195,11 @@ namespace Server.Services
             }
         }
 
+        /// <summary>
+        /// Handler for sending messages from users to group.
+        /// </summary>
+        /// <param name="req">Request contains user id, group id and text message</param>
+        /// <param name="ip">UserTo IP</param>
         public void SendMessageToGroupHandle(Request req, IPEndPoint ip)
         {
             int from = req.Data.From;
@@ -147,6 +217,16 @@ namespace Server.Services
             }
         }
 
+        /// <summary>
+        /// Login processing, password verifying.
+        /// Sending data about contacts, groups and invites.
+        /// <see cref="DatabaseService.GetUser(string)">Appropriate method from DBService</see>
+        /// <see cref="DatabaseService.GetUserGroups(int)">Appropriate method from DBService</see>
+        /// <see cref="DatabaseService.GetInvites(int)">Appropriate method from DBService</see>
+        /// <see cref="DatabaseService.GetContacts(int)">Appropriate method from DBService</see>
+        /// </summary>
+        /// <param name="req">Request contains user name and password</param>
+        /// <param name="ip">UserTo IP</param>
         public void SignInHandle(Request req, IPEndPoint ip)
         {
             string name = req.Data.Name;
@@ -187,6 +267,13 @@ namespace Server.Services
             SendData(res, ip);
         }
 
+        /// <summary>
+        /// Processing a registration request.
+        /// Creating new user.
+        /// <see cref="DatabaseService.AddUser(string, string)">Appropriate method from DBService</see>
+        /// </summary>
+        /// <param name="req">Request contains new user name and password</param>
+        /// <param name="ip">UserTo IP</param>
         public void SignUpHandle(Request req, IPEndPoint ip)
         {
             string name = req.Data.Name;
