@@ -143,6 +143,7 @@
     <Border Grid.Column="1" BorderBrush="#abadb8" BorderThickness="1,0,0,0">
       <Grid>
         <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="50" />
           <ColumnDefinition />
           <ColumnDefinition Width="60" />
           <ColumnDefinition Width="50" />
@@ -150,16 +151,17 @@
         <Grid.RowDefinitions>
           <RowDefinition Height="40" />
           <RowDefinition />
+          <RowDefinition Height="auto" />
           <RowDefinition Height="40" />
         </Grid.RowDefinitions>
 
-        <TextBox Grid.Column="0" Grid.Row="0" x:Name="ChatName" Style="{StaticResource Input}" IsReadOnly="True"></TextBox>
-        <Button Grid.Column="1" Grid.Row="0" x:Name="RenameBtn" Click="RenameBtn_Click">Rename</Button>
+        <TextBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" x:Name="ChatName" Style="{StaticResource Input}" IsReadOnly="True"></TextBox>
+        <Button Grid.Column="2" Grid.Row="0" x:Name="RenameBtn" Click="RenameBtn_Click">Rename</Button>
         <!--<Label Name="interlocutor" Grid.Column="0" Grid.Row="0" Content="interlocutor" />-->
 
-        <Button Grid.Column="2" Grid.Row="0" x:Name="Exit" Click="Exit_Click">Exit</Button>
+        <Button Grid.Column="3" Grid.Row="0" x:Name="Exit" Click="Exit_Click">Exit</Button>
 
-        <ListBox Grid.Row="1" Grid.ColumnSpan="3" x:Name="MessageList" ItemsSource="{Binding CurrentMessages}" ScrollViewer.ScrollChanged="MessageList_ScrollChanged" ScrollViewer.VerticalScrollBarVisibility="Auto"  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+        <ListBox Grid.Row="1" Grid.ColumnSpan="4" x:Name="MessageList" ItemsSource="{Binding CurrentMessages}" ScrollViewer.ScrollChanged="MessageList_ScrollChanged" ScrollViewer.VerticalScrollBarVisibility="Auto"  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
           <ListBox.ItemContainerStyle>
             <Style TargetType="ListBoxItem">
               <Setter Property="Margin" Value="100,5,5,0" />
@@ -176,14 +178,44 @@
           <ListBox.ItemTemplate>
             <DataTemplate>
               <Grid Background="#f4f4f6">
-                <TextBlock Text="{Binding Text}" Foreground="Black" Padding="10" TextWrapping="Wrap"></TextBlock>
+                <Grid.RowDefinitions>
+                  <RowDefinition />
+                  <RowDefinition />
+                  <RowDefinition />
+                </Grid.RowDefinitions>
+
+                <TextBlock Text="{Binding Text}" Padding="10" Grid.Row="0" Foreground="Black" TextWrapping="Wrap" />
+                <ItemsControl  x:Name="Files" ItemsSource="{Binding Files}"  Grid.Row="1">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                      <Image Source="{Binding Path}" />
+                      <DataTemplate.Triggers>
+                        <DataTrigger Binding="{Binding IsImage}" Value="False">
+                          <Setter Property="Visibility"  Value="Collapsed" />
+                        </DataTrigger>
+                      </DataTemplate.Triggers>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <Button x:Name="ShowInFolderBtn" Click="ShowInFolderBtn_Click" Grid.Row="2">Show in folder</Button>
               </Grid>
+              <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding Files}" Value="{x:Null}">
+                  <Setter TargetName="ShowInFolderBtn" Property="Visibility" Value="Collapsed" />
+                  <!--<Setter TargetName="ShowInFolderBtn" Property="Height" Value="0" />-->
+                  <Setter TargetName="Files" Property="Visibility" Value="Collapsed" />
+                </DataTrigger>
+              </DataTemplate.Triggers>
             </DataTemplate>
           </ListBox.ItemTemplate>
         </ListBox>
 
-        <TextBox KeyDown="MessageSend_KeyDown" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" x:Name="MessageWrite" IsEnabled="False" Style="{StaticResource Input}"></TextBox>
-        <Button Grid.Column="2" Grid.Row="2" x:Name="MessageSend" Click="MessageSend_Click">Send</Button>
+        <TextBlock x:Name="SelectedFilesText" Grid.Row="2" Grid.ColumnSpan="3" Visibility="Collapsed" />
+        <Button x:Name="UnselectFilesBtn" Click="UnselectFilesBtn_Click" Grid.Row="2" Grid.Column="3" Visibility="Collapsed" >Unselect</Button>
+
+        <Button Grid.Column="0" Grid.Row="3" Click="FileBth_Click">File</Button>
+        <TextBox KeyDown="MessageSend_KeyDown" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="3" x:Name="MessageWrite" IsEnabled="False" Style="{StaticResource Input}"></TextBox>
+        <Button Grid.Column="3" Grid.Row="3" x:Name="MessageSend" Click="MessageSend_Click">Send</Button>
       </Grid>
     </Border>
   </Grid>

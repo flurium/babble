@@ -4,99 +4,99 @@ using Server.Models;
 
 namespace Server.Services
 {
-  // prefix 'u' means 'user'
+    // prefix 'u' means 'user'
 
-  public interface IGroupService
-  {
-    Task<Prop> CreateGroupAsync(int uid, string groupName);
-
-    Task<Prop> AddUserToGroupAsync(int uid, string groupName);
-
-    IEnumerable<Prop> GetUserGroups(int uid);
-
-    Task RemoveUserFromGroupAsync(int uid, string groupName);
-
-    Task RenameGroupAsync(int id, string newName);
-
-    IEnumerable<int> GetGroupMembersIds(int id);
-  }
-
-  public class GroupService : IGroupService
-  {
-    private BabbleContext db;
-
-    public GroupService(BabbleContext db) => this.db = db;
-
-    public async Task<Prop> CreateGroupAsync(int uid, string groupName)
+    public interface IGroupService
     {
-      Group group = new() { Name = groupName };
-      User? user = db.Users.Find(uid);
+        Task<Prop> CreateGroupAsync(int uid, string groupName);
 
-      if (user != null)
-      {
-        group = db.Groups.Add(group).Entity;
-        db.UserGroups.Add(new UserGroup { Group = group, User = user });
-        await db.SaveChangesAsync();
+        Task<Prop> AddUserToGroupAsync(int uid, string groupName);
 
-        return new Prop { Id = group.Id, Name = group.Name };
-      }
-      throw new Exception("User not found!");
+        IEnumerable<Prop> GetUserGroups(int uid);
+
+        Task RemoveUserFromGroupAsync(int uid, string groupName);
+
+        Task RenameGroupAsync(int id, string newName);
+
+        IEnumerable<int> GetGroupMembersIds(int id);
     }
 
-    public async Task<Prop> AddUserToGroupAsync(int uid, string groupName)
+    public class GroupService : IGroupService
     {
-      Group? group = db.Groups.FirstOrDefault(g => g.Name == groupName);
-      User? user = db.Users.Find(uid);
+        private readonly BabbleContext db;
 
-      if (group == null) throw new Exception("Group is not found!");
-      if (user == null) throw new Exception("User is not found!");
+        public GroupService(BabbleContext db) => this.db = db;
 
-      db.UserGroups.Add(new UserGroup { User = user, Group = group });
-      await db.SaveChangesAsync();
-      return new Prop { Id = group.Id, Name = group.Name };
-    }
-
-    // return example [ {Id = 1, Name = "aboba"}, {Id = 4, Name = "adasd"} ]
-    public IEnumerable<Prop> GetUserGroups(int uid)
-    {
-      return db.UserGroups.Where(ug => ug.UserId == uid).Select(ug => new Prop { Id = ug.GroupId, Name = ug.Group.Name });
-    }
-
-    // id = group id
-    public IEnumerable<int> GetGroupMembersIds(int id)
-    {
-      return db.UserGroups.Where(ug => ug.GroupId == id).Select(ug => ug.UserId);
-    }
-
-    // TODO: add throw exeptions
-    public async Task RemoveUserFromGroupAsync(int uid, string groupName)
-    {
-      Group? group = db.Groups.FirstOrDefault(g => g.Name == groupName);
-      if (group != null)
-      {
-        UserGroup? userGroup = db.UserGroups.FirstOrDefault(ug => ug.GroupId == group.Id && ug.UserId == uid);
-        if (userGroup != null)
+        public async Task<Prop> CreateGroupAsync(int uid, string groupName)
         {
-          db.UserGroups.Remove(userGroup);
+            Group group = new() { Name = groupName };
+            User? user = db.Users.Find(uid);
 
-          if (db.UserGroups.Count(ug => ug.GroupId == group.Id) <= 1)
-          {
-            db.Groups.Remove(group);
-          }
+            if (user != null)
+            {
+                group = db.Groups.Add(group).Entity;
+                db.UserGroups.Add(new UserGroup { Group = group, User = user });
+                await db.SaveChangesAsync();
 
-          await db.SaveChangesAsync();
+                return new Prop { Id = group.Id, Name = group.Name };
+            }
+            throw new Exception("User not found!");
         }
-      }
-    }
 
-    public async Task RenameGroupAsync(int id, string newName)
-    {
-      Group? group = db.Groups.Find(id);
-      if (group != null)
-      {
-        group.Name = newName;
-        await db.SaveChangesAsync();
-      }
+        public async Task<Prop> AddUserToGroupAsync(int uid, string groupName)
+        {
+            Group? group = db.Groups.FirstOrDefault(g => g.Name == groupName);
+            User? user = db.Users.Find(uid);
+
+            if (group == null) throw new Exception("Group is not found!");
+            if (user == null) throw new Exception("User is not found!");
+
+            db.UserGroups.Add(new UserGroup { User = user, Group = group });
+            await db.SaveChangesAsync();
+            return new Prop { Id = group.Id, Name = group.Name };
+        }
+
+        // return example [ {Id = 1, Name = "aboba"}, {Id = 4, Name = "adasd"} ]
+        public IEnumerable<Prop> GetUserGroups(int uid)
+        {
+            return db.UserGroups.Where(ug => ug.UserId == uid).Select(ug => new Prop { Id = ug.GroupId, Name = ug.Group.Name });
+        }
+
+        // id = group id
+        public IEnumerable<int> GetGroupMembersIds(int id)
+        {
+            return db.UserGroups.Where(ug => ug.GroupId == id).Select(ug => ug.UserId);
+        }
+
+        // TODO: add throw exeptions
+        public async Task RemoveUserFromGroupAsync(int uid, string groupName)
+        {
+            Group? group = db.Groups.FirstOrDefault(g => g.Name == groupName);
+            if (group != null)
+            {
+                UserGroup? userGroup = db.UserGroups.FirstOrDefault(ug => ug.GroupId == group.Id && ug.UserId == uid);
+                if (userGroup != null)
+                {
+                    db.UserGroups.Remove(userGroup);
+
+                    if (db.UserGroups.Count(ug => ug.GroupId == group.Id) <= 1)
+                    {
+                        db.Groups.Remove(group);
+                    }
+
+                    await db.SaveChangesAsync();
+                }
+            }
+        }
+
+        public async Task RenameGroupAsync(int id, string newName)
+        {
+            Group? group = db.Groups.Find(id);
+            if (group != null)
+            {
+                group.Name = newName;
+                await db.SaveChangesAsync();
+            }
+        }
     }
-  }
 }

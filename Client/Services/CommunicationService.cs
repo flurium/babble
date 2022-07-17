@@ -1,273 +1,200 @@
 ﻿using Client.Models;
+using Client.Services.Network.Base;
 using CrossLibrary;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Net;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
+using static CrossLibrary.Globals;
 
 namespace Client.Services
 {
-  public partial class CommunicationService
-  {
-    private const string remoteIp = "127.0.0.1";
-    private const int remotePort = 5001;
-    private CommunicationState state;
-
-    // key = contact id
-    private readonly Dictionary<int, LinkedList<Message>> contactMessages = new();
-
-    // key = group id
-    private readonly Dictionary<int, LinkedList<Message>> groupMessages = new();
-
-    private readonly Dictionary<Command, Action<Response>> handlers = new();
-    private readonly int localPort;
-    private Prop currentProp;
-    private Socket? listeningSocket;
-    private Task listeningTask;
-    private bool run = false;
-
-    public CommunicationService()
+    public partial class CommunicationService
     {
-      // open port
-      Random rnd = new();
-      do
-      {
-        localPort = rnd.Next(3000, 49000);
-      } while (localPort == 5001); // 5001 = server port
+        private CommunicationState state;
 
-      // Init handlers
-      handlers.Add(Command.SignIn, SignInHandle);
-      handlers.Add(Command.SignUp, SignUpHandle);
-      handlers.Add(Command.SendInvite, SendInviteHandle);
-      handlers.Add(Command.GetInvite, GetInviteHandle);
-      handlers.Add(Command.GetContact, GetContactHandle);
-      handlers.Add(Command.GetMessageFromContact, GetMessageFromContactHandle);
-      handlers.Add(Command.GetMessageFromGroup, GetMessageFromGroupHandle);
-      handlers.Add(Command.CreateGroup, CreateGroupHandle);
-      handlers.Add(Command.EnterGroup, EnterGroupHandle);
-      handlers.Add(Command.RemoveContact, RemoveContactHandle);
-      handlers.Add(Command.RenameContact, RenameContactHandle);
-      handlers.Add(Command.RenameGroup, RenameGroupHandle);
-    }
+        // key = contact id
+        private Dictionary<int, LinkedList<Message>> contactMessages = new();
 
-    // function from interface to confirm sign
-    public Action ConfirmSign { get; set; }
+        // key = group id
+        private Dictionary<int, LinkedList<Message>> groupMessages = new();
 
-    // ObservableCollections must not be recreated
-    public ObservableCollection<Prop> Contacts { get; } = new();
+        private int localPort;
+        private Prop currentProp;
 
-    public ObservableCollection<Message> CurrentMessages { get; } = new();
-    public Action<string> DenySign { get; set; }
-    public ObservableCollection<Prop> Groups { get; } = new();
+        private IProtocolService udpHandler;
+        private IProtocolService tcpHandler;
+        //private UdpService udpService;
 
-    public ObservableCollection<Prop> Invites { get; } = new();
+        private byte[] pendingSendFile;
+        private bool run = false;
 
-    public Prop User { get; private set; }
-
-    public void SetState(CommunicationState state)
-    {
-      this.state = state;
-      state.SetCommunicationService(this);
-    }
-
-    public void AcceptInvite(int id)
-    {
-      Request req = new() { Command = Command.AcceptInvite, Data = new { Id = id } };
-      SendData(req);
-
-      foreach (var invite in Invites)
-      {
-        if (invite.Id == id)
+        public CommunicationService()
         {
-          Invites.Remove(invite);
-          return;
-        }
-      }
-    }
-
-    public void CreateGroup(string groupName)
-    {
-      Request req = new() { Command = Command.CreateGroup, Data = new { Group = groupName, User = User.Id } };
-      SendData(req);
-    }
-
-    public void Disconnect()
-    {
-      Request req = new() { Command = Command.Disconnect, Data = new { Id = User.Id } };
-      SendData(req);
-
-      contactMessages.Clear();
-      groupMessages.Clear();
-      Contacts.Clear();
-      CurrentMessages.Clear();
-      Groups.Clear();
-      Invites.Clear();
-
-      CloseConnection();
-    }
-
-    public void Leave(int id) => state.Leave(id);
-
-    public void EnterGroup(string groupName)
-    {
-      Request req = new() { Command = Command.EnterGroup, Data = new { Group = groupName, User = User.Id } };
-      SendData(req);
-    }
-
-    public void Rename(string newName) => state.Rename(newName);
-
-    public void SendInvite(string name)
-    {
-      Request req = new() { Command = Command.SendInvite, Data = new { To = name, From = User.Id } };
-      SendData(req);
-    }
-
-    public void SendMessage(string messageStr) => state.SendMessage(messageStr);
-
-    public void SetCurrentProp(Prop prop)
-    {
-      currentProp = prop;
-      state.RefreshMessages();
-    }
-
-    public void SignIn(string name, string password)
-    {
-      try
-      {
-        Request req = new() { Command = Command.SignIn, Data = new { Name = name, Password = password } };
-
-        if (!run) OpenConnection();
-
-        SendData(req);
-      }
-      catch (Exception ex)
-      {
-        MessageBox.Show(ex.Message);
-      }
-    }
-
-    public void SignUp(string name, string password)
-    {
-      try
-      {
-        Request req = new() { Command = Command.SignUp, Data = new { Name = name, Password = Hasher.Hash(password) } };
-
-        if (!run) OpenConnection();
-
-        SendData(req);
-      }
-      catch (Exception ex)
-      {
-        MessageBox.Show(ex.Message);
-      }
-    }
-
-    private void CloseConnection()
-    {
-      if (listeningSocket != null)
-      {
-        run = false;
-        listeningSocket.Shutdown(SocketShutdown.Both);
-        listeningSocket.Close();
-        listeningSocket = null;
-      }
-    }
-
-    // Treatment
-    private void Handle(string resStr)
-    {
-      Response res = JsonConvert.DeserializeObject<Response>(resStr);
-      try
-      {
-        handlers[res.Command](res);
-      }
-      catch (Exception ex)
-      {
-        // Show error
-      }
-    }
-
-    /// <summary>
-    /// Loop that read incomming responses
-    /// </summary>
-    private void Listen()
-    {
-      if (listeningSocket != null)
-      {
-        try
-        {
-          while (run)
-          {
-            StringBuilder builder = new StringBuilder();
-            int bytes = 0;
-            byte[] data = new byte[1024];
-
-            // adress fromm where get
-            EndPoint remoteIp = new IPEndPoint(IPAddress.Any, 0);
-
+            // open port
+            Random rnd = new();
             do
             {
-              bytes = listeningSocket.ReceiveFrom(data, ref remoteIp);
+                localPort = rnd.Next(3000, 49000);
+            } while (localPort == ServerDestination.Port);
 
-              builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
+            // init udp service
+            udpHandler = new UdpHandler(localPort, this);
+            //udpService = new(localPort, Handle);
+
+            // init tcp service
+            tcpHandler = new TcpHandler(localPort);
+        }
+
+        // function from interface to confirm sign
+        public Action ConfirmSign { get; set; }
+
+        // ObservableCollections must not be recreated
+
+        private ObservableCollection<Prop> contacts = new();
+        public ObservableCollection<Prop> Contacts { get => contacts; }
+
+        public ObservableCollection<Message> CurrentMessages { get; } = new();
+        public Action<string> DenySign { get; set; }
+
+        private ObservableCollection<Prop> groups = new();
+        public ObservableCollection<Prop> Groups { get => groups; }
+
+        public ObservableCollection<Prop> Invites { get; } = new();
+
+        public Prop User { get; private set; }
+
+        public void SetState(CommunicationState state)
+        {
+            this.state = state;
+            state.SetCommunicationService(this);
+        }
+
+        public void AcceptInvite(int id)
+        {
+            Request req = new() { Command = Command.AcceptInvite, Data = new { Id = id } };
+            SendData(req);
+
+            foreach (var invite in Invites)
+            {
+                if (invite.Id == id)
+                {
+                    Invites.Remove(invite);
+                    return;
+                }
             }
-            while (listeningSocket.Available > 0);
+        }
 
-            IPEndPoint remoteFullIp = (IPEndPoint)remoteIp;
+        public void CreateGroup(string groupName)
+        {
+            Request req = new() { Command = Command.CreateGroup, Data = new { Group = groupName, User = User.Id } };
+            SendData(req);
+        }
 
-            Handle(builder.ToString());
+        public void Disconnect()
+        {
+            Request req = new() { Command = Command.Disconnect, Data = new { Id = User.Id } };
+            SendData(req);
 
-            // output
-            // AddToOutput(builder.ToString());
-          }
+            contactMessages.Clear();
+            groupMessages.Clear();
+            contacts.Clear();
+            CurrentMessages.Clear();
+            groups.Clear();
+            Invites.Clear();
+
+            // stop services
+            //tcpService.Stop();
+            //udpService.Stop();
+
+            run = false;
         }
-        catch (SocketException socketEx)
+
+        public void Leave(int id) => state.Leave(id);
+
+        public void EnterGroup(string groupName)
         {
-          if (socketEx.ErrorCode != 10004)
-            MessageBox.Show(socketEx.Message + socketEx.ErrorCode);
+            Request req = new() { Command = Command.EnterGroup, Data = new { Group = groupName, User = User.Id } };
+            SendData(req);
         }
-        catch (Exception ex)
+
+        public void Rename(string newName) => state.Rename(newName);
+
+        public void SendInvite(string name)
         {
-          MessageBox.Show(ex.Message + ex.GetType().ToString());
+            Request req = new() { Command = Command.SendInvite, Data = new { To = name, From = User.Id } };
+            SendData(req);
         }
-        finally
+
+        public void SendMessage(string messageStr, List<string>? filePaths)
         {
-          CloseConnection();
+            if (filePaths == null)
+            {
+                state.SendMessage(messageStr);
+            }
+            else
+            {
+                state.SendFileMessage(messageStr, filePaths);
+            }
         }
-      }
+
+        public Prop CurrentProp
+        {
+            get => currentProp;
+            set
+            {
+                currentProp = value;
+                state.RefreshMessages();
+            }
+        }
+
+        public void SignIn(string name, string password)
+        {
+            try
+            {
+                Request req = new() { Command = Command.SignIn, Data = new { Name = name, Password = password } };
+
+                if (!run) OpenConnection();
+
+                SendData(req);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        public void SignUp(string name, string password)
+        {
+            try
+            {
+                Request req = new() { Command = Command.SignUp, Data = new { Name = name, Password = Hasher.Hash(password) } };
+
+                if (!run) OpenConnection();
+
+                SendData(req);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void OpenConnection()
+        {
+            run = true;
+            // run udp service
+            udpHandler.Start();
+            //udpService.Start();
+
+            // run tcp service
+
+            //tcpHandler.Start();
+        }
+
+        //internal void SendData(Request req) => udpService.Send(req);
+        public void SendData(Request req) => udpHandler.Send(req.ToStrBytes());
+
+        private void SendData(byte[] data) => udpHandler.Send(data);
     }
-
-    private void OpenConnection()
-    {
-      run = true;
-      listeningSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-      IPEndPoint localIP = new IPEndPoint(IPAddress.Parse(remoteIp), localPort);
-      listeningSocket.Bind(localIP);
-      listeningTask = new(Listen);
-      listeningTask.Start();
-    }
-
-    private void SendData(Request req)
-    {
-      if (listeningSocket != null)
-      {
-        try
-        {
-          IPEndPoint remotePoint = new(IPAddress.Parse(remoteIp), remotePort);
-          string requestStr = JsonConvert.SerializeObject(req);
-          byte[] data = Encoding.Unicode.GetBytes(requestStr);
-          listeningSocket.SendTo(data, remotePoint);
-        }
-        catch (Exception ex)
-        {
-          MessageBox.Show(ex.Message);
-        }
-      }
-    }
-  }
 }

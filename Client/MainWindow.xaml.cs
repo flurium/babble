@@ -4,32 +4,32 @@ using System.Windows;
 
 namespace Client
 {
-  /// <summary>
-  /// Interaction logic for MainWindow.xaml
-  /// </summary>
-  ///
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    ///
 
-  public partial class MainWindow : Window
-  {
-    public static SignInPage signIn;
-    public static SignUpPage signUp;
-    public static UserPage userChat;
-    private CommunicationService cs = new();
-
-    public MainWindow()
+    public partial class MainWindow : Window
     {
-      InitializeComponent();
+        public static SignInPage signIn;
+        public static SignUpPage signUp;
+        public static UserPage userChat;
+        private readonly CommunicationService cs = new();
 
-      userChat = new UserPage(cs);
-      signIn = new SignInPage(cs);
-      signUp = new SignUpPage(cs);
+        public MainWindow()
+        {
+            InitializeComponent();
 
-      MainFrame.Content = signIn;
+            userChat = new UserPage(cs);
+            signIn = new SignInPage(cs);
+            signUp = new SignUpPage(cs);
+
+            MainFrame.Content = signIn;
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            cs.Disconnect();
+        }
     }
-
-    private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-    {
-      cs.Disconnect();
-    }
-  }
 }
