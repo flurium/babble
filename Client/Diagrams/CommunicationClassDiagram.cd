@@ -38,7 +38,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="Client.Services.Network.Base.ProtocolHandler">
-    <Position X="12.25" Y="3.5" Width="1.5" />
+    <Position X="12.25" Y="3.5" Width="2" />
     <AssociationLine Name="protocolService" Type="Client.Services.Network.Base.ProtocolService" FixedFromPoint="true">
       <Path>
         <Point X="12.25" Y="3.938" />
@@ -66,14 +66,14 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="Client.Services.Network.Udp.UdpService">
-    <Position X="10" Y="8" Width="1.5" />
+    <Position X="10" Y="8" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAABACAAAEAAAEAAAAAAAAAAAAAQIAEAAAAAAAA=</HashCode>
       <FileName>Services\Network\Udp\UdpService.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Client.Services.Network.Tcp.TcpService">
-    <Position X="6.75" Y="8" Width="1.5" />
+    <Position X="6.5" Y="8" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAACAAAEAAAEAAAAAAIAAAAAAUIAAAEAAAAAA=</HashCode>
       <FileName>Services\Network\Tcp\TcpService.cs</FileName>
