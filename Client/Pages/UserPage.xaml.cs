@@ -37,14 +37,14 @@ namespace Client
                 cs.CurrentProp = contact;
 
                 MessageWrite.Focus();
-                ChatName.Text = contact.Name;
+                ChatName.Content = contact.Name;
                 MessageWrite.IsEnabled = true;
             }
         }
 
         private void ClearInputs()
         {
-            ChatName.Text = "";
+            ChatName.Content = "";
             InviteContact.Text = "";
             GroupInput.Text = "";
             MessageWrite.Text = "";
@@ -82,7 +82,7 @@ namespace Client
                 cs.CurrentProp = group;
 
                 MessageWrite.Focus();
-                ChatName.Text = group.Name;
+                ChatName.Content = group.Name;
                 MessageWrite.IsEnabled = true;
             }
         }
@@ -111,25 +111,11 @@ namespace Client
 
         private void RenameBtn_Click(object sender, RoutedEventArgs e)
         {
-            ChatName.IsReadOnly = !ChatName.IsReadOnly;
 
-            if (ChatName.IsReadOnly)
-            {
-                RenameBtn.Content = "Rename";
-                ChatName.FontSize = 12;
-
-                // confirm rename
-                string newName = ChatName.Text.Trim();
-                if (newName != "") cs.Rename(newName);
-            }
-            else
-            {
-                RenameBtn.Content = "Confirm";
-                ChatName.FontSize = 14;
-                ChatName.Focus();
-                ChatName.CaretIndex = ChatName.Text.Length;
-            }
+            string newName = ReNameInput.Text.Trim();
+            if (newName != "") cs.Rename(newName); ChatName.Content=newName;
         }
+
 
         private void SendMessage()
         {
@@ -211,6 +197,21 @@ namespace Client
             SelectedFilesText.Text = "";
             SelectedFilesText.Visibility = Visibility.Collapsed;
             UnselectFilesBtn.Visibility = Visibility.Collapsed;
+        }
+
+        private void ChatName_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            ChatOption.Visibility = Visibility.Visible;
+        }
+
+        private void Return_Click(object sender, RoutedEventArgs e)
+        {
+            ChatOption.Visibility = Visibility.Hidden;
+        }
+
+        private void DeleteChat_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

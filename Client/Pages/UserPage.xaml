@@ -4,219 +4,243 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       mc:Ignorable="d"
-       d:DesignHeight="450" d:DesignWidth="800"
-      Title="UserPage">
+      Title="UserPage" >
 
-  <Page.Resources>
-    <Style TargetType="Label">
-      <Setter Property="Background" Value="#f4f4f6" />
-      <Setter Property="VerticalContentAlignment" Value="Center" />
-      <Setter Property="Padding" Value="20,0,0,0" />
-    </Style>
-    <Style x:Key="Base" TargetType="Control">
-      <Setter Property="BorderThickness" Value="0" />
-      <Setter Property="VerticalContentAlignment" Value="Center" />
-    </Style>
-    <Style x:Key="Input" TargetType="Control" BasedOn="{StaticResource Base}">
-      <Setter Property="Background" Value="#f4f4f6" />
-      <Setter Property="Padding" Value="15,0,15,0" />
-    </Style>
-    <Style TargetType="Button" BasedOn="{StaticResource Base}">
-      <Setter Property="Background" Value="#0bbffa" />
-    </Style>
-    <Style TargetType="ListBox">
-      <Setter Property="BorderThickness" Value="0" />
-    </Style>
-    <Style TargetType="ListBoxItem">
-      <Setter Property="Height" Value="50" />
-      <Setter Property="FontSize" Value="16" />
-      <Setter Property="Template">
-        <Setter.Value>
-          <ControlTemplate TargetType="ListBoxItem">
-            <Border Name="Border" BorderThickness="0,0,0,1" BorderBrush="#f4f4f6">
-              <ContentPresenter />
-            </Border>
-            <ControlTemplate.Triggers>
-              <Trigger Property="IsMouseOver" Value="True">
-                <Setter TargetName="Border" Property="Background" Value="#f4f4f6" />
-              </Trigger>
-              <Trigger Property="IsSelected" Value="True">
-                <Setter TargetName="Border" Property="Background" Value="#fcd1df" />
-              </Trigger>
-            </ControlTemplate.Triggers>
-          </ControlTemplate>
-        </Setter.Value>
-      </Setter>
-    </Style>
-  </Page.Resources>
+    <Page.Resources>
+        <Style TargetType="Label">
+            <Setter Property="Background" Value="#f4f4f6" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Padding" Value="20,0,0,0" />
+        </Style>
+        <Style x:Key="Base" TargetType="Control">
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+        <Style x:Key="Input" TargetType="Control" BasedOn="{StaticResource Base}">
+            <Setter Property="Background" Value="#f4f4f6" />
+            <Setter Property="Padding" Value="15,0,15,0" />
+        </Style>
+        <Style TargetType="Button" BasedOn="{StaticResource Base}">
+            <Setter Property="Background" Value="#0bbffa" />
+        </Style>
+        <Style TargetType="ListBox">
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+        <Style TargetType="ListBoxItem">
+            <Setter Property="Height" Value="50" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border Name="Border" BorderThickness="0,0,0,1" BorderBrush="#f4f4f6">
+                            <ContentPresenter />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="#f4f4f6" />
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="#fcd1df" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Page.Resources>
 
-  <Grid Background="White">
-    <Grid.ColumnDefinitions>
-      <ColumnDefinition x:Name="Contacts" />
-      <ColumnDefinition x:Name="Chating" Width="3*" />
-    </Grid.ColumnDefinitions>
+    <Grid Background="White">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition x:Name="Contacts"/>
+            <ColumnDefinition x:Name="ChatPanel" Width="3*" />
 
-    <Grid Grid.Column="0">
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition />
-        <ColumnDefinition />
-        <ColumnDefinition />
-      </Grid.ColumnDefinitions>
-      <Grid.RowDefinitions>
-        <RowDefinition Height="40" />
-        <RowDefinition />
-      </Grid.RowDefinitions>
+        </Grid.ColumnDefinitions>
 
-      <Button Grid.Column="0" Grid.Row="0" Click="GoToContacts_Click">Contacts</Button>
-      <Button Grid.Column="1" Grid.Row="0" Click="GoToGroups_Click">Groups</Button>
-      <Button Grid.Column="2" Grid.Row="0" Click="GoToInvites_Click">Invites</Button>
 
-      <TabControl x:Name="ListSection"  Padding="0" BorderThickness="0" Grid.Row="1" Grid.ColumnSpan="3">
 
-        <TabItem Visibility="Collapsed">
-          <Grid>
+        <Grid Grid.Column="0" >
             <Grid.ColumnDefinitions>
-              <ColumnDefinition />
-              <ColumnDefinition Width="50" />
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-              <RowDefinition />
-              <RowDefinition Height="40" />
+                <RowDefinition Height="40" />
+                <RowDefinition />
             </Grid.RowDefinitions>
 
-            <ListBox x:Name="ContactsList" ItemsSource="{Binding Contacts}" SelectionChanged="ContactsList_SelectionChanged" Grid.Row="0" Grid.ColumnSpan="2" Margin="0,-3,-2,0">
-              <ListBox.ItemTemplate>
-                <DataTemplate>
-                  <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="15,0,15,0" />
-                </DataTemplate>
-              </ListBox.ItemTemplate>
-            </ListBox>
-            <TextBox x:Name="InviteContact" Style="{StaticResource Input}" Grid.Row="1" Grid.Column="0"></TextBox>
-            <Button x:Name="SendInviteBtn" Click="SendInviteBtn_Click" FontSize="16" Grid.Column="1" Grid.Row="1">Invite</Button>
-          </Grid>
-        </TabItem>
+            <Button Grid.Column="0" Grid.Row="0" Click="GoToContacts_Click">Contacts</Button>
+            <Button Grid.Column="1" Grid.Row="0" Click="GoToGroups_Click">Groups</Button>
+            <Button Grid.Column="2" Grid.Row="0" Click="GoToInvites_Click">Invites</Button>
 
-        <TabItem Visibility="Collapsed">
-          <Grid>
-            <Grid.ColumnDefinitions>
-              <ColumnDefinition />
-              <ColumnDefinition Width="45" />
-              <ColumnDefinition Width="35" />
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-              <RowDefinition />
-              <RowDefinition Height="40" />
-            </Grid.RowDefinitions>
+            <TabControl x:Name="ListSection"  Padding="0" BorderThickness="0" Grid.Row="1" Grid.ColumnSpan="3">
 
-            <ListBox x:Name="GroupsList" ItemsSource="{Binding Groups}" SelectionChanged="GroupsList_SelectionChanged" Grid.Row="0" Grid.ColumnSpan="3" Margin="0,-3,-2,0">
-              <ListBox.ItemTemplate>
-                <DataTemplate>
-                  <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="15,0,15,0" />
-                </DataTemplate>
-              </ListBox.ItemTemplate>
-            </ListBox>
-            <TextBox x:Name="GroupInput" Style="{StaticResource Input}" Grid.Row="1" Grid.Column="0"></TextBox>
-            <Button Click="CreateGroupBtn_Click"  FontSize="12" Grid.Column="1" Grid.Row="1">Create</Button>
-            <Button x:Name="EnterGroupBtn" Click="EnterGroupBtn_Click"  FontSize="12" Grid.Column="2" Grid.Row="1">Enter</Button>
-          </Grid>
-        </TabItem>
+                <TabItem Visibility="Collapsed">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="50" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition Height="40" />
+                        </Grid.RowDefinitions>
 
-        <TabItem Visibility="Collapsed">
-          <ListBox x:Name="InvitesList" ItemsSource="{Binding Invites}" Margin="0,-3,-2,0">
-            <ListBox.ItemTemplate>
-              <DataTemplate>
-                <Grid>
-                  <Grid.ColumnDefinitions>
+                        <ListBox x:Name="ContactsList" ItemsSource="{Binding Contacts}" SelectionChanged="ContactsList_SelectionChanged" Grid.Row="0" Grid.ColumnSpan="2" Margin="0,-3,-2,0">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="15,0,15,0" />
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                        <TextBox x:Name="InviteContact" Style="{StaticResource Input}" Grid.Row="1" Grid.Column="0"></TextBox>
+                        <Button x:Name="SendInviteBtn" Click="SendInviteBtn_Click" FontSize="16" Grid.Column="1" Grid.Row="1">Invite</Button>
+                    </Grid>
+                </TabItem>
+
+                <TabItem Visibility="Collapsed">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="45" />
+                            <ColumnDefinition Width="35" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition Height="40" />
+                        </Grid.RowDefinitions>
+
+                        <ListBox x:Name="GroupsList" ItemsSource="{Binding Groups}" SelectionChanged="GroupsList_SelectionChanged" Grid.Row="0" Grid.ColumnSpan="3" Margin="0,-3,-2,0">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="15,0,15,0" />
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                        <TextBox x:Name="GroupInput" Style="{StaticResource Input}" Grid.Row="1" Grid.Column="0"></TextBox>
+                        <Button Click="CreateGroupBtn_Click"  FontSize="12" Grid.Column="1" Grid.Row="1">Create</Button>
+                        <Button x:Name="EnterGroupBtn" Click="EnterGroupBtn_Click"  FontSize="12" Grid.Column="2" Grid.Row="1">Enter</Button>
+                    </Grid>
+                </TabItem>
+
+                <TabItem Visibility="Collapsed">
+                    <ListBox x:Name="InvitesList" ItemsSource="{Binding Invites}" Margin="0,-3,-2,0">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="15,0,15,0" />
+                                    <Button Tag="{Binding Id}" Click="AcceptInviteBtn_Click" Grid.Column="1">Accept</Button>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </TabItem>
+            </TabControl>
+        </Grid>
+
+        <Border Grid.Column="1" BorderBrush="#abadb8" BorderThickness="1,0,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50" />
                     <ColumnDefinition />
-                    <ColumnDefinition Width="auto" />
-                  </Grid.ColumnDefinitions>
-                  <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="15,0,15,0" />
-                  <Button Tag="{Binding Id}" Click="AcceptInviteBtn_Click" Grid.Column="1">Accept</Button>
-                </Grid>
-              </DataTemplate>
-            </ListBox.ItemTemplate>
-          </ListBox>
-        </TabItem>
-      </TabControl>
+                    <ColumnDefinition Width="60" />
+                    <ColumnDefinition Width="50" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="40" />
+                    <RowDefinition />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="40" />
+                </Grid.RowDefinitions>
+                <Label Grid.ColumnSpan="3" Name="ChatName" MouseDoubleClick="ChatName_MouseDoubleClick"></Label>
+                <!--<Label Name="interlocutor" Grid.Column="0" Grid.Row="0" Content="interlocutor" />-->
+
+                <Button Grid.Column="3" Grid.Row="0" x:Name="Exit" Click="Exit_Click">Exit</Button>
+
+                <ListBox Grid.Row="1" Grid.ColumnSpan="4" x:Name="MessageList" ItemsSource="{Binding CurrentMessages}" ScrollViewer.ScrollChanged="MessageList_ScrollChanged" ScrollViewer.VerticalScrollBarVisibility="Auto"  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="Margin" Value="100,5,5,0" />
+                            <Setter Property="HorizontalContentAlignment" Value="Right" />
+                            <Setter Property="IsEnabled" Value="False" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsIncoming}" Value="true">
+                                    <Setter Property="Margin" Value="5,5,100,0" />
+                                    <Setter Property="HorizontalContentAlignment" Value="Left" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Background="#f4f4f6">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Text="{Binding Text}" Padding="10" Grid.Row="0" Foreground="Black" TextWrapping="Wrap" />
+                                <ItemsControl  x:Name="Files" ItemsSource="{Binding Files}"  Grid.Row="1">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Image Source="{Binding Path}" />
+                                            <DataTemplate.Triggers>
+                                                <DataTrigger Binding="{Binding IsImage}" Value="False">
+                                                    <Setter Property="Visibility"  Value="Collapsed" />
+                                                </DataTrigger>
+                                            </DataTemplate.Triggers>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <Button x:Name="ShowInFolderBtn" Click="ShowInFolderBtn_Click" Grid.Row="2">Show in folder</Button>
+                            </Grid>
+                            <DataTemplate.Triggers>
+                                <DataTrigger Binding="{Binding Files}" Value="{x:Null}">
+                                    <Setter TargetName="ShowInFolderBtn" Property="Visibility" Value="Collapsed" />
+                                    <!--<Setter TargetName="ShowInFolderBtn" Property="Height" Value="0" />-->
+                                    <Setter TargetName="Files" Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </DataTemplate.Triggers>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <TextBlock x:Name="SelectedFilesText" Grid.Row="2" Grid.ColumnSpan="3" Visibility="Collapsed" />
+                <Button x:Name="UnselectFilesBtn" Click="UnselectFilesBtn_Click" Grid.Row="2" Grid.Column="3" Visibility="Collapsed" >Unselect</Button>
+
+                <Button Grid.Column="0" Grid.Row="3" Click="FileBth_Click">File</Button>
+                <TextBox KeyDown="MessageSend_KeyDown" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="3" x:Name="MessageWrite" IsEnabled="False" Style="{StaticResource Input}"></TextBox>
+                <Button Grid.Column="3" Grid.Row="3" x:Name="MessageSend" Click="MessageSend_Click">Send</Button>
+            </Grid>
+
+
+        </Border>
+        <Grid Grid.Column="0" Name="ChatOption" Background="White" Visibility="Visible">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40" />
+                <RowDefinition  Height="40" />
+                <RowDefinition  Height="40"/>
+                <RowDefinition  Height="40"/>
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition  Height="40"/>
+            </Grid.RowDefinitions>
+            <Label Grid.Row="0" Content="Rename Chat"></Label>
+            <TextBox x:Name="ReNameInput" Style="{StaticResource Input}" Grid.Row="1" />
+            <Button Content="Rename" x:Name="RenameChat" Grid.Row="2"/>
+            <Button Content="Return" x:Name="Return"  Grid.Row="3" Click="Return_Click" />
+
+            <Button Content="Delete" x:Name="DeleteChat"  Grid.Row="9" Click="DeleteChat_Click"/>
+        </Grid>
+
     </Grid>
 
-    <Border Grid.Column="1" BorderBrush="#abadb8" BorderThickness="1,0,0,0">
-      <Grid>
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="50" />
-          <ColumnDefinition />
-          <ColumnDefinition Width="60" />
-          <ColumnDefinition Width="50" />
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-          <RowDefinition Height="40" />
-          <RowDefinition />
-          <RowDefinition Height="auto" />
-          <RowDefinition Height="40" />
-        </Grid.RowDefinitions>
-
-        <TextBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" x:Name="ChatName" Style="{StaticResource Input}" IsReadOnly="True"></TextBox>
-        <Button Grid.Column="2" Grid.Row="0" x:Name="RenameBtn" Click="RenameBtn_Click">Rename</Button>
-        <!--<Label Name="interlocutor" Grid.Column="0" Grid.Row="0" Content="interlocutor" />-->
-
-        <Button Grid.Column="3" Grid.Row="0" x:Name="Exit" Click="Exit_Click">Exit</Button>
-
-        <ListBox Grid.Row="1" Grid.ColumnSpan="4" x:Name="MessageList" ItemsSource="{Binding CurrentMessages}" ScrollViewer.ScrollChanged="MessageList_ScrollChanged" ScrollViewer.VerticalScrollBarVisibility="Auto"  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-          <ListBox.ItemContainerStyle>
-            <Style TargetType="ListBoxItem">
-              <Setter Property="Margin" Value="100,5,5,0" />
-              <Setter Property="HorizontalContentAlignment" Value="Right" />
-              <Setter Property="IsEnabled" Value="False" />
-              <Style.Triggers>
-                <DataTrigger Binding="{Binding IsIncoming}" Value="true">
-                  <Setter Property="Margin" Value="5,5,100,0" />
-                  <Setter Property="HorizontalContentAlignment" Value="Left" />
-                </DataTrigger>
-              </Style.Triggers>
-            </Style>
-          </ListBox.ItemContainerStyle>
-          <ListBox.ItemTemplate>
-            <DataTemplate>
-              <Grid Background="#f4f4f6">
-                <Grid.RowDefinitions>
-                  <RowDefinition />
-                  <RowDefinition />
-                  <RowDefinition />
-                </Grid.RowDefinitions>
-
-                <TextBlock Text="{Binding Text}" Padding="10" Grid.Row="0" Foreground="Black" TextWrapping="Wrap" />
-                <ItemsControl  x:Name="Files" ItemsSource="{Binding Files}"  Grid.Row="1">
-                  <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                      <Image Source="{Binding Path}" />
-                      <DataTemplate.Triggers>
-                        <DataTrigger Binding="{Binding IsImage}" Value="False">
-                          <Setter Property="Visibility"  Value="Collapsed" />
-                        </DataTrigger>
-                      </DataTemplate.Triggers>
-                    </DataTemplate>
-                  </ItemsControl.ItemTemplate>
-                </ItemsControl>
-                <Button x:Name="ShowInFolderBtn" Click="ShowInFolderBtn_Click" Grid.Row="2">Show in folder</Button>
-              </Grid>
-              <DataTemplate.Triggers>
-                <DataTrigger Binding="{Binding Files}" Value="{x:Null}">
-                  <Setter TargetName="ShowInFolderBtn" Property="Visibility" Value="Collapsed" />
-                  <!--<Setter TargetName="ShowInFolderBtn" Property="Height" Value="0" />-->
-                  <Setter TargetName="Files" Property="Visibility" Value="Collapsed" />
-                </DataTrigger>
-              </DataTemplate.Triggers>
-            </DataTemplate>
-          </ListBox.ItemTemplate>
-        </ListBox>
-
-        <TextBlock x:Name="SelectedFilesText" Grid.Row="2" Grid.ColumnSpan="3" Visibility="Collapsed" />
-        <Button x:Name="UnselectFilesBtn" Click="UnselectFilesBtn_Click" Grid.Row="2" Grid.Column="3" Visibility="Collapsed" >Unselect</Button>
-
-        <Button Grid.Column="0" Grid.Row="3" Click="FileBth_Click">File</Button>
-        <TextBox KeyDown="MessageSend_KeyDown" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="3" x:Name="MessageWrite" IsEnabled="False" Style="{StaticResource Input}"></TextBox>
-        <Button Grid.Column="3" Grid.Row="3" x:Name="MessageSend" Click="MessageSend_Click">Send</Button>
-      </Grid>
-    </Border>
-  </Grid>
 </Page>
