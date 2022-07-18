@@ -11,7 +11,7 @@ namespace Client.Services
 {
     public partial class CommunicationService
     {
-        private CommunicationState state;
+        private State state;
 
         // key = contact id
         private Dictionary<int, LinkedList<Message>> contactMessages = new();
@@ -64,7 +64,7 @@ namespace Client.Services
 
         public Prop User { get; private set; }
 
-        public void SetState(CommunicationState state)
+        public void SetState(State state)
         {
             this.state = state;
             state.SetCommunicationService(this);

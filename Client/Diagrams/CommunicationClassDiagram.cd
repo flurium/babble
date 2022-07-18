@@ -16,9 +16,9 @@
           <NewMemberFileName>Services\Network\Udp\UdpHandler.cs</NewMemberFileName>
         </TypeIdentifier>
       </Class>
-      <Class Name="Client.Services.CommunicationService.CommunicationState">
+      <Class Name="Client.Services.CommunicationService.State">
         <TypeIdentifier>
-          <NewMemberFileName>Services\CommunicationState.cs</NewMemberFileName>
+          <NewMemberFileName>Services\State\State.cs</NewMemberFileName>
         </TypeIdentifier>
       </Class>
       <Class Name="Client.Services.CommunicationService.ContactState">

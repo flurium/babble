@@ -16,25 +16,6 @@ namespace Client.Services.Network.Tcp
         /// <param name="handle">Delegate to handle incomming message strings<</param>
         public TcpService(int port, Action<string> handle) : base(port, handle) { }
 
-        //public void Send(string message)
-        //{
-        //    TcpClient outcomeClient = new();
-        //    NetworkStream? outcomeStream = null;
-        //    try
-        //    {
-        //        outcomeClient.Connect(Destination.Ip, Destination.Port);
-        //        outcomeStream = outcomeClient.GetStream();
-
-        //        byte[] data = CommunicationEncoding.GetBytes(message);
-        //        outcomeStream.Write(data, 0, data.Length);
-        //    }
-        //    finally
-        //    {
-        //        if (outcomeStream != null) outcomeStream.Close();
-        //        outcomeClient.Close();
-        //    }
-        //}
-
         /// <summary>
         /// Connect to another client and send file message. Get nothing.
         /// </summary>

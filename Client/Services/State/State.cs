@@ -15,7 +15,7 @@ namespace Client.Services
         /// because need access to private fields.
         /// Need access to: currentProp, contactMessages, groupMessages, contacts, groups, pendingSendFile
         /// </summary>
-        public abstract class CommunicationState
+        public abstract class State
         {
             protected CommunicationService cs;
 
