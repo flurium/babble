@@ -1,7 +1,7 @@
 ﻿using Server.Data.Models;
 using Server.Models;
 
-namespace Server.Services
+namespace Server.Services.Database
 {
     internal interface IUserService
     {

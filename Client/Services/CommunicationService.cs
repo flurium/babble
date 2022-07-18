@@ -22,8 +22,8 @@ namespace Client.Services
         private int localPort;
         private Prop currentProp;
 
-        private IProtocolService udpHandler;
-        private IProtocolService tcpHandler;
+        private readonly IProtocolService udpHandler;
+        private readonly IProtocolService tcpHandler;
         //private UdpService udpService;
 
         private byte[] pendingSendFile;
@@ -185,11 +185,9 @@ namespace Client.Services
             run = true;
             // run udp service
             udpHandler.Start();
-            //udpService.Start();
 
             // run tcp service
-
-            //tcpHandler.Start();
+            tcpHandler.Start();
         }
 
         //internal void SendData(Request req) => udpService.Send(req);

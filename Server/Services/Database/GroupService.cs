@@ -2,7 +2,7 @@
 using Server.Data.Models;
 using Server.Models;
 
-namespace Server.Services
+namespace Server.Services.Database
 {
     // prefix 'u' means 'user'
 

@@ -2,7 +2,7 @@
 using Server.Data.Models;
 using Server.Models;
 
-namespace Server.Services
+namespace Server.Services.Database
 {
     public interface IContactService
     {
@@ -45,7 +45,7 @@ namespace Server.Services
         public Contact GetContact(int uidFrom, int uidTo)
         {
             Contact? contact = db.Contacts.FirstOrDefault(
-              c => (c.UserFromId == uidFrom && c.UserToId == uidTo) || (c.UserToId == uidFrom && c.UserFromId == uidTo)
+              c => c.UserFromId == uidFrom && c.UserToId == uidTo || c.UserToId == uidFrom && c.UserFromId == uidTo
               );
             if (contact == null) throw new Exception("Contact isn't found");
             return contact;
