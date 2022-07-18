@@ -36,6 +36,7 @@ namespace Client
                 cs.SetState(new ContactState());
                 cs.CurrentProp = contact;
 
+                OpenSettingsBtn.IsEnabled = true;
                 MessageWrite.Focus();
                 ChatName.Content = contact.Name;
                 MessageWrite.IsEnabled = true;
@@ -81,6 +82,7 @@ namespace Client
                 cs.SetState(new GroupState());
                 cs.CurrentProp = group;
 
+                OpenSettingsBtn.IsEnabled = true;
                 MessageWrite.Focus();
                 ChatName.Content = group.Name;
                 MessageWrite.IsEnabled = true;
@@ -113,7 +115,7 @@ namespace Client
         {
 
             string newName = ReNameInput.Text.Trim();
-            if (newName != "") cs.Rename(newName); ChatName.Content=newName;
+            if (newName != "") cs.Rename(newName); ChatName.Content = newName;
         }
 
 
@@ -212,6 +214,11 @@ namespace Client
         private void DeleteChat_Click(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void OpenSettingsBtn_Click(object sender, RoutedEventArgs e)
+        {
+            ListSection.SelectedIndex = 3;
         }
     }
 }

@@ -139,6 +139,26 @@
                         </ListBox.ItemTemplate>
                     </ListBox>
                 </TabItem>
+
+                <TabItem Visibility="Collapsed">
+                    <Grid Grid.Column="0" Name="ChatOption">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="40" />
+                            <RowDefinition Height="40" />
+                            <RowDefinition Height="40" />
+                            <RowDefinition />
+                            <RowDefinition Height="40" />
+                            <RowDefinition Height="40" />
+                        </Grid.RowDefinitions>
+
+                        <Label Grid.Row="0">Input new name:</Label>
+                        <TextBox x:Name="ReNameInput" Style="{StaticResource Input}" Grid.Row="1" />
+                        <Button Content="Rename" x:Name="RenameChat" Grid.Row="2"/>
+
+                        <Button Content="Return" x:Name="Return"  Grid.Row="4" Click="Return_Click" />
+                        <Button Content="Delete" x:Name="DeleteChat"  Grid.Row="5" Click="DeleteChat_Click"/>
+                    </Grid>
+                </TabItem>
             </TabControl>
         </Grid>
 
@@ -159,6 +179,7 @@
                 <Label Grid.ColumnSpan="3" Name="ChatName" MouseDoubleClick="ChatName_MouseDoubleClick"></Label>
                 <!--<Label Name="interlocutor" Grid.Column="0" Grid.Row="0" Content="interlocutor" />-->
 
+                <Button x:Name="OpenSettingsBtn" Grid.Column="2" Click="OpenSettingsBtn_Click" IsEnabled="False">Settings</Button>
                 <Button Grid.Column="3" Grid.Row="0" x:Name="Exit" Click="Exit_Click">Exit</Button>
 
                 <ListBox Grid.Row="1" Grid.ColumnSpan="4" x:Name="MessageList" ItemsSource="{Binding CurrentMessages}" ScrollViewer.ScrollChanged="MessageList_ScrollChanged" ScrollViewer.VerticalScrollBarVisibility="Auto"  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
@@ -220,26 +241,6 @@
 
 
         </Border>
-        <Grid Grid.Column="0" Name="ChatOption" Background="White" Visibility="Visible">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="40" />
-                <RowDefinition  Height="40" />
-                <RowDefinition  Height="40"/>
-                <RowDefinition  Height="40"/>
-                <RowDefinition />
-                <RowDefinition />
-                <RowDefinition />
-                <RowDefinition />
-                <RowDefinition />
-                <RowDefinition  Height="40"/>
-            </Grid.RowDefinitions>
-            <Label Grid.Row="0" Content="Rename Chat"></Label>
-            <TextBox x:Name="ReNameInput" Style="{StaticResource Input}" Grid.Row="1" />
-            <Button Content="Rename" x:Name="RenameChat" Grid.Row="2"/>
-            <Button Content="Return" x:Name="Return"  Grid.Row="3" Click="Return_Click" />
-
-            <Button Content="Delete" x:Name="DeleteChat"  Grid.Row="9" Click="DeleteChat_Click"/>
-        </Grid>
 
     </Grid>
 
