@@ -7,7 +7,7 @@ namespace Client.Services.Communication.States
     {
         public override void Leave(int id)
         {
-            Request req = new() { Command = Command.LeaveGroup, Data = new { Group = id, User = store.user.Id } };
+            Transaction req = new() { Command = Command.LeaveGroup, Data = new { Group = id, User = store.user.Id } };
             store.udpHandler.Send(req.ToStrBytes());
         }
 

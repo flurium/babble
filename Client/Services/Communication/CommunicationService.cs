@@ -55,7 +55,7 @@ namespace Client.Services.Communication
 
         public void AcceptInvite(int id)
         {
-            Request req = new() { Command = Command.AcceptInvite, Data = new { Id = id } };
+            Transaction req = new() { Command = Command.AcceptInvite, Data = new { Id = id } };
             SendData(req);
 
             foreach (var invite in Invites)
@@ -70,13 +70,13 @@ namespace Client.Services.Communication
 
         public void CreateGroup(string groupName)
         {
-            Request req = new() { Command = Command.CreateGroup, Data = new { Group = groupName, User = store.user.Id } };
+            Transaction req = new() { Command = Command.CreateGroup, Data = new { Group = groupName, User = store.user.Id } };
             SendData(req);
         }
 
         public void Disconnect()
         {
-            Request req = new() { Command = Command.Disconnect, Data = new { store.user.Id } };
+            Transaction req = new() { Command = Command.Disconnect, Data = new { store.user.Id } };
             SendData(req);
 
             store.Clear();
@@ -92,7 +92,7 @@ namespace Client.Services.Communication
 
         public void EnterGroup(string groupName)
         {
-            Request req = new() { Command = Command.EnterGroup, Data = new { Group = groupName, User = store.user.Id } };
+            Transaction req = new() { Command = Command.EnterGroup, Data = new { Group = groupName, User = store.user.Id } };
             SendData(req);
         }
 
@@ -100,7 +100,7 @@ namespace Client.Services.Communication
 
         public void SendInvite(string name)
         {
-            Request req = new() { Command = Command.SendInvite, Data = new { To = name, From = store.user.Id } };
+            Transaction req = new() { Command = Command.SendInvite, Data = new { To = name, From = store.user.Id } };
             SendData(req);
         }
 
@@ -133,7 +133,7 @@ namespace Client.Services.Communication
                 store.ConfirmSign = confirm;
                 store.DenySign = deny;
 
-                Request req = new() { Command = Command.SignIn, Data = new { Name = name, Password = password } };
+                Transaction req = new() { Command = Command.SignIn, Data = new { Name = name, Password = password } };
 
                 if (!run) OpenConnection();
 
@@ -152,7 +152,7 @@ namespace Client.Services.Communication
                 store.ConfirmSign = confirm;
                 store.DenySign = deny;
 
-                Request req = new() { Command = Command.SignUp, Data = new { Name = name, Password = Hasher.Hash(password) } };
+                Transaction req = new() { Command = Command.SignUp, Data = new { Name = name, Password = Hasher.Hash(password) } };
 
                 if (!run) OpenConnection();
 
@@ -175,6 +175,6 @@ namespace Client.Services.Communication
         }
 
         //internal void SendData(Request req) => udpService.Send(req);
-        public void SendData(Request req) => store.udpHandler.Send(req.ToStrBytes());
+        public void SendData(Transaction req) => store.udpHandler.Send(req.ToStrBytes());
     }
 }
