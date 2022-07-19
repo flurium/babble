@@ -21,7 +21,8 @@ namespace CrossLibrary
         EnterGroup,
         Disconnect,
         SendFileMessageToContact, SendFileMessageToGroup,
-        GetFileMessageSize, GetClientAddress
+        GetFileMessageSize, GetClientAddress,
+        Exception
     }
 
     public enum Status
@@ -36,7 +37,7 @@ namespace CrossLibrary
         public string Name { get; set; }
     }
 
-    public struct Request
+    public struct Transaction
     {
         public Command Command { get; set; }
         public dynamic Data { get; set; }
@@ -46,13 +47,6 @@ namespace CrossLibrary
             string str = JsonConvert.SerializeObject(this);
             return CommunicationEncoding.GetBytes(str);
         }
-    }
-
-    public struct Response
-    {
-        public Command Command { get; set; }
-        public dynamic Data { get; set; }
-        public Status Status { get; set; }
     }
 
     public struct Destination

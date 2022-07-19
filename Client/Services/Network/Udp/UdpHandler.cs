@@ -13,7 +13,7 @@ namespace Client.Services
 {
     public class UdpHandler : ProtocolHandler
     {
-        private Dictionary<Command, Action<Response>> handlers;
+        private Dictionary<Command, Action<Transaction>> handlers;
 
         public UdpHandler(int port, Store store) : base(port, store)
         {
@@ -32,7 +32,8 @@ namespace Client.Services
                     { Command.RenameContact, RenameContactHandle },
                     { Command.RenameGroup, RenameGroupHandle },
                     { Command.GetFileMessageSize,  GetFileMessageSizeHandle },
-                    { Command.GetClientAddress, GetClientAddressHandle }
+                    { Command.GetClientAddress, GetClientAddressHandle },
+                    { Command.Exception, ExceptionHandle }
                 };
         }
 
@@ -42,43 +43,38 @@ namespace Client.Services
         {
             try
             {
-                Response res = JsonConvert.DeserializeObject<Response>(str);
+                Transaction res = JsonConvert.DeserializeObject<Transaction>(str);
                 handlers[res.Command](res);
             }
             catch (Exception ex)
             {
-                // TODO:
-                // Show error
-                throw;
+                Application.Current.Dispatcher.Invoke(() => MessageBox.Show("Sorry, something went wrong"));
             }
         }
 
-        private Prop GetProp(Response res) => new() { Id = res.Data.Id, Name = res.Data.Name };
+        private Prop GetProp(Transaction res) => new() { Id = res.Data.Id, Name = res.Data.Name };
 
-        private void GetFileMessageSizeHandle(Response res)
+        private void ExceptionHandle(Transaction tran)
         {
-            if (res.Status == Status.OK)
-            {
-                long size = res.Data.Size;
-                store.tcpHandler.UpdateBufferSize(size);
-            }
-            else
-            {
-            }
+            string message = (string)tran.Data;
+            Application.Current.Dispatcher.Invoke(() => MessageBox.Show(message));
         }
 
-        private void GetClientAddressHandle(Response res)
+        private void GetFileMessageSizeHandle(Transaction res)
         {
-            if (res.Status == Status.OK)
+            long size = res.Data.Size;
+            store.tcpHandler.UpdateBufferSize(size);
+        }
+
+        private void GetClientAddressHandle(Transaction res)
+        {
+            Destination destination = new()
             {
-                Destination destination = new()
-                {
-                    Ip = res.Data.Ip,
-                    Port = res.Data.Port
-                };
-                store.tcpHandler.UpdateDestination(destination);
-                store.tcpHandler.Send(store.pendingSendFile);
-            }
+                Ip = res.Data.Ip,
+                Port = res.Data.Port
+            };
+            store.tcpHandler.UpdateDestination(destination);
+            store.tcpHandler.Send(store.pendingSendFile);
         }
 
         private void AddToCollection(Prop prop, ref ObservableCollection<Prop> collection) => collection.Add(prop);
@@ -87,31 +83,22 @@ namespace Client.Services
         /// Handler for incoming props from the server.
         /// Create new entries in "dictionary" and "collection"
         /// </summary>
-        private void NewChatHandle(Response res, ref Dictionary<int, LinkedList<Message>> dictionary, ref ObservableCollection<Prop> collection)
+        private void NewChatHandle(Transaction res, ref Dictionary<int, LinkedList<Message>> dictionary, ref ObservableCollection<Prop> collection)
         {
-            if (res.Status == Status.OK)
-            {
-                Prop chat = GetProp(res);
+            Prop chat = GetProp(res);
 
-                Delegate addDelegate = AddToCollection;
-                object[] addParams = new object[] { chat, collection };
+            Delegate addDelegate = AddToCollection;
+            object[] addParams = new object[] { chat, collection };
 
-                dictionary.Add(chat.Id, new());
-                Application.Current.Dispatcher.Invoke(addDelegate, addParams);
-            }
-            else
-            {
-                // show error
-                string message = (string)res.Data;
-                Application.Current.Dispatcher.Invoke(() => MessageBox.Show(message));
-            }
+            dictionary.Add(chat.Id, new());
+            Application.Current.Dispatcher.Invoke(addDelegate, addParams);
         }
 
-        private void GetContactHandle(Response res) => NewChatHandle(res, ref store.contactMessages, ref store.contacts);
+        private void GetContactHandle(Transaction res) => NewChatHandle(res, ref store.contactMessages, ref store.contacts);
 
-        private void CreateGroupHandle(Response res) => NewChatHandle(res, ref store.groupMessages, ref store.groups);
+        private void CreateGroupHandle(Transaction res) => NewChatHandle(res, ref store.groupMessages, ref store.groups);
 
-        private void EnterGroupHandle(Response res) => NewChatHandle(res, ref store.groupMessages, ref store.groups);
+        private void EnterGroupHandle(Transaction res) => NewChatHandle(res, ref store.groupMessages, ref store.groups);
 
         /// <summary>
         /// Deleting a contact handler.
@@ -119,32 +106,24 @@ namespace Client.Services
         /// </summary>
         /// <remarks>Accepts response from the contact id in the Data.Id</remarks>
         /// <param name="res"></param>
-        private void RemoveContactHandle(Response res)
+        private void RemoveContactHandle(Transaction res)
         {
-            if (res.Status == Status.OK)
+            Prop contact = new()
             {
-                Prop contact = new()
-                {
-                    Id = res.Data.Id
-                };
+                Id = res.Data.Id
+            };
 
-                foreach (var cont in store.contacts)
+            foreach (var cont in store.contacts)
+            {
+                if (cont.Id == contact.Id)
                 {
-                    if (cont.Id == contact.Id)
-                    {
-                        store.contacts.Remove(cont);
-                        store.contactMessages.Remove(cont.Id);
-                        break;
-                    }
+                    store.contacts.Remove(cont);
+                    store.contactMessages.Remove(cont.Id);
+                    break;
                 }
+            }
 
-                Application.Current.Dispatcher.Invoke(() => store.contacts.Add(contact));
-            }
-            else
-            {
-                string message = (string)res.Data;
-                Application.Current.Dispatcher.Invoke(() => MessageBox.Show(message));
-            }
+            Application.Current.Dispatcher.Invoke(() => store.contacts.Add(contact));
         }
 
         /// <summary>
@@ -152,37 +131,22 @@ namespace Client.Services
         /// Placement of the invitation in  "ObservableCollection<Prop> Invites"
         /// </summary>
         /// <param name="res"></param>
-        private void GetInviteHandle(Response res)
+        private void GetInviteHandle(Transaction res)
         {
-            if (res.Status == Status.OK)
-            {
-                Prop invite = GetProp(res);
-                Application.Current.Dispatcher.Invoke(() => store.invites.Add(invite));
-            }
-            else
-            {
-                // show error
-            }
+            Prop invite = GetProp(res);
+            Application.Current.Dispatcher.Invoke(() => store.invites.Add(invite));
         }
 
-        private void SendInviteHandle(Response res)
+        private void SendInviteHandle(Transaction res)
         {
-            if (res.Status == Status.OK)
-            {
-                string message = res.Data.Message;
-                MessageBox.Show(message);
-            }
-            else
-            {
-                string message = res.Data;
-                MessageBox.Show(message);
-            }
+            string message = res.Data.Message;
+            MessageBox.Show(message);
         }
 
         /// <summary>
         /// Inserting a message into "dictionary" and " ObservableCollection<Message> CurrentMessages"
         /// </summary>
-        private void GetMessageHandle(Response res, ref Dictionary<int, LinkedList<Message>> dictionary)
+        private void GetMessageHandle(Transaction res, ref Dictionary<int, LinkedList<Message>> dictionary)
         {
             int id = res.Data.Id;
             string text = res.Data.Message;
@@ -202,9 +166,9 @@ namespace Client.Services
             }
         }
 
-        private void GetMessageFromContactHandle(Response res) => GetMessageHandle(res, ref store.contactMessages);
+        private void GetMessageFromContactHandle(Transaction res) => GetMessageHandle(res, ref store.contactMessages);
 
-        private void GetMessageFromGroupHandle(Response res) => GetMessageHandle(res, ref store.groupMessages);
+        private void GetMessageFromGroupHandle(Transaction res) => GetMessageHandle(res, ref store.groupMessages);
 
         private void UpdateCollectionProp(Prop prop, int i, ref ObservableCollection<Prop> collection) => collection[i] = prop;
 
@@ -213,43 +177,37 @@ namespace Client.Services
         /// Search for a prop in the ObservableCollection<Prop> collection and change the Name
         /// </summary>
         /// <param name="res"></param>
-        private void RenameHandle(Response res, ref ObservableCollection<Prop> collection)
+        private void RenameHandle(Transaction res, ref ObservableCollection<Prop> collection)
         {
-            if (res.Status == Status.OK)
-            {
-                Prop newProp = GetProp(res);
-                //int id = res.Data.Id;
-                //string newName = res.Data.Name;
+            Prop newProp = GetProp(res);
 
-                for (int i = 0; i < collection.Count; i++)
+            for (int i = 0; i < collection.Count; i++)
+            {
+                if (collection[i].Id == newProp.Id)
                 {
-                    if (collection[i].Id == newProp.Id)
-                    {
-                        Delegate updateDelegate = UpdateCollectionProp;
-                        object[] updateParams = new object[] { newProp, i, collection };
+                    Delegate updateDelegate = UpdateCollectionProp;
+                    object[] updateParams = new object[] { newProp, i, collection };
 
-                        Application.Current.Dispatcher.Invoke(updateDelegate, updateParams);
-                        break;
-                    }
+                    Application.Current.Dispatcher.Invoke(updateDelegate, updateParams);
+                    break;
                 }
-            }
-            else
-            {
             }
         }
 
-        private void RenameContactHandle(Response res) => RenameHandle(res, ref store.contacts);
+        private void RenameContactHandle(Transaction res) => RenameHandle(res, ref store.contacts);
 
-        private void RenameGroupHandle(Response res) => RenameHandle(res, ref store.groups);
+        private void RenameGroupHandle(Transaction res) => RenameHandle(res, ref store.groups);
 
         /// <summary>
         /// Login processing from the server.
         /// Obtaining data about contacts, groups and invites, entering into the appropriate arrays.
         /// </summary>
         /// <param name="res"></param>
-        private void SignInHandle(Response res)
+        private void SignInHandle(Transaction res)
         {
-            if (res.Status == Status.OK)
+            bool isOk = res.Data.IsOk;
+
+            if (isOk)
             {
                 store.user = new()
                 {
@@ -284,7 +242,7 @@ namespace Client.Services
             }
             else
             {
-                string message = res.Data;
+                string message = res.Data.Message;
                 store.DenySign(message);
             }
         }
@@ -294,16 +252,17 @@ namespace Client.Services
         /// Creating a new user.
         /// </summary>
         /// <param name="res"></param>
-        private void SignUpHandle(Response res)
+        private void SignUpHandle(Transaction res)
         {
-            if (res.Status == Status.OK)
+            bool isOk = res.Data.IsOk;
+            if (isOk)
             {
                 store.user = GetProp(res);
                 store.ConfirmSign();
             }
             else
             {
-                string message = res.Data;
+                string message = res.Data.Message;
                 store.DenySign(message);
             }
         }

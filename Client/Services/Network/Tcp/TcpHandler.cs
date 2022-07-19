@@ -13,7 +13,7 @@ namespace Client.Services
 {
     public class TcpHandler : ProtocolHandler
     {
-        private Dictionary<Command, Action<Request>> handlers;
+        private Dictionary<Command, Action<Transaction>> handlers;
         private readonly string downloadFolder = string.Format("{0}\\Downloads\\babble", Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
 
         public TcpHandler(int port, Store store) : base(port, store)
@@ -33,7 +33,7 @@ namespace Client.Services
         {
             try
             {
-                Request req = JsonConvert.DeserializeObject<Request>(str);
+                Transaction req = JsonConvert.DeserializeObject<Transaction>(str);
                 handlers[req.Command](req);
             }
             catch
@@ -42,7 +42,7 @@ namespace Client.Services
             }
         }
 
-        private void SendFileMessageHandle(Request req, ref Dictionary<int, LinkedList<Message>> dictionary)
+        private void SendFileMessageHandle(Transaction req, ref Dictionary<int, LinkedList<Message>> dictionary)
         {
             Message message = new()
             {
@@ -86,12 +86,12 @@ namespace Client.Services
             }
         }
 
-        private void SendFileMessageToContactHandle(Request req)
+        private void SendFileMessageToContactHandle(Transaction req)
         {
             SendFileMessageHandle(req, ref store.contactMessages);
         }
 
-        private void SendFileMessageToGroupHandle(Request req)
+        private void SendFileMessageToGroupHandle(Transaction req)
         {
             SendFileMessageHandle(req, ref store.groupMessages);
         }

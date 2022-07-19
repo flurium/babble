@@ -7,7 +7,7 @@ namespace Client.Services.Communication.States
     {
         public override void Leave(int id)
         {
-            Request req = new() { Command = Command.RemoveContact, Data = { To = id, From = store.user.Id } };
+            Transaction req = new() { Command = Command.RemoveContact, Data = { To = id, From = store.user.Id } };
             store.udpHandler.Send(req.ToStrBytes());
         }
 

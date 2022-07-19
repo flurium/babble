@@ -33,7 +33,7 @@ namespace Client.Services.Communication.States
         /// <param name="command"></param>
         protected void Rename(dynamic data, ref ObservableCollection<Prop> collection, Command command)
         {
-            Request req = new() { Command = command, Data = data };
+            Transaction req = new() { Command = command, Data = data };
 
             store.udpHandler.Send(req.ToStrBytes());
 
@@ -63,7 +63,7 @@ namespace Client.Services.Communication.States
             dictionary[store.currentProp.Id].AddLast(message);
             store.currentMessages.Add(message);
 
-            Request req = new() { Command = command, Data = new { To = store.currentProp.Id, From = store.user.Id, Message = message.Text } };
+            Transaction req = new() { Command = command, Data = new { To = store.currentProp.Id, From = store.user.Id, Message = message.Text } };
             store.udpHandler.Send(req.ToStrBytes());
         }
 
@@ -94,12 +94,12 @@ namespace Client.Services.Communication.States
             store.currentMessages.Add(message);
 
             // File request which will be sended to another client
-            Request fileReq = new() { Command = command, Data = new { From = store.user.Id, Message = message.Text, Files = files } };
+            Transaction fileReq = new() { Command = command, Data = new { From = store.user.Id, Message = message.Text, Files = files } };
             string fileReqStr = JsonConvert.SerializeObject(fileReq);
             byte[] fileReqData = CommunicationEncoding.GetBytes(fileReqStr);
 
             // send data size
-            Request req = new() { Command = Command.GetFileMessageSize, Data = new { To = store.currentProp.Id, Size = fileReqData.LongLength } };
+            Transaction req = new() { Command = Command.GetFileMessageSize, Data = new { To = store.currentProp.Id, Size = fileReqData.LongLength } };
             store.udpHandler.Send(req.ToStrBytes());
 
             store.pendingSendFile = fileReqData;
