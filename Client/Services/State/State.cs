@@ -76,10 +76,17 @@ namespace Client.Services
                 LinkedList<object> files = new();
                 foreach (string filePath in filePaths)
                 {
-                    bool isImage = MessageFile.ImageExtentions.Contains(Path.GetExtension(filePath).ToLower());
+                    string extention = Path.GetExtension(filePath).ToLower();
+                    bool isImage = MessageFile.ImageExtentions.Contains(extention);
 
                     byte[] data = File.ReadAllBytes(filePath);
-                    files.AddLast(new { IsImage = isImage, Bytes = data });
+                    files.AddLast(new
+                    {
+                        IsImage = isImage,
+                        Bytes = data,
+                        Name = Path.GetFileNameWithoutExtension(filePath),
+                        Extention = extention
+                    });
 
                     message.Files.Add(new MessageFile { IsImage = isImage, Path = filePath });
                 }

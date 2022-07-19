@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CrossLibrary;
+using System;
 
 namespace Client.Services.Network.Base
 {
@@ -11,14 +12,18 @@ namespace Client.Services.Network.Base
             protocolService = CreateProtocolService(port, Handle);
         }
 
-        protected abstract ProtocolService CreateProtocolService(int port, Action<string> handle);
-
-        protected abstract void Handle(string str);
+        public void Send(byte[] data) => protocolService.Send(data);
 
         public void Start() => protocolService.Start();
 
         public void Stop() => protocolService.Stop();
 
-        public void Send(byte[] data) => protocolService.Send(data);
+        public void UpdateBufferSize(long bufferSize) => protocolService.UpdateBufferSize(bufferSize);
+
+        public void UpdateDestination(Destination destination) => protocolService.UpdateDestination(destination);
+
+        protected abstract ProtocolService CreateProtocolService(int port, Action<string> handle);
+
+        protected abstract void Handle(string str);
     }
 }

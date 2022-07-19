@@ -30,7 +30,7 @@ namespace Server.Services
         /// </summary>
         /// <param name="req">Request contains id</param>
         /// <param name="ip">UserTo IP</param>
-        public async void AcceptInviteHandle(Request req, IPEndPoint ip)
+        private async void AcceptInviteHandle(Request req, IPEndPoint ip)
         {
             // ip = ip of user to
             // req.Data = contact id
@@ -57,7 +57,7 @@ namespace Server.Services
         /// </summary>
         /// <param name="req">Request contains user id and new name of group</param>
         /// <param name="ip">UserTo IP</param>
-        public async void CreateGroupHandle(Request req, IPEndPoint ip)
+        private async void CreateGroupHandle(Request req, IPEndPoint ip)
         {
             int uid = req.Data.User;
             string name = req.Data.Group;
@@ -71,7 +71,7 @@ namespace Server.Services
         /// </summary>
         /// <param name="req">Request contains user id and name of group</param>
         /// <param name="ip">UserTo IP</param>
-        public async void EnterGroupHandle(Request req, IPEndPoint ip)
+        private async void EnterGroupHandle(Request req, IPEndPoint ip)
         {
             int uid = req.Data.User;
             string groupName = req.Data.Group;
@@ -86,7 +86,7 @@ namespace Server.Services
         /// </summary>
         /// <param name="req">Request contains user id and name of group</param>
         /// <param name="ip">UserTo IP</param>
-        public async void LeaveGroupHandle(Request req, IPEndPoint ip)
+        private async void LeaveGroupHandle(Request req, IPEndPoint ip)
         {
             int uid = req.Data.Id;
             string name = req.Data.Name;
@@ -100,7 +100,7 @@ namespace Server.Services
         /// </summary>
         /// <param name="req">Request contains user id</param>
         /// <param name="ip">User IP</param>
-        public void DisconnectHandle(Request req, IPEndPoint ip)
+        private void DisconnectHandle(Request req, IPEndPoint ip)
         {
             int id = req.Data.Id;
             clients.Remove(id);
@@ -112,7 +112,7 @@ namespace Server.Services
         /// </summary>
         /// <param name="req">Request contains two user ids</param>
         /// <param name="ip">UserTo IP</param>
-        public async void RemoveContactHandle(Request req, IPEndPoint ip)
+        private async void RemoveContactHandle(Request req, IPEndPoint ip)
         {
             int from = req.Data.From;
             int to = req.Data.To;
@@ -126,7 +126,7 @@ namespace Server.Services
         /// </summary>
         /// <param name="req">Request contains two user ids and new contact name</param>
         /// <param name="ip">UserTo IP</param>
-        public void RenameContactHandle(Request req, IPEndPoint ip)
+        private void RenameContactHandle(Request req, IPEndPoint ip)
         {
             int from = req.Data.From;
             int to = req.Data.To;
@@ -141,7 +141,7 @@ namespace Server.Services
         /// </summary>
         /// <param name="req">Request contains user id and new group name</param>
         /// <param name="ip">UserTo IP</param>
-        public async void RenameGroupHandle(Request req, IPEndPoint ip)
+        private async void RenameGroupHandle(Request req, IPEndPoint ip)
         {
             int id = req.Data.Id;
             string name = req.Data.NewName;
@@ -156,7 +156,7 @@ namespace Server.Services
         /// </summary>
         /// <param name="req">Request contains two user ids</param>
         /// <param name="ip">UserTo IP</param>
-        public async void SendInviteHandle(Request req, IPEndPoint ip)
+        private async void SendInviteHandle(Request req, IPEndPoint ip)
         {
             int from = req.Data.From;
             string to = req.Data.To;
@@ -178,7 +178,7 @@ namespace Server.Services
         /// </summary>
         /// <param name="req">Request contains two user ids and text message</param>
         /// <param name="ip">UserTo IP</param>
-        public void SendMessageToContactHandle(Request req, IPEndPoint ip)
+        private void SendMessageToContactHandle(Request req, IPEndPoint ip)
         {
             // to user who sent
             //SendData(new Response { Command = Command.SendMessageToContact, Status = Status.OK, Data = "Message sent" }, ip);
@@ -201,7 +201,7 @@ namespace Server.Services
         /// </summary>
         /// <param name="req">Request contains user id, group id and text message</param>
         /// <param name="ip">UserTo IP</param>
-        public void SendMessageToGroupHandle(Request req, IPEndPoint ip)
+        private void SendMessageToGroupHandle(Request req, IPEndPoint ip)
         {
             int from = req.Data.From;
             int group = req.Data.To;
@@ -228,7 +228,7 @@ namespace Server.Services
         /// </summary>
         /// <param name="req">Request contains user name and password</param>
         /// <param name="ip">UserTo IP</param>
-        public void SignInHandle(Request req, IPEndPoint ip)
+        private void SignInHandle(Request req, IPEndPoint ip)
         {
             string name = req.Data.Name;
             string password = req.Data.Password;
@@ -275,7 +275,7 @@ namespace Server.Services
         /// </summary>
         /// <param name="req">Request contains new user name and password</param>
         /// <param name="ip">UserTo IP</param>
-        public void SignUpHandle(Request req, IPEndPoint ip)
+        private void SignUpHandle(Request req, IPEndPoint ip)
         {
             string name = req.Data.Name;
             string password = req.Data.Password;
@@ -294,6 +294,39 @@ namespace Server.Services
                     Name = user.Name
                 }
             }, ip);
+        }
+
+        /// <summary>
+        /// Send data size to clientTo.
+        /// Send clientTo address to clientFrom
+        /// </summary>
+        private void GetFileMessageSizeHandle(Request req, IPEndPoint ip)
+        {
+            int to = req.Data.To;
+            long size = req.Data.Size;
+
+            IPEndPoint toIp;
+            if (clients.TryGetValue(to, out toIp))
+            {
+                // send data size to clientTo
+                SendData(new Response
+                {
+                    Command = Command.GetFileMessageSize,
+                    Status = Status.OK,
+                    Data = new { Size = size }
+                }, toIp);
+
+                // send clientTo destination to clientFrom
+                SendData(new Response
+                {
+                    Command = Command.GetClientAddress,
+                    Status = Status.OK,
+                    Data = new Destination { Ip = toIp.Address.ToString(), Port = toIp.Port }
+                }, ip);
+            }
+            else
+            {
+            }
         }
 
         private void Handle(string reqStr, IPEndPoint ip)
@@ -385,21 +418,22 @@ namespace Server.Services
 
             // init handlers
             handlers = new()
-      {
-        { Command.SignIn, SignInHandle },
-        { Command.SignUp, SignUpHandle },
-        { Command.SendMessageToContact, SendMessageToContactHandle },
-        { Command.SendMessageToGroup, SendMessageToGroupHandle },
-        { Command.SendInvite, SendInviteHandle },
-        { Command.AcceptInvite, AcceptInviteHandle },
-        { Command.RenameContact, RenameContactHandle },
-        { Command.RemoveContact, RemoveContactHandle },
-        { Command.CreateGroup, CreateGroupHandle },
-        { Command.LeaveGroup, LeaveGroupHandle },
-        { Command.EnterGroup, EnterGroupHandle },
-        { Command.Disconnect, DisconnectHandle },
-        { Command.RenameGroup, RenameGroupHandle }
-      };
+            {
+                { Command.SignIn, SignInHandle },
+                { Command.SignUp, SignUpHandle },
+                { Command.SendMessageToContact, SendMessageToContactHandle },
+                { Command.SendMessageToGroup, SendMessageToGroupHandle },
+                { Command.SendInvite, SendInviteHandle },
+                { Command.AcceptInvite, AcceptInviteHandle },
+                { Command.RenameContact, RenameContactHandle },
+                { Command.RemoveContact, RemoveContactHandle },
+                { Command.CreateGroup, CreateGroupHandle },
+                { Command.LeaveGroup, LeaveGroupHandle },
+                { Command.EnterGroup, EnterGroupHandle },
+                { Command.Disconnect, DisconnectHandle },
+                { Command.RenameGroup, RenameGroupHandle },
+                { Command.GetFileMessageSize, GetFileMessageSizeHandle },
+            };
         }
 
         private void CloseConnection()
@@ -409,14 +443,6 @@ namespace Server.Services
                 listeningSocket.Shutdown(SocketShutdown.Both);
                 listeningSocket.Close();
                 listeningSocket = null;
-            }
-        }
-
-        public Logger Logger
-        {
-            get => default;
-            set
-            {
             }
         }
     }

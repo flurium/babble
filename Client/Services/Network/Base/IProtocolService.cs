@@ -1,11 +1,17 @@
-﻿namespace Client.Services.Network.Base
+﻿using CrossLibrary;
+
+namespace Client.Services.Network.Base
 {
     public interface IProtocolService
     {
+        void Send(byte[] data);
+
         void Start();
 
         void Stop();
 
-        void Send(byte[] data);
+        void UpdateBufferSize(long bufferSize);
+
+        void UpdateDestination(Destination destination);
     }
 }
