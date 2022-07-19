@@ -13,20 +13,10 @@ namespace Client.Services
     {
         private State state;
 
-        // key = contact id
-        private Dictionary<int, LinkedList<Message>> contactMessages = new();
-
-        // key = group id
-        private Dictionary<int, LinkedList<Message>> groupMessages = new();
+        private Store store = new();
 
         private int localPort;
-        private Prop currentProp;
 
-        private readonly IProtocolService udpHandler;
-        private readonly IProtocolService tcpHandler;
-        //private UdpService udpService;
-
-        private byte[] pendingSendFile;
         private bool run = false;
 
         public CommunicationService()
@@ -38,36 +28,31 @@ namespace Client.Services
                 localPort = rnd.Next(3000, 49000);
             } while (localPort == ServerDestination.Port);
 
+
             // init udp service
-            udpHandler = new UdpHandler(localPort, this);
-            //udpService = new(localPort, Handle);
+            IProtocolService udpHandler = new UdpHandler(localPort, store);
 
             // init tcp service
-            tcpHandler = new TcpHandler(localPort, this);
+            IProtocolService tcpHandler = new TcpHandler(localPort, store);
+
+            // put protocol services to store
+            store.udpHandler = udpHandler;
+            store.tcpHandler = tcpHandler;
         }
 
-        // function from interface to confirm sign
-        public Action ConfirmSign { get; set; }
 
-        // ObservableCollections must not be recreated
 
-        private ObservableCollection<Prop> contacts = new();
-        public ObservableCollection<Prop> Contacts { get => contacts; }
+        public ObservableCollection<Prop> Contacts { get => store.contacts; }
+        public ObservableCollection<Message> CurrentMessages { get => store.currentMessages; }
 
-        public ObservableCollection<Message> CurrentMessages { get; } = new();
-        public Action<string> DenySign { get; set; }
+        public ObservableCollection<Prop> Groups { get => store.groups; }
 
-        private ObservableCollection<Prop> groups = new();
-        public ObservableCollection<Prop> Groups { get => groups; }
-
-        public ObservableCollection<Prop> Invites { get; } = new();
-
-        public Prop User { get; private set; }
+        public ObservableCollection<Prop> Invites { get => store.invites; }
 
         public void SetState(State state)
         {
             this.state = state;
-            state.SetCommunicationService(this);
+            state.SetCommunicationService(store);
         }
 
         public void AcceptInvite(int id)
@@ -87,21 +72,16 @@ namespace Client.Services
 
         public void CreateGroup(string groupName)
         {
-            Request req = new() { Command = Command.CreateGroup, Data = new { Group = groupName, User = User.Id } };
+            Request req = new() { Command = Command.CreateGroup, Data = new { Group = groupName, User = store.user.Id } };
             SendData(req);
         }
 
         public void Disconnect()
         {
-            Request req = new() { Command = Command.Disconnect, Data = new { Id = User.Id } };
+            Request req = new() { Command = Command.Disconnect, Data = new { Id = store.user.Id } };
             SendData(req);
 
-            contactMessages.Clear();
-            groupMessages.Clear();
-            contacts.Clear();
-            CurrentMessages.Clear();
-            groups.Clear();
-            Invites.Clear();
+            store.Clear();
 
             // stop services
             //tcpService.Stop();
@@ -114,7 +94,7 @@ namespace Client.Services
 
         public void EnterGroup(string groupName)
         {
-            Request req = new() { Command = Command.EnterGroup, Data = new { Group = groupName, User = User.Id } };
+            Request req = new() { Command = Command.EnterGroup, Data = new { Group = groupName, User = store.user.Id } };
             SendData(req);
         }
 
@@ -122,7 +102,7 @@ namespace Client.Services
 
         public void SendInvite(string name)
         {
-            Request req = new() { Command = Command.SendInvite, Data = new { To = name, From = User.Id } };
+            Request req = new() { Command = Command.SendInvite, Data = new { To = name, From = store.user.Id } };
             SendData(req);
         }
 
@@ -140,18 +120,21 @@ namespace Client.Services
 
         public Prop CurrentProp
         {
-            get => currentProp;
+            get => store.currentProp;
             set
             {
-                currentProp = value;
+                store.currentProp = value;
                 state.RefreshMessages();
             }
         }
 
-        public void SignIn(string name, string password)
+        public void SignIn(string name, string password, Action confirm, Action<string> deny)
         {
             try
             {
+                store.ConfirmSign = confirm;
+                store.DenySign = deny;
+
                 Request req = new() { Command = Command.SignIn, Data = new { Name = name, Password = password } };
 
                 if (!run) OpenConnection();
@@ -164,10 +147,13 @@ namespace Client.Services
             }
         }
 
-        public void SignUp(string name, string password)
+        public void SignUp(string name, string password, Action confirm, Action<string> deny)
         {
             try
             {
+                store.ConfirmSign = confirm;
+                store.DenySign = deny;
+
                 Request req = new() { Command = Command.SignUp, Data = new { Name = name, Password = Hasher.Hash(password) } };
 
                 if (!run) OpenConnection();
@@ -184,15 +170,14 @@ namespace Client.Services
         {
             run = true;
             // run udp service
-            udpHandler.Start();
+            store.udpHandler.Start();
 
             // run tcp service
-            tcpHandler.Start();
+            store.tcpHandler.Start();
         }
 
         //internal void SendData(Request req) => udpService.Send(req);
-        public void SendData(Request req) => udpHandler.Send(req.ToStrBytes());
+        public void SendData(Request req) => store.udpHandler.Send(req.ToStrBytes());
 
-        private void SendData(byte[] data) => udpHandler.Send(data);
     }
 }

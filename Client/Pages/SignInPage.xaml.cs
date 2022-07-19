@@ -60,10 +60,7 @@ namespace Client.Pages
             {
                 ReverseIsEnabled();
 
-                cs.DenySign = DenySignIn;
-                cs.ConfirmSign = ConfirmSignIn;
-
-                cs.SignIn(name, password);
+                cs.SignIn(name, password, ConfirmSignIn, DenySignIn);
             }
         }
 
