@@ -1,5 +1,6 @@
 ﻿using Server.Services;
 using System.Text;
+using static CrossLibrary.Globals;
 
 namespace Server
 {
@@ -8,10 +9,9 @@ namespace Server
         private static void Main(string[] args)
         {
             Console.Title = "Babble server";
-            Console.OutputEncoding = Encoding.UTF8;
+            Console.OutputEncoding = CommunicationEncoding;
 
             CommunicationService cs = new();
-
             cs.Listen();
         }
     }

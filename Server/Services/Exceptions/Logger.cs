@@ -1,6 +1,6 @@
 ﻿using CrossLibrary;
 
-namespace Server.Services
+namespace Server.Services.Exceptions
 {
     public interface ILogger
     {

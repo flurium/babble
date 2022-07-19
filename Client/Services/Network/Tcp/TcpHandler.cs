@@ -19,11 +19,10 @@ namespace Client.Services
         public TcpHandler(int port, Store store) : base(port, store)
         {
             handlers = new()
-                {
-                    { Command.SendFileMessageToContact, SendFileMessageToContactHandle },
-                    { Command.SendFileMessageToGroup, SendFileMessageToGroupHandle },
-                };
-
+            {
+                { Command.SendFileMessageToContact, SendFileMessageToContactHandle },
+                { Command.SendFileMessageToGroup, SendFileMessageToGroupHandle },
+            };
             if (!Directory.Exists(downloadFolder)) Directory.CreateDirectory(downloadFolder);
         }
 

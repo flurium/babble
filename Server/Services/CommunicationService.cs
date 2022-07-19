@@ -2,6 +2,7 @@ using CrossLibrary;
 using Newtonsoft.Json;
 using Server.Models;
 using Server.Services.Database;
+using Server.Services.Exceptions;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -91,7 +92,6 @@ namespace Server.Services
             int uid = req.Data.Id;
             string name = req.Data.Name;
             await db.RemoveUserFromGroupAsync(uid, name);
-
             SendData(new Transaction { Command = Command.LeaveGroup, Data = "Group is removed" }, ip);
         }
 
@@ -350,9 +350,14 @@ namespace Server.Services
             {
                 handlers[req.Command](req, ip);
             }
-            catch (Exception ex)
+            catch (InfoException ex)
             {
                 SendData(new Transaction { Command = Command.Exception, Data = ex.Message }, ip);
+                logger.LogRequest(req, ex);
+            }
+            catch (Exception ex)
+            {
+                SendData(new Transaction { Command = Command.Exception, Data = "Sorry, something went wrong." }, ip);
                 logger.LogRequest(req, ex);
             }
         }
