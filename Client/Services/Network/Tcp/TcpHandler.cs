@@ -59,11 +59,15 @@ namespace Client.Services
                 foreach (var file in files)
                 {
                     string name = file.Name;
-
+                    string extention = file.Extention;
                     int count = 1;
 
-                    string downloadPath = string.Format("{0}\\{1}", downloadFolder, name);
-
+                    string downloadPath = string.Format("{0}\\{1}{2}", downloadFolder, name, extention);
+                    while (File.Exists(downloadPath))
+                    {
+                        downloadPath = string.Format("{0}\\{1}({2}){3}", downloadFolder, name, count, extention);
+                        count++;
+                    }
 
                     byte[] data = file.Bytes;
                     File.WriteAllBytes(downloadPath, data);
