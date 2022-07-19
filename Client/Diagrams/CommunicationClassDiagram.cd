@@ -1,30 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Class Name="Client.Services.CommunicationService">
-    <Position X="7.25" Y="6.25" Width="2" />
-    <Compartments>
-      <Compartment Name="Nested Types" Collapsed="false" />
-    </Compartments>
-    <TypeIdentifier>
-      <HashCode>BAwABkCAAIAACAABACAAAEAAAQEAgACFAAAAIAAAoAQ=</HashCode>
-      <FileName>Services\CommunicationService.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Field Name="store" />
-    </ShowAsAssociation>
-  </Class>
   <Class Name="Client.Services.Network.Base.ProtocolHandler">
     <Position X="11.25" Y="1.25" Width="2" />
-    <AssociationLine Name="store" Type="Client.Services.Store" FixedFromPoint="true">
-      <Path>
-        <Point X="11.25" Y="1.938" />
-        <Point X="9" Y="1.938" />
-      </Path>
-    </AssociationLine>
     <AssociationLine Name="protocolService" Type="Client.Services.Network.Base.ProtocolService" FixedToPoint="true">
       <Path>
         <Point X="13.25" Y="1.937" />
         <Point X="16.25" Y="1.937" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="store" Type="Client.Services.Communication.Store" FixedFromPoint="true">
+      <Path>
+        <Point X="11.25" Y="1.938" />
+        <Point X="9" Y="1.938" />
       </Path>
     </AssociationLine>
     <TypeIdentifier>
@@ -32,8 +19,8 @@
       <FileName>Services\Network\Base\ProtocolHandler.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
-      <Field Name="store" />
       <Field Name="protocolService" />
+      <Field Name="store" />
     </ShowAsAssociation>
     <Lollipop Position="0.2" />
   </Class>
@@ -73,16 +60,26 @@
       <FileName>Services\Network\Udp\UdpHandler.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Client.Services.ContactState">
-    <Position X="2.25" Y="5" Width="1.5" />
+  <Class Name="Client.Services.Communication.CommunicationService">
+    <Position X="7.25" Y="6.25" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAACAAAAAAAAEAAAAAAAAAAAAAggA=</HashCode>
-      <FileName>Services\State\ContactState.cs</FileName>
+      <HashCode>BAwABkCAAIAACAABACAAAEAAAQEAgACFAAAAIAAAoAQ=</HashCode>
+      <FileName>Services\Communication\CommunicationService.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="store" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Client.Services.Communication.Store">
+    <Position X="7.5" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAAAAQMAAAAAAAEAQAAAQAAAABAAAAAAIAAAAZAAQA=</HashCode>
+      <FileName>Services\Communication\Store.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Client.Services.State">
+  <Class Name="Client.Services.Communication.States.State">
     <Position X="2.75" Y="1.25" Width="2.5" />
-    <AssociationLine Name="store" Type="Client.Services.Store" FixedFromPoint="true">
+    <AssociationLine Name="store" Type="Client.Services.Communication.Store" FixedFromPoint="true">
       <Path>
         <Point X="5.25" Y="1.938" />
         <Point X="7.5" Y="1.938" />
@@ -90,24 +87,24 @@
     </AssociationLine>
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAEAAACAAAAAAAAEAAAABAAAAAAAAggA=</HashCode>
-      <FileName>Services\State\State.cs</FileName>
+      <FileName>Services\Communication\States\State.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Field Name="store" />
     </ShowAsAssociation>
   </Class>
-  <Class Name="Client.Services.GroupState">
+  <Class Name="Client.Services.Communication.States.ContactState">
+    <Position X="2.25" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAACAAAAAAAAEAAAAAAAAAAAAAggA=</HashCode>
+      <FileName>Services\Communication\States\ContactState.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Client.Services.Communication.States.GroupState">
     <Position X="4.25" Y="5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAACAAAAAAAAEAAAAAAAAAAAAAggA=</HashCode>
-      <FileName>Services\State\GroupState.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Client.Services.Store">
-    <Position X="7.5" Y="1.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>QAAAAAQMAAAAAAAEAQAAAQAAAABAAAAAAIAAAAZAAQA=</HashCode>
-      <FileName>Services\Store.cs</FileName>
+      <FileName>Services\Communication\States\GroupState.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Interface Name="Client.Services.Network.Base.IProtocolService">

@@ -1,5 +1,5 @@
 ﻿using Client.Pages;
-using Client.Services;
+using Client.Services.Communication;
 using System.Windows;
 
 namespace Client

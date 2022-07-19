@@ -1,4 +1,4 @@
-﻿using Client.Services;
+﻿using Client.Services.Communication;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;

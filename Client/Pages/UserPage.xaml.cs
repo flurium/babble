@@ -1,4 +1,5 @@
-﻿using Client.Services;
+﻿using Client.Services.Communication;
+using Client.Services.Communication.States;
 using CrossLibrary;
 using Microsoft.Win32;
 using System;
@@ -7,7 +8,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Navigation;
-using static Client.Services.CommunicationService;
 
 namespace Client
 {

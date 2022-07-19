@@ -1,4 +1,5 @@
 ﻿using Client.Models;
+using Client.Services.Communication.States;
 using Client.Services.Network.Base;
 using CrossLibrary;
 using System;
@@ -7,9 +8,9 @@ using System.Collections.ObjectModel;
 using System.Windows;
 using static CrossLibrary.Globals;
 
-namespace Client.Services
+namespace Client.Services.Communication
 {
-    public partial class CommunicationService
+    public class CommunicationService
     {
         private State state;
 
@@ -28,7 +29,6 @@ namespace Client.Services
                 localPort = rnd.Next(3000, 49000);
             } while (localPort == ServerDestination.Port);
 
-
             // init udp service
             IProtocolService udpHandler = new UdpHandler(localPort, store);
 
@@ -39,8 +39,6 @@ namespace Client.Services
             store.udpHandler = udpHandler;
             store.tcpHandler = tcpHandler;
         }
-
-
 
         public ObservableCollection<Prop> Contacts { get => store.contacts; }
         public ObservableCollection<Message> CurrentMessages { get => store.currentMessages; }
@@ -78,7 +76,7 @@ namespace Client.Services
 
         public void Disconnect()
         {
-            Request req = new() { Command = Command.Disconnect, Data = new { Id = store.user.Id } };
+            Request req = new() { Command = Command.Disconnect, Data = new { store.user.Id } };
             SendData(req);
 
             store.Clear();
@@ -178,6 +176,5 @@ namespace Client.Services
 
         //internal void SendData(Request req) => udpService.Send(req);
         public void SendData(Request req) => store.udpHandler.Send(req.ToStrBytes());
-
     }
 }

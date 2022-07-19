@@ -1,7 +1,7 @@
 ﻿using CrossLibrary;
 using System.Collections.Generic;
 
-namespace Client.Services
+namespace Client.Services.Communication.States
 {
     public class GroupState : State
     {

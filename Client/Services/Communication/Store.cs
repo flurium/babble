@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace Client.Services
+namespace Client.Services.Communication
 {
     public class Store
     {
@@ -24,6 +24,7 @@ namespace Client.Services
 
         // function from interface to confirm sign
         public Action ConfirmSign { get; set; }
+
         public Action<string> DenySign { get; set; }
 
         public IProtocolService udpHandler;

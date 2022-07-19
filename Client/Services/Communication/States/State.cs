@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using static CrossLibrary.Globals;
 
-namespace Client.Services
+namespace Client.Services.Communication.States
 {
     /// <summary>
     /// Base state abstraction. Inside of CommunicationService class,
