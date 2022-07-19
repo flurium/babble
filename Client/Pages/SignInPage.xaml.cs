@@ -1,4 +1,4 @@
-﻿using Client.Services;
+﻿using Client.Services.Communication;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;
@@ -60,10 +60,7 @@ namespace Client.Pages
             {
                 ReverseIsEnabled();
 
-                cs.DenySign = DenySignIn;
-                cs.ConfirmSign = ConfirmSignIn;
-
-                cs.SignIn(name, password);
+                cs.SignIn(name, password, ConfirmSignIn, DenySignIn);
             }
         }
 

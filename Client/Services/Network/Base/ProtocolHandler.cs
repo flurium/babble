@@ -1,4 +1,5 @@
-﻿using CrossLibrary;
+﻿using Client.Services.Communication;
+using CrossLibrary;
 using System;
 
 namespace Client.Services.Network.Base
@@ -6,10 +7,12 @@ namespace Client.Services.Network.Base
     public abstract class ProtocolHandler : IProtocolService
     {
         protected ProtocolService protocolService;
+        protected Store store;
 
-        protected ProtocolHandler(int port)
+        protected ProtocolHandler(int port, Store store)
         {
             protocolService = CreateProtocolService(port, Handle);
+            this.store = store;
         }
 
         public void Send(byte[] data) => protocolService.Send(data);
