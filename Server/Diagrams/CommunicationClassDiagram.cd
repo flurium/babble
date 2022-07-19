@@ -1,62 +1,52 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="Server.Services.CommunicationService">
-    <Position X="4.25" Y="0.75" Width="2.5" />
-    <AssociationLine Name="db" Type="Server.Services.DatabaseService" FixedFromPoint="true">
+    <Position X="4" Y="1.25" Width="2.5" />
+    <AssociationLine Name="logger" Type="Server.Services.ILogger" FixedFromPoint="true">
       <Path>
-        <Point X="6.75" Y="1.394" />
-        <Point X="8.25" Y="1.394" />
+        <Point X="4" Y="1.938" />
+        <Point X="2.75" Y="1.938" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true">
-        <Position X="0.56" Y="0.089" />
+        <Position X="0.43" Y="0.082" />
       </MemberNameLabel>
     </AssociationLine>
-    <AssociationLine Name="Logger" Type="Server.Services.Logger" FixedFromPoint="true">
+    <AssociationLine Name="db" Type="Server.Services.Database.DatabaseService" FixedFromPoint="true">
       <Path>
-        <Point X="4.25" Y="2.445" />
-        <Point X="2.75" Y="2.445" />
+        <Point X="6.5" Y="1.938" />
+        <Point X="7.75" Y="1.938" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true">
-        <Position X="0.407" Y="0.117" />
+        <Position X="0.692" Y="0.089" />
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AABABgBgAIIQAkADAAAAARAgAAAAEAJQCAAACABAEAA=</HashCode>
+      <HashCode>AABABgBgAIAQAkADAAAAARAgAAAAEgJQCAAACABAEAA=</HashCode>
       <FileName>Services\CommunicationService.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
+      <Field Name="logger" />
       <Field Name="db" />
-      <Property Name="Logger" />
     </ShowAsAssociation>
   </Class>
-  <Class Name="Server.Services.DatabaseService">
-    <Position X="8.25" Y="1.25" Width="2.25" />
-    <Members>
-      <Property Name="BabbleContext" Hidden="true" />
-      <Field Name="contactService" Hidden="true" />
-      <Property Name="ContactService" Hidden="true" />
-      <Field Name="db" Hidden="true" />
-      <Field Name="groupService" Hidden="true" />
-      <Property Name="GroupService" Hidden="true" />
-      <Field Name="userService" Hidden="true" />
-      <Property Name="UserService" Hidden="true" />
-    </Members>
-    <TypeIdentifier>
-      <HashCode>AAAEYACgiAAQAICEAAEAgAgAAQAAQAAgkEBAQBBAIAA=</HashCode>
-      <FileName>Services\DatabaseService.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" Collapsed="true" />
-  </Class>
   <Class Name="Server.Services.Logger">
-    <Position X="1.25" Y="2.25" Width="1.5" />
+    <Position X="1.25" Y="3.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAQAAAAAAACAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Services\Logger.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
+  <Class Name="Server.Services.Database.DatabaseService">
+    <Position X="7.75" Y="1.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAEYACgiAAQAICEAAEAgAgAAQAAQAAgkEBAQBBAIAA=</HashCode>
+      <FileName>Services\Database\DatabaseService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
   <Interface Name="Server.Services.ILogger">
-    <Position X="1.25" Y="4" Width="1.5" />
+    <Position X="1.25" Y="1.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAQAAAAAAACAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Services\Logger.cs</FileName>
