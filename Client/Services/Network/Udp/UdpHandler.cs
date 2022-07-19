@@ -23,20 +23,22 @@ namespace Client.Services
 
                 // Init handlers
                 handlers = new()
-            {
-                {Command.GetMessageFromContact, GetMessageFromContactHandle},
-                {Command.GetMessageFromGroup, GetMessageFromGroupHandle},
-                {Command.SignIn, SignInHandle },
-                {Command.SignUp, SignUpHandle},
-                {Command.SendInvite, SendInviteHandle},
-                {Command.GetInvite, GetInviteHandle},
-                {Command.GetContact, GetContactHandle},
-                {Command.CreateGroup, CreateGroupHandle},
-                {Command.EnterGroup, EnterGroupHandle},
-                {Command.RemoveContact, RemoveContactHandle},
-                {Command.RenameContact, RenameContactHandle},
-                {Command.RenameGroup, RenameGroupHandle}
-            };
+                {
+                    { Command.GetMessageFromContact, GetMessageFromContactHandle },
+                    { Command.GetMessageFromGroup, GetMessageFromGroupHandle },
+                    { Command.SignIn, SignInHandle },
+                    { Command.SignUp, SignUpHandle },
+                    { Command.SendInvite, SendInviteHandle },
+                    { Command.GetInvite, GetInviteHandle },
+                    { Command.GetContact, GetContactHandle },
+                    { Command.CreateGroup, CreateGroupHandle },
+                    { Command.EnterGroup, EnterGroupHandle },
+                    { Command.RemoveContact, RemoveContactHandle },
+                    { Command.RenameContact, RenameContactHandle },
+                    { Command.RenameGroup, RenameGroupHandle },
+                    { Command.GetFileMessageSize,  GetFileMessageSizeHandle },
+                    { Command.GetClientAddress, GetClientAddressHandle }
+                };
             }
 
             protected override ProtocolService CreateProtocolService(int port, Action<string> handle) => new UdpService(port, handle);
@@ -56,9 +58,35 @@ namespace Client.Services
                 }
             }
 
-            private void AddToCollection(Prop prop, ref ObservableCollection<Prop> collection) => collection.Add(prop);
-
             private Prop GetProp(Response res) => new() { Id = res.Data.Id, Name = res.Data.Name };
+
+            private void GetFileMessageSizeHandle(Response res)
+            {
+                if (res.Status == Status.OK)
+                {
+                    long size = res.Data.Size;
+                    cs.tcpHandler.UpdateBufferSize(size);
+                }
+                else
+                {
+                }
+            }
+
+            private void GetClientAddressHandle(Response res)
+            {
+                if (res.Status == Status.OK)
+                {
+                    Destination destination = new()
+                    {
+                        Ip = res.Data.Ip,
+                        Port = res.Data.Port
+                    };
+                    cs.tcpHandler.UpdateDestination(destination);
+                    cs.tcpHandler.Send(cs.pendingSendFile);
+                }
+            }
+
+            private void AddToCollection(Prop prop, ref ObservableCollection<Prop> collection) => collection.Add(prop);
 
             /// <summary>
             /// Handler for incoming props from the server.

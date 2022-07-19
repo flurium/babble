@@ -43,7 +43,7 @@ namespace Client.Services
             //udpService = new(localPort, Handle);
 
             // init tcp service
-            tcpHandler = new TcpHandler(localPort);
+            tcpHandler = new TcpHandler(localPort, this);
         }
 
         // function from interface to confirm sign

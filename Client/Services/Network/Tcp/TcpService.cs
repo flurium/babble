@@ -3,6 +3,7 @@ using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using static CrossLibrary.Globals;
 
 namespace Client.Services.Network.Tcp
 {
@@ -25,7 +26,7 @@ namespace Client.Services.Network.Tcp
             NetworkStream? outcomeStream = null;
             try
             {
-                outcomeClient.Connect(Destination.Ip, Destination.Port);
+                outcomeClient.Connect(destination.Ip, destination.Port);
                 outcomeStream = outcomeClient.GetStream();
                 outcomeStream.Write(data, 0, data.Length);
             }
@@ -85,12 +86,12 @@ namespace Client.Services.Network.Tcp
         protected override string Receive()
         {
             int bytes;
-            byte[] buffer = new byte[BufferSize];
+            byte[] buffer = new byte[bufferSize];
             StringBuilder builder = new();
             do
             {
                 bytes = tcpStream.Read(buffer, 0, buffer.Length);
-                builder.Append(Encoding.Unicode.GetString(buffer, 0, bytes));
+                builder.Append(CommunicationEncoding.GetString(buffer, 0, bytes));
             } while (tcpStream.DataAvailable);
 
             return builder.ToString();

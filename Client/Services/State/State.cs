@@ -79,7 +79,7 @@ namespace Client.Services
                     bool isImage = MessageFile.ImageExtentions.Contains(Path.GetExtension(filePath).ToLower());
 
                     byte[] data = File.ReadAllBytes(filePath);
-                    files.AddLast(new { IsImage = isImage, Bytes = data });
+                    files.AddLast(new { IsImage = isImage, Bytes = data, Name = Path.GetFileName(filePath) });
 
                     message.Files.Add(new MessageFile { IsImage = isImage, Path = filePath });
                 }

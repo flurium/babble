@@ -113,11 +113,9 @@ namespace Client
 
         private void RenameBtn_Click(object sender, RoutedEventArgs e)
         {
-
             string newName = ReNameInput.Text.Trim();
             if (newName != "") cs.Rename(newName); ChatName.Content = newName;
         }
-
 
         private void SendMessage()
         {
@@ -213,7 +211,6 @@ namespace Client
 
         private void DeleteChat_Click(object sender, RoutedEventArgs e)
         {
-
         }
 
         private void OpenSettingsBtn_Click(object sender, RoutedEventArgs e)

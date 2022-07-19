@@ -1,6 +1,4 @@
 ﻿using Client.Services.Network.Base;
-using CrossLibrary;
-using Newtonsoft.Json;
 using System;
 using System.Net;
 using System.Net.Sockets;
@@ -19,27 +17,14 @@ namespace Client.Services.Network.Udp
         /// <param name="handle">Delegate to handle incomming message strings</param>
         public UdpService(int port, Action<string> handle) : base(port, handle)
         {
-            Destination = ServerDestination;
-        }
-
-        public void Send(Request req)
-        {
-            try
-            {
-                string reqStr = JsonConvert.SerializeObject(req);
-                byte[] data = CommunicationEncoding.GetBytes(reqStr);
-                Send(data);
-            }
-            catch (Exception ex)
-            {
-            }
+            destination = ServerDestination;
         }
 
         public override void Send(byte[] data)
         {
             try
             {
-                IPEndPoint remoteIP = new(IPAddress.Parse(Destination.Ip), Destination.Port);
+                IPEndPoint remoteIP = new(IPAddress.Parse(destination.Ip), destination.Port);
                 socket.SendTo(data, remoteIP);
             }
             catch (Exception ex)
@@ -106,12 +91,11 @@ namespace Client.Services.Network.Udp
         protected override string Receive()
         {
             int bytes;
-            byte[] buffer = new byte[BufferSize];
+            byte[] buffer = new byte[bufferSize];
             StringBuilder builder = new();
             do
             {
                 bytes = socket.ReceiveFrom(buffer, ref remoteEndPoint);
-
                 builder.Append(CommunicationEncoding.GetString(buffer, 0, bytes));
             } while (socket.Available > 0);
 
