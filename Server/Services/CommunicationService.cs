@@ -18,6 +18,7 @@ namespace Server.Services
     public class CommunicationService
     {
         private readonly Dictionary<int, IPEndPoint> clients = new();
+        private readonly Dictionary<int, LinkedList<Transaction>> pendingMessages = new();
         private readonly DatabaseService db = new();
         private readonly Dictionary<Command, Action<Transaction, IPEndPoint>> handlers = new();
         private Socket? listeningSocket;
@@ -180,19 +181,29 @@ namespace Server.Services
         /// <param name="ip">UserTo IP</param>
         private void SendMessageToContactHandle(Transaction req, IPEndPoint ip)
         {
-            // to user who sent
-            //SendData(new Response { Command = Command.SendMessageToContact, Status = Status.OK, Data = "Message sent" }, ip);
-
-            // to user for whom sent
-
             int from = req.Data.From;
             int to = req.Data.To;
             string message = req.Data.Message;
 
+            Transaction transaction = new() { Command = Command.GetMessageFromContact, Data = new { Id = from, Message = message } };
+
             IPEndPoint toIp;
             if (clients.TryGetValue(to, out toIp!))
             {
-                SendData(new Transaction { Command = Command.GetMessageFromContact, Data = new { Id = from, Message = message } }, toIp);
+                SendData(transaction, toIp);
+            }
+            else
+            {
+                if (pendingMessages.ContainsKey(to))
+                {
+                    pendingMessages[to].AddLast(transaction);
+                }
+                else
+                {
+                    LinkedList<Transaction> messages = new();
+                    messages.AddLast(transaction);
+                    pendingMessages.Add(to, messages);
+                }
             }
         }
 
@@ -207,13 +218,22 @@ namespace Server.Services
             int group = req.Data.To;
             string message = req.Data.Message;
 
+            Transaction transaction = new() { Command = Command.GetMessageFromGroup, Data = new { Id = group, Message = message } };
+
             IPEndPoint toIp;
             IEnumerable<int> ids = db.GetGroupMembersIds(group);
             foreach (int id in ids)
             {
-                if (id != from && clients.TryGetValue(id, out toIp!))
+                if (id != from)
                 {
-                    SendData(new Transaction { Command = Command.GetMessageFromGroup, Data = new { Id = group, Message = message } }, toIp);
+                    if (clients.TryGetValue(id, out toIp!))
+                    {
+                        SendData(transaction, toIp);
+                    }
+                    else
+                    {
+                        pendingMessages[id].AddLast(transaction);
+                    }
                 }
             }
         }
@@ -233,39 +253,46 @@ namespace Server.Services
             string name = req.Data.Name;
             string password = req.Data.Password;
 
-            Transaction res;
             User? user = db.GetUser(name);
-            if (user != null)
-            {
-                if (Hasher.Verify(password, user.Password))
-                {
-                    // add user to connected clients
-                    clients.TryAdd(user.Id, ip);
 
-                    res = new Transaction
-                    {
-                        Command = req.Command,
-                        Data = new
-                        {
-                            IsOk = true,
-                            User = new Prop { Id = user.Id, Name = user.Name },
-                            Groups = db.GetUserGroups(user.Id),
-                            Invites = db.GetInvites(user.Id),
-                            Contacts = db.GetContacts(user.Id)
-                        }
-                    };
-                }
-                else
-                {
-                    res = new Transaction { Command = Command.SignIn, Data = new { IsOk = false, Message = "Wrong password" } };
-                }
-            }
-            else
+            if (user == null)
             {
-                res = new Transaction { Command = Command.SignIn, Data = new { IsOk = false, Message = "User not found" } };
+                SendData(new Transaction { Command = Command.SignIn, Data = new { IsOk = false, Message = "User not found" } }, ip);
+                return;
             }
 
+            if (!Hasher.Verify(password, user.Password))
+            {
+                SendData(new Transaction { Command = Command.SignIn, Data = new { IsOk = false, Message = "Wrong password" } }, ip);
+                return;
+            }
+
+            // add user to connected clients
+            clients.Add(user.Id, ip);
+
+            Transaction res = new()
+            {
+                Command = req.Command,
+                Data = new
+                {
+                    IsOk = true,
+                    User = new Prop { Id = user.Id, Name = user.Name },
+                    Groups = db.GetUserGroups(user.Id),
+                    Invites = db.GetInvites(user.Id),
+                    Contacts = db.GetContacts(user.Id)
+                }
+            };
             SendData(res, ip);
+
+            LinkedList<Transaction> messages;
+            if (pendingMessages.TryGetValue(user.Id, out messages))
+            {
+                foreach (var message in messages)
+                {
+                    SendData(message, ip);
+                }
+                pendingMessages.Remove(user.Id);
+            }
         }
 
         /// <summary>
