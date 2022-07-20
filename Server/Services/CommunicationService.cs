@@ -284,6 +284,7 @@ namespace Server.Services
             };
             SendData(res, ip);
 
+            // send pending messages
             LinkedList<Transaction> messages;
             if (pendingMessages.TryGetValue(user.Id, out messages))
             {
@@ -417,7 +418,8 @@ namespace Server.Services
 
                             string request = builder.ToString();
                             Console.WriteLine(string.Format("{0} = {1}", clientIp.ToString(), request));
-                            Handle(request, clientFullIp);
+                            // work
+                            Task.Run(() => Handle(request, clientFullIp));
                         }
                     }
                     catch (SocketException socketEx)
