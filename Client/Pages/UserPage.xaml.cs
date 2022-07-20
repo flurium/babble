@@ -19,11 +19,13 @@ namespace Client
     {
         private readonly CommunicationService cs;
         private List<string>? selectedFiles;
+        private Action<string> setTitle;
 
-        public UserPage(CommunicationService cs)
+        public UserPage(CommunicationService cs, Action<string> setTitle)
         {
             InitializeComponent();
             this.cs = cs;
+            this.setTitle = setTitle;
             DataContext = cs;
         }
 
@@ -57,6 +59,7 @@ namespace Client
             NavigationService.RemoveBackEntry();
             cs.Disconnect();
             ClearInputs();
+            setTitle("");
         }
 
         private void GoToContacts_Click(object sender, RoutedEventArgs e)

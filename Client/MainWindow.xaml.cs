@@ -18,7 +18,7 @@ namespace Client
         {
             InitializeComponent();
 
-            userChat = new UserPage(cs);
+            userChat = new UserPage(cs, SetTitle);
             signIn = new SignInPage(cs, SetTitle);
             signUp = new SignUpPage(cs, SetTitle);
 
