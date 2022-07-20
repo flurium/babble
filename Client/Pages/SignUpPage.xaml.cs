@@ -1,4 +1,5 @@
 ﻿using Client.Services.Communication;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;
@@ -11,11 +12,13 @@ namespace Client.Pages
     public partial class SignUpPage : Page
     {
         private readonly CommunicationService cs;
+        private Action<string> setTitle;
 
-        public SignUpPage(CommunicationService cs)
+        public SignUpPage(CommunicationService cs, Action<string> setTitle)
         {
             InitializeComponent();
             this.cs = cs;
+            this.setTitle = setTitle;
         }
 
         private void ReverseIsEnabled()
@@ -33,7 +36,7 @@ namespace Client.Pages
             NavigationService.RemoveBackEntry();
         }
 
-        private void ConfirmSignUp()
+        private void ConfirmSignUp(string username)
         {
             Dispatcher.Invoke(() =>
             {
@@ -43,6 +46,7 @@ namespace Client.Pages
                 NameInput.Text = "";
                 PasswordInput.Password = "";
                 PasswordConfirmInput.Password = "";
+                setTitle(string.Format("user: {0}", username));
             });
         }
 

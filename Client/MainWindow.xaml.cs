@@ -7,8 +7,6 @@ namespace Client
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    ///
-
     public partial class MainWindow : Window
     {
         public static SignInPage signIn;
@@ -21,10 +19,15 @@ namespace Client
             InitializeComponent();
 
             userChat = new UserPage(cs);
-            signIn = new SignInPage(cs);
-            signUp = new SignUpPage(cs);
+            signIn = new SignInPage(cs, SetTitle);
+            signUp = new SignUpPage(cs, SetTitle);
 
             MainFrame.Content = signIn;
+        }
+
+        private void SetTitle(string title)
+        {
+            Title = string.Format("BabbleUp {0}", title);
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)

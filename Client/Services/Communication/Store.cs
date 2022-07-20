@@ -23,7 +23,7 @@ namespace Client.Services.Communication
         public byte[] pendingSendFile;
 
         // function from interface to confirm sign
-        public Action ConfirmSign { get; set; }
+        public Action<string> ConfirmSign { get; set; }
 
         public Action<string> DenySign { get; set; }
 

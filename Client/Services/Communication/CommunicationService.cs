@@ -126,7 +126,7 @@ namespace Client.Services.Communication
             }
         }
 
-        public void SignIn(string name, string password, Action confirm, Action<string> deny)
+        public void SignIn(string name, string password, Action<string> confirm, Action<string> deny)
         {
             try
             {
@@ -145,7 +145,7 @@ namespace Client.Services.Communication
             }
         }
 
-        public void SignUp(string name, string password, Action confirm, Action<string> deny)
+        public void SignUp(string name, string password, Action<string> confirm, Action<string> deny)
         {
             try
             {

@@ -238,7 +238,7 @@ namespace Client.Services
                     Application.Current.Dispatcher.Invoke(() => store.contacts.Add(contactProp));
                 }
 
-                store.ConfirmSign();
+                store.ConfirmSign(store.user.Name);
             }
             else
             {
@@ -258,7 +258,7 @@ namespace Client.Services
             if (isOk)
             {
                 store.user = GetProp(res);
-                store.ConfirmSign();
+                store.ConfirmSign(store.user.Name);
             }
             else
             {
