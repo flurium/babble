@@ -179,7 +179,7 @@
                 <Button x:Name="OpenSettingsBtn" Grid.Column="2" Click="OpenSettingsBtn_Click" IsEnabled="False">Settings</Button>
                 <Button Grid.Column="3" Grid.Row="0" x:Name="Exit" Click="Exit_Click">Exit</Button>
 
-                <ListBox Grid.Row="1" Grid.ColumnSpan="4" x:Name="MessageList" ItemsSource="{Binding CurrentMessages}" ScrollViewer.ScrollChanged="MessageList_ScrollChanged" ScrollViewer.VerticalScrollBarVisibility="Auto"  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListBox Grid.Row="1" Grid.ColumnSpan="4" x:Name="MessageList" ScrollViewer.CanContentScroll="False" ItemsSource="{Binding CurrentMessages}" ScrollViewer.ScrollChanged="MessageList_ScrollChanged" ScrollViewer.VerticalScrollBarVisibility="Auto"  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                     <ListBox.ItemContainerStyle>
                         <Style TargetType="ListBoxItem">
                             <Setter Property="Margin" Value="100,5,5,0" />
@@ -220,7 +220,6 @@
                             <DataTemplate.Triggers>
                                 <DataTrigger Binding="{Binding Files}" Value="{x:Null}">
                                     <Setter TargetName="ShowInFolderBtn" Property="Visibility" Value="Collapsed" />
-                                    <!--<Setter TargetName="ShowInFolderBtn" Property="Height" Value="0" />-->
                                     <Setter TargetName="Files" Property="Visibility" Value="Collapsed" />
                                 </DataTrigger>
                             </DataTemplate.Triggers>
