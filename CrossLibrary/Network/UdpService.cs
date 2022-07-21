@@ -14,8 +14,9 @@ namespace CrossLibrary.Network
         private Socket socket;
         private EndPoint remoteEndPoint;
 
-        public UdpService(string ip, int port, Action<string> handle) : base(ip, port, handle)
-        { }
+        public UdpService(string ip, int port, int remotePort, Action<string> handle) : base(ip, port, remotePort, handle)
+        {
+        }
 
         public override IPEndPoint RemoteIpEndPoint { get => (IPEndPoint)remoteEndPoint; }
 
@@ -35,7 +36,7 @@ namespace CrossLibrary.Network
             {
                 run = true;
                 socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-                IPEndPoint localEndPoint = new(IPAddress.Parse(ip), port);
+                IPEndPoint localEndPoint = new(IPAddress.Parse(ip), localPort);
                 socket.Bind(localEndPoint);
                 Listen();
             }
@@ -57,7 +58,7 @@ namespace CrossLibrary.Network
             {
                 while (run)
                 {
-                    remoteEndPoint = new IPEndPoint(IPAddress.Any, 0);
+                    remoteEndPoint = new IPEndPoint(IPAddress.Any, remotePort);
                     string message = Receive();
                     handle(message);
                 }

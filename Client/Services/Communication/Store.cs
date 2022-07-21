@@ -1,6 +1,7 @@
 ﻿using Client.Models;
 using Client.Services.Network.Base;
 using CrossLibrary;
+using CrossLibrary.Network;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

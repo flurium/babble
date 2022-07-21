@@ -1,4 +1,5 @@
 ﻿using CrossLibrary;
+using System.Net;
 
 namespace Client.Services.Network.Base
 {
@@ -6,12 +7,14 @@ namespace Client.Services.Network.Base
     {
         void Send(byte[] data);
 
+        void Send(byte[] data, IPEndPoint ipEndPoint);
+
         void Start();
 
         void Stop();
 
         void UpdateBufferSize(long bufferSize);
 
-        void UpdateDestination(Destination destination);
+        //void UpdateDestination(Destination destination);
     }
 }

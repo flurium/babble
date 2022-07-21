@@ -3,10 +3,12 @@ using Client.Services.Communication;
 using Client.Services.Network.Base;
 using Client.Services.Network.Udp;
 using CrossLibrary;
+using CrossLibrary.Network;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Net;
 using System.Windows;
 
 namespace Client.Services
@@ -15,7 +17,7 @@ namespace Client.Services
     {
         private Dictionary<Command, Action<Transaction>> handlers;
 
-        public UdpHandler(int port, Store store) : base(port, store)
+        public UdpHandler(string ip, int port, Store store) : base(ip, port, store)
         {
             handlers = new()
             {
@@ -37,7 +39,7 @@ namespace Client.Services
             };
         }
 
-        protected override ProtocolService CreateProtocolService(int port, Action<string> handle) => new UdpService(port, handle);
+        protected override ProtocolService CreateProtocolService(string ip, int port, Action<string> handle) => new UdpService(ip, port, port, handle);
 
         protected override void Handle(string str)
         {
@@ -68,13 +70,11 @@ namespace Client.Services
 
         private void GetClientAddressHandle(Transaction res)
         {
-            Destination destination = new()
-            {
-                Ip = res.Data.Ip,
-                Port = res.Data.Port
-            };
-            store.tcpHandler.UpdateDestination(destination);
-            store.tcpHandler.Send(store.pendingSendFile);
+            string ip = res.Data.Ip;
+            int port = res.Data.Port;
+
+            //store.tcpHandler.UpdateDestination(destination);
+            store.tcpHandler.Send(store.pendingSendFile, new(IPAddress.Parse(ip), port));
         }
 
         private void AddToCollection(Prop prop, ref ObservableCollection<Prop> collection) => collection.Add(prop);

@@ -11,15 +11,17 @@ namespace CrossLibrary.Network
     {
         protected readonly Action<string> handle;
         protected readonly string ip;
-        protected readonly int port;
+        protected readonly int localPort;
         protected long bufferSize = 1024;
+        protected readonly int remotePort;
         protected bool run = false;
 
-        protected ProtocolService(string ip, int port, Action<string> handle)
+        protected ProtocolService(string ip, int port, int remotePort, Action<string> handle)
         {
             this.ip = ip;
-            this.port = port;
+            this.localPort = port;
             this.handle = handle;
+            this.remotePort = remotePort;
         }
 
         public abstract IPEndPoint RemoteIpEndPoint { get; }
