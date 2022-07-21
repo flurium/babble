@@ -1,6 +1,8 @@
 using CrossLibrary;
 using Newtonsoft.Json;
 using Server.Models;
+using Server.Services.Database;
+using Server.Services.Exceptions;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -16,8 +18,9 @@ namespace Server.Services
     public class CommunicationService
     {
         private readonly Dictionary<int, IPEndPoint> clients = new();
+        private readonly Dictionary<int, LinkedList<Transaction>> pendingMessages = new();
         private readonly DatabaseService db = new();
-        private readonly Dictionary<Command, Action<Request, IPEndPoint>> handlers = new();
+        private readonly Dictionary<Command, Action<Transaction, IPEndPoint>> handlers = new();
         private Socket? listeningSocket;
         private readonly bool run = false;
         private readonly ILogger logger = new Logger();
@@ -29,7 +32,7 @@ namespace Server.Services
         /// </summary>
         /// <param name="req">Request contains id</param>
         /// <param name="ip">UserTo IP</param>
-        public async void AcceptInviteHandle(Request req, IPEndPoint ip)
+        private async void AcceptInviteHandle(Transaction req, IPEndPoint ip)
         {
             // ip = ip of user to
             // req.Data = contact id
@@ -37,14 +40,14 @@ namespace Server.Services
             Contact contact = await db.AcceptInviteAsync(id);
 
             // to user to
-            SendData(new Response { Command = Command.GetContact, Status = Status.OK, Data = new Prop { Id = contact.UserFromId, Name = contact.NameAtUserTo } }, ip);
+            SendData(new Transaction { Command = Command.GetContact, Data = new Prop { Id = contact.UserFromId, Name = contact.NameAtUserTo } }, ip);
 
             // to user from
             if (clients.ContainsKey(contact.UserFromId))
             {
                 // only if user from is online
                 SendData(
-                  new Response { Command = Command.GetContact, Status = Status.OK, Data = new Prop { Id = contact.UserToId, Name = contact.NameAtUserFrom } },
+                  new Transaction { Command = Command.GetContact, Data = new Prop { Id = contact.UserToId, Name = contact.NameAtUserFrom } },
                   clients[contact.UserFromId]
                 );
             }
@@ -56,12 +59,12 @@ namespace Server.Services
         /// </summary>
         /// <param name="req">Request contains user id and new name of group</param>
         /// <param name="ip">UserTo IP</param>
-        public async void CreateGroupHandle(Request req, IPEndPoint ip)
+        private async void CreateGroupHandle(Transaction req, IPEndPoint ip)
         {
             int uid = req.Data.User;
             string name = req.Data.Group;
             Prop group = await db.CreateGroupAsync(uid, name);
-            SendData(new Response { Command = Command.CreateGroup, Status = Status.OK, Data = group }, ip);
+            SendData(new Transaction { Command = Command.CreateGroup, Data = group }, ip);
         }
 
         /// <summary>
@@ -70,13 +73,13 @@ namespace Server.Services
         /// </summary>
         /// <param name="req">Request contains user id and name of group</param>
         /// <param name="ip">UserTo IP</param>
-        public async void EnterGroupHandle(Request req, IPEndPoint ip)
+        private async void EnterGroupHandle(Transaction req, IPEndPoint ip)
         {
             int uid = req.Data.User;
             string groupName = req.Data.Group;
             Prop group = await db.AddUserToGroupAsync(uid, groupName);
 
-            SendData(new Response { Command = Command.EnterGroup, Status = Status.OK, Data = group }, ip);
+            SendData(new Transaction { Command = Command.EnterGroup, Data = group }, ip);
         }
 
         /// <summary>
@@ -85,13 +88,12 @@ namespace Server.Services
         /// </summary>
         /// <param name="req">Request contains user id and name of group</param>
         /// <param name="ip">UserTo IP</param>
-        public async void LeaveGroupHandle(Request req, IPEndPoint ip)
+        private async void LeaveGroupHandle(Transaction req, IPEndPoint ip)
         {
             int uid = req.Data.Id;
             string name = req.Data.Name;
             await db.RemoveUserFromGroupAsync(uid, name);
-
-            SendData(new Response { Command = Command.LeaveGroup, Status = Status.OK, Data = "Group is removed" }, ip);
+            SendData(new Transaction { Command = Command.LeaveGroup, Data = "Group is removed" }, ip);
         }
 
         /// <summary>
@@ -99,7 +101,7 @@ namespace Server.Services
         /// </summary>
         /// <param name="req">Request contains user id</param>
         /// <param name="ip">User IP</param>
-        public void DisconnectHandle(Request req, IPEndPoint ip)
+        private void DisconnectHandle(Transaction req, IPEndPoint ip)
         {
             int id = req.Data.Id;
             clients.Remove(id);
@@ -111,12 +113,12 @@ namespace Server.Services
         /// </summary>
         /// <param name="req">Request contains two user ids</param>
         /// <param name="ip">UserTo IP</param>
-        public async void RemoveContactHandle(Request req, IPEndPoint ip)
+        private async void RemoveContactHandle(Transaction req, IPEndPoint ip)
         {
             int from = req.Data.From;
             int to = req.Data.To;
             await db.RemoveContact(from, to);
-            SendData(new Response { Command = Command.RemoveContact, Status = Status.OK, Data = "Contact is removed" }, ip);
+            SendData(new Transaction { Command = Command.RemoveContact, Data = "Contact is removed" }, ip);
         }
 
         /// <summary>
@@ -125,13 +127,13 @@ namespace Server.Services
         /// </summary>
         /// <param name="req">Request contains two user ids and new contact name</param>
         /// <param name="ip">UserTo IP</param>
-        public void RenameContactHandle(Request req, IPEndPoint ip)
+        private void RenameContactHandle(Transaction req, IPEndPoint ip)
         {
             int from = req.Data.From;
             int to = req.Data.To;
             string newName = req.Data.NewName;
             db.RenameContact(from, to, newName);
-            SendData(new Response { Command = Command.RenameContact, Status = Status.OK, Data = new Prop { Id = to, Name = newName } }, ip);
+            SendData(new Transaction { Command = Command.RenameContact, Data = new Prop { Id = to, Name = newName } }, ip);
         }
 
         /// <summary>
@@ -140,12 +142,12 @@ namespace Server.Services
         /// </summary>
         /// <param name="req">Request contains user id and new group name</param>
         /// <param name="ip">UserTo IP</param>
-        public async void RenameGroupHandle(Request req, IPEndPoint ip)
+        private async void RenameGroupHandle(Transaction req, IPEndPoint ip)
         {
             int id = req.Data.Id;
             string name = req.Data.NewName;
             await db.RenameGroupAsync(id, name);
-            SendData(new Response { Command = Command.RenameGroup, Status = Status.OK, Data = new Prop { Id = id, Name = name } }, ip);
+            SendData(new Transaction { Command = Command.RenameGroup, Data = new Prop { Id = id, Name = name } }, ip);
         }
 
         /// <summary>
@@ -155,20 +157,20 @@ namespace Server.Services
         /// </summary>
         /// <param name="req">Request contains two user ids</param>
         /// <param name="ip">UserTo IP</param>
-        public async void SendInviteHandle(Request req, IPEndPoint ip)
+        private async void SendInviteHandle(Transaction req, IPEndPoint ip)
         {
             int from = req.Data.From;
             string to = req.Data.To;
             Contact contact = await db.SendInviteAsync(from, to);
 
             // to who sent request
-            SendData(new Response { Command = Command.SendInvite, Status = Status.OK, Data = new { Message = "Invite was send successfully" } }, ip);
+            SendData(new Transaction { Command = Command.SendInvite, Data = new { Message = "Invite was send successfully" } }, ip);
 
             // to who will get invite
             IPEndPoint toIp;
             if (clients.TryGetValue(contact.UserToId, out toIp!))
             {
-                SendData(new Response { Command = Command.GetInvite, Status = Status.OK, Data = new Prop { Id = contact.Id, Name = contact.UserFrom.Name } }, toIp);
+                SendData(new Transaction { Command = Command.GetInvite, Data = new Prop { Id = contact.Id, Name = contact.UserFrom.Name } }, toIp);
             }
         }
 
@@ -177,21 +179,31 @@ namespace Server.Services
         /// </summary>
         /// <param name="req">Request contains two user ids and text message</param>
         /// <param name="ip">UserTo IP</param>
-        public void SendMessageToContactHandle(Request req, IPEndPoint ip)
+        private void SendMessageToContactHandle(Transaction req, IPEndPoint ip)
         {
-            // to user who sent
-            //SendData(new Response { Command = Command.SendMessageToContact, Status = Status.OK, Data = "Message sent" }, ip);
-
-            // to user for whom sent
-
             int from = req.Data.From;
             int to = req.Data.To;
             string message = req.Data.Message;
 
+            Transaction transaction = new() { Command = Command.GetMessageFromContact, Data = new { Id = from, Message = message } };
+
             IPEndPoint toIp;
             if (clients.TryGetValue(to, out toIp!))
             {
-                SendData(new Response { Command = Command.GetMessageFromContact, Status = Status.OK, Data = new { Id = from, Message = message } }, toIp);
+                SendData(transaction, toIp);
+            }
+            else
+            {
+                if (pendingMessages.ContainsKey(to))
+                {
+                    pendingMessages[to].AddLast(transaction);
+                }
+                else
+                {
+                    LinkedList<Transaction> messages = new();
+                    messages.AddLast(transaction);
+                    pendingMessages.Add(to, messages);
+                }
             }
         }
 
@@ -200,19 +212,28 @@ namespace Server.Services
         /// </summary>
         /// <param name="req">Request contains user id, group id and text message</param>
         /// <param name="ip">UserTo IP</param>
-        public void SendMessageToGroupHandle(Request req, IPEndPoint ip)
+        private void SendMessageToGroupHandle(Transaction req, IPEndPoint ip)
         {
             int from = req.Data.From;
             int group = req.Data.To;
             string message = req.Data.Message;
 
+            Transaction transaction = new() { Command = Command.GetMessageFromGroup, Data = new { Id = group, Message = message } };
+
             IPEndPoint toIp;
             IEnumerable<int> ids = db.GetGroupMembersIds(group);
             foreach (int id in ids)
             {
-                if (id != from && clients.TryGetValue(id, out toIp!))
+                if (id != from)
                 {
-                    SendData(new Response { Command = Command.GetMessageFromGroup, Status = Status.OK, Data = new { Id = group, Message = message } }, toIp);
+                    if (clients.TryGetValue(id, out toIp!))
+                    {
+                        SendData(transaction, toIp);
+                    }
+                    else
+                    {
+                        pendingMessages[id].AddLast(transaction);
+                    }
                 }
             }
         }
@@ -227,44 +248,52 @@ namespace Server.Services
         /// </summary>
         /// <param name="req">Request contains user name and password</param>
         /// <param name="ip">UserTo IP</param>
-        public void SignInHandle(Request req, IPEndPoint ip)
+        private void SignInHandle(Transaction req, IPEndPoint ip)
         {
             string name = req.Data.Name;
             string password = req.Data.Password;
 
-            Response res;
             User? user = db.GetUser(name);
-            if (user != null)
-            {
-                if (Hasher.Verify(password, user.Password))
-                {
-                    // add user to connected clients
-                    clients.TryAdd(user.Id, ip);
 
-                    res = new Response
-                    {
-                        Command = req.Command,
-                        Status = Status.OK,
-                        Data = new
-                        {
-                            User = new Prop { Id = user.Id, Name = user.Name },
-                            Groups = db.GetUserGroups(user.Id),
-                            Invites = db.GetInvites(user.Id),
-                            Contacts = db.GetContacts(user.Id)
-                        }
-                    };
-                }
-                else
-                {
-                    res = new Response { Command = Command.SignIn, Status = Status.Bad, Data = "Wrong password" };
-                }
-            }
-            else
+            if (user == null)
             {
-                res = new Response { Command = Command.SignIn, Status = Status.Bad, Data = "User not found" };
+                SendData(new Transaction { Command = Command.SignIn, Data = new { IsOk = false, Message = "User not found" } }, ip);
+                return;
             }
 
+            if (!Hasher.Verify(password, user.Password))
+            {
+                SendData(new Transaction { Command = Command.SignIn, Data = new { IsOk = false, Message = "Wrong password" } }, ip);
+                return;
+            }
+
+            // add user to connected clients
+            clients.Add(user.Id, ip);
+
+            Transaction res = new()
+            {
+                Command = req.Command,
+                Data = new
+                {
+                    IsOk = true,
+                    User = new Prop { Id = user.Id, Name = user.Name },
+                    Groups = db.GetUserGroups(user.Id),
+                    Invites = db.GetInvites(user.Id),
+                    Contacts = db.GetContacts(user.Id)
+                }
+            };
             SendData(res, ip);
+
+            // send pending messages
+            LinkedList<Transaction> messages;
+            if (pendingMessages.TryGetValue(user.Id, out messages))
+            {
+                foreach (var message in messages)
+                {
+                    SendData(message, ip);
+                }
+                pendingMessages.Remove(user.Id);
+            }
         }
 
         /// <summary>
@@ -274,38 +303,89 @@ namespace Server.Services
         /// </summary>
         /// <param name="req">Request contains new user name and password</param>
         /// <param name="ip">UserTo IP</param>
-        public void SignUpHandle(Request req, IPEndPoint ip)
+        private void SignUpHandle(Transaction req, IPEndPoint ip)
         {
-            string name = req.Data.Name;
-            string password = req.Data.Password;
-            User user = db.AddUser(name, password);
-
-            // add user to connected clients
-            clients.TryAdd(user.Id, ip);
-
-            SendData(new Response
+            try
             {
-                Command = Command.SignUp,
-                Status = Status.OK,
-                Data = new Prop
+                string name = req.Data.Name;
+                string password = req.Data.Password;
+                User user = db.AddUser(name, password);
+
+                // add user to connected clients
+                clients.TryAdd(user.Id, ip);
+
+                SendData(new Transaction
                 {
-                    Id = user.Id,
-                    Name = user.Name
-                }
-            }, ip);
+                    Command = Command.SignUp,
+                    Data = new
+                    {
+                        IsOk = true,
+                        Id = user.Id,
+                        Name = user.Name
+                    }
+                }, ip);
+            }
+            catch (Exception ex)
+            {
+                SendData(new Transaction
+                {
+                    Command = Command.SignUp,
+                    Data = new
+                    {
+                        IsOk = false,
+                        Message = ex.Message
+                    }
+                }, ip);
+            }
+        }
+
+        /// <summary>
+        /// Send data size to clientTo.
+        /// Send clientTo address to clientFrom
+        /// </summary>
+        private void GetFileMessageSizeHandle(Transaction req, IPEndPoint ip)
+        {
+            int to = req.Data.To;
+            long size = req.Data.Size;
+
+            IPEndPoint toIp;
+            if (clients.TryGetValue(to, out toIp))
+            {
+                // send data size to clientTo
+                SendData(new Transaction
+                {
+                    Command = Command.GetFileMessageSize,
+                    Data = new { Size = size }
+                }, toIp);
+
+                // send clientTo destination to clientFrom
+                SendData(new Transaction
+                {
+                    Command = Command.GetClientAddress,
+                    Data = new Destination { Ip = toIp.Address.ToString(), Port = toIp.Port }
+                }, ip);
+            }
+            else
+            {
+            }
         }
 
         private void Handle(string reqStr, IPEndPoint ip)
         {
             // allways: Command, Data
-            Request req = JsonConvert.DeserializeObject<Request>(reqStr);
+            Transaction req = JsonConvert.DeserializeObject<Transaction>(reqStr);
             try
             {
                 handlers[req.Command](req, ip);
             }
+            catch (InfoException ex)
+            {
+                SendData(new Transaction { Command = Command.Exception, Data = ex.Message }, ip);
+                logger.LogRequest(req, ex);
+            }
             catch (Exception ex)
             {
-                SendData(new Response { Command = req.Command, Status = Status.Bad, Data = ex.Message }, ip);
+                SendData(new Transaction { Command = Command.Exception, Data = "Sorry, something went wrong." }, ip);
                 logger.LogRequest(req, ex);
             }
         }
@@ -338,7 +418,8 @@ namespace Server.Services
 
                             string request = builder.ToString();
                             Console.WriteLine(string.Format("{0} = {1}", clientIp.ToString(), request));
-                            Handle(request, clientFullIp);
+                            // work
+                            Task.Run(() => Handle(request, clientFullIp));
                         }
                     }
                     catch (SocketException socketEx)
@@ -361,7 +442,7 @@ namespace Server.Services
             }
         }
 
-        private void SendData(Response response, IPEndPoint ip)
+        private void SendData(Transaction response, IPEndPoint ip)
         {
             if (listeningSocket != null)
             {
@@ -384,21 +465,22 @@ namespace Server.Services
 
             // init handlers
             handlers = new()
-      {
-        { Command.SignIn, SignInHandle },
-        { Command.SignUp, SignUpHandle },
-        { Command.SendMessageToContact, SendMessageToContactHandle },
-        { Command.SendMessageToGroup, SendMessageToGroupHandle },
-        { Command.SendInvite, SendInviteHandle },
-        { Command.AcceptInvite, AcceptInviteHandle },
-        { Command.RenameContact, RenameContactHandle },
-        { Command.RemoveContact, RemoveContactHandle },
-        { Command.CreateGroup, CreateGroupHandle },
-        { Command.LeaveGroup, LeaveGroupHandle },
-        { Command.EnterGroup, EnterGroupHandle },
-        { Command.Disconnect, DisconnectHandle },
-        { Command.RenameGroup, RenameGroupHandle }
-      };
+            {
+                { Command.SignIn, SignInHandle },
+                { Command.SignUp, SignUpHandle },
+                { Command.SendMessageToContact, SendMessageToContactHandle },
+                { Command.SendMessageToGroup, SendMessageToGroupHandle },
+                { Command.SendInvite, SendInviteHandle },
+                { Command.AcceptInvite, AcceptInviteHandle },
+                { Command.RenameContact, RenameContactHandle },
+                { Command.RemoveContact, RemoveContactHandle },
+                { Command.CreateGroup, CreateGroupHandle },
+                { Command.LeaveGroup, LeaveGroupHandle },
+                { Command.EnterGroup, EnterGroupHandle },
+                { Command.Disconnect, DisconnectHandle },
+                { Command.RenameGroup, RenameGroupHandle },
+                { Command.GetFileMessageSize, GetFileMessageSizeHandle },
+            };
         }
 
         private void CloseConnection()
@@ -408,14 +490,6 @@ namespace Server.Services
                 listeningSocket.Shutdown(SocketShutdown.Both);
                 listeningSocket.Close();
                 listeningSocket = null;
-            }
-        }
-
-        public Logger Logger
-        {
-            get => default;
-            set
-            {
             }
         }
     }

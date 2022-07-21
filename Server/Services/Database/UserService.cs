@@ -1,7 +1,8 @@
 ﻿using Server.Data.Models;
 using Server.Models;
+using Server.Services.Exceptions;
 
-namespace Server.Services
+namespace Server.Services.Database
 {
     internal interface IUserService
     {
@@ -22,7 +23,7 @@ namespace Server.Services
         public User AddUser(string name, string password)
         {
             User user = new() { Name = name, Password = password };
-            if (db.Users.Any(u => u.Name == user.Name)) throw new Exception("User with this name already exists");
+            if (db.Users.Any(u => u.Name == user.Name)) throw new InfoException("User with this name already exists");
 
             user = db.Users.Add(user).Entity;
             db.SaveChanges();

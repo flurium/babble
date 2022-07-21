@@ -1,8 +1,9 @@
 ﻿using CrossLibrary;
 using Server.Data.Models;
 using Server.Models;
+using Server.Services.Exceptions;
 
-namespace Server.Services
+namespace Server.Services.Database
 {
     public interface IContactService
     {
@@ -33,7 +34,7 @@ namespace Server.Services
         public async Task<Contact> AcceptInviteAsync(int id)
         {
             Contact? contact = db.Contacts.Find(id);
-            if (contact == null) throw new Exception("Contact isn't found");
+            if (contact == null) throw new InfoException("Contact isn't found");
 
             contact.isAccepted = true;
             contact.NameAtUserFrom = contact.UserTo.Name;
@@ -45,9 +46,9 @@ namespace Server.Services
         public Contact GetContact(int uidFrom, int uidTo)
         {
             Contact? contact = db.Contacts.FirstOrDefault(
-              c => (c.UserFromId == uidFrom && c.UserToId == uidTo) || (c.UserToId == uidFrom && c.UserFromId == uidTo)
+              c => c.UserFromId == uidFrom && c.UserToId == uidTo || c.UserToId == uidFrom && c.UserFromId == uidTo
               );
-            if (contact == null) throw new Exception("Contact isn't found");
+            if (contact == null) throw new InfoException("Contact isn't found");
             return contact;
         }
 
@@ -77,7 +78,7 @@ namespace Server.Services
         public async Task RemoveContactAsync(int id)
         {
             Contact? contact = db.Contacts.Find(id);
-            if (contact == null) throw new Exception("ContactNotFound");
+            if (contact == null) throw new InfoException("ContactNotFound");
 
             db.Contacts.Remove(contact);
             await db.SaveChangesAsync();
@@ -100,13 +101,13 @@ namespace Server.Services
         public async Task<Contact> SendInviteAsync(int uidFrom, string unameTo)
         {
             User? userFrom = db.Users.Find(uidFrom);
-            if (userFrom == null) throw new Exception("User Not Found"); // user, who send invite, doesn't exist
+            if (userFrom == null) throw new InfoException("User Not Found"); // user, who send invite, doesn't exist
 
             User? userTo = db.Users.FirstOrDefault(u => u.Name == unameTo);
-            if (userTo == null) throw new Exception("User Not Found"); // user, who should accept invite, doesn't exist
+            if (userTo == null) throw new InfoException("User Not Found"); // user, who should accept invite, doesn't exist
 
             if (db.Contacts.Any(c => c.UserFromId == userFrom.Id && c.UserToId == userTo.Id || c.UserFromId == userTo.Id && c.UserToId == userFrom.Id))
-                throw new Exception("Invite Already Exist");
+                throw new InfoException("Invite Already Exist");
 
             var contact = db.Contacts.Add(new Contact { UserFrom = userFrom, UserTo = userTo, isAccepted = false });
 

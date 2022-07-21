@@ -1,8 +1,9 @@
 ﻿using CrossLibrary;
 using Server.Data.Models;
 using Server.Models;
+using Server.Services.Exceptions;
 
-namespace Server.Services
+namespace Server.Services.Database
 {
     // prefix 'u' means 'user'
 
@@ -40,7 +41,7 @@ namespace Server.Services
 
                 return new Prop { Id = group.Id, Name = group.Name };
             }
-            throw new Exception("User not found!");
+            throw new InfoException("User not found!");
         }
 
         public async Task<Prop> AddUserToGroupAsync(int uid, string groupName)
@@ -48,8 +49,8 @@ namespace Server.Services
             Group? group = db.Groups.FirstOrDefault(g => g.Name == groupName);
             User? user = db.Users.Find(uid);
 
-            if (group == null) throw new Exception("Group is not found!");
-            if (user == null) throw new Exception("User is not found!");
+            if (group == null) throw new InfoException("Group is not found!");
+            if (user == null) throw new InfoException("User is not found!");
 
             db.UserGroups.Add(new UserGroup { User = user, Group = group });
             await db.SaveChangesAsync();

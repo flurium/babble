@@ -1,12 +1,12 @@
 ﻿using CrossLibrary;
 
-namespace Server.Services
+namespace Server.Services.Exceptions
 {
     public interface ILogger
     {
         abstract void LogException(Exception ex);
 
-        abstract void LogRequest(Request req, Exception ex);
+        abstract void LogRequest(Transaction req, Exception ex);
     }
 
     public class Logger : ILogger
@@ -16,7 +16,7 @@ namespace Server.Services
             if (!Directory.Exists("logs")) Directory.CreateDirectory("logs");
         }
 
-        public void LogRequest(Request req, Exception ex)
+        public void LogRequest(Transaction req, Exception ex)
         {
             using (StreamWriter sw = new("logs\\exceptions.log", true))
             {

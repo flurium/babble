@@ -1,4 +1,5 @@
-﻿using Client.Services;
+﻿using Client.Services.Communication;
+using Client.Services.Communication.States;
 using CrossLibrary;
 using Microsoft.Win32;
 using System;
@@ -7,7 +8,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Navigation;
-using static Client.Services.CommunicationService;
 
 namespace Client
 {
@@ -19,11 +19,13 @@ namespace Client
     {
         private readonly CommunicationService cs;
         private List<string>? selectedFiles;
+        private Action<string> setTitle;
 
-        public UserPage(CommunicationService cs)
+        public UserPage(CommunicationService cs, Action<string> setTitle)
         {
             InitializeComponent();
             this.cs = cs;
+            this.setTitle = setTitle;
             DataContext = cs;
         }
 
@@ -36,15 +38,16 @@ namespace Client
                 cs.SetState(new ContactState());
                 cs.CurrentProp = contact;
 
+                OpenSettingsBtn.IsEnabled = true;
                 MessageWrite.Focus();
-                ChatName.Text = contact.Name;
+                ChatName.Content = contact.Name;
                 MessageWrite.IsEnabled = true;
             }
         }
 
         private void ClearInputs()
         {
-            ChatName.Text = "";
+            ChatName.Content = "";
             InviteContact.Text = "";
             GroupInput.Text = "";
             MessageWrite.Text = "";
@@ -56,6 +59,7 @@ namespace Client
             NavigationService.RemoveBackEntry();
             cs.Disconnect();
             ClearInputs();
+            setTitle("");
         }
 
         private void GoToContacts_Click(object sender, RoutedEventArgs e)
@@ -81,8 +85,9 @@ namespace Client
                 cs.SetState(new GroupState());
                 cs.CurrentProp = group;
 
+                OpenSettingsBtn.IsEnabled = true;
                 MessageWrite.Focus();
-                ChatName.Text = group.Name;
+                ChatName.Content = group.Name;
                 MessageWrite.IsEnabled = true;
             }
         }
@@ -111,24 +116,8 @@ namespace Client
 
         private void RenameBtn_Click(object sender, RoutedEventArgs e)
         {
-            ChatName.IsReadOnly = !ChatName.IsReadOnly;
-
-            if (ChatName.IsReadOnly)
-            {
-                RenameBtn.Content = "Rename";
-                ChatName.FontSize = 12;
-
-                // confirm rename
-                string newName = ChatName.Text.Trim();
-                if (newName != "") cs.Rename(newName);
-            }
-            else
-            {
-                RenameBtn.Content = "Confirm";
-                ChatName.FontSize = 14;
-                ChatName.Focus();
-                ChatName.CaretIndex = ChatName.Text.Length;
-            }
+            string newName = ReNameInput.Text.Trim();
+            if (newName != "") cs.Rename(newName); ChatName.Content = newName;
         }
 
         private void SendMessage()
@@ -211,6 +200,25 @@ namespace Client
             SelectedFilesText.Text = "";
             SelectedFilesText.Visibility = Visibility.Collapsed;
             UnselectFilesBtn.Visibility = Visibility.Collapsed;
+        }
+
+        private void ChatName_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            ChatOption.Visibility = Visibility.Visible;
+        }
+
+        private void Return_Click(object sender, RoutedEventArgs e)
+        {
+            ChatOption.Visibility = Visibility.Hidden;
+        }
+
+        private void DeleteChat_Click(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void OpenSettingsBtn_Click(object sender, RoutedEventArgs e)
+        {
+            ListSection.SelectedIndex = 3;
         }
     }
 }

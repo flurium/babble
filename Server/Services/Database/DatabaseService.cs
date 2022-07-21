@@ -2,7 +2,7 @@
 using Server.Data.Models;
 using Server.Models;
 
-namespace Server.Services
+namespace Server.Services.Database
 {
     public class DatabaseService : IUserService, IGroupService, IContactService
     {
@@ -19,31 +19,15 @@ namespace Server.Services
             contactService = new ContactService(db);
         }
 
-        public BabbleContext BabbleContext
-        {
-            get => default;
-            set
-            {
-            }
-        }
+        public BabbleContext BabbleContext { get; set; }
 
-        public UserService UserService
-        {
-            get => default;
-            set
-            {
-            }
-        }
+        public UserService UserService { get; set; }
 
-        public ContactService ContactService
-        {
-            get => default;
-            set
-            {
-            }
-        }
+        public ContactService ContactService { get; set; }
 
-        public GroupService GroupService
+        public GroupService GroupService { get; set; }
+
+        public BabbleContext context
         {
             get => default;
             set
