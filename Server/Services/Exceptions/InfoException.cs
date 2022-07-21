@@ -6,7 +6,7 @@
     /// </summary>
     public class InfoException : Exception
     {
-        public InfoException(string? message) : base(message)
+        public InfoException(string message) : base(message)
         { }
     }
 }

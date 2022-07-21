@@ -3,7 +3,7 @@
   <Class Name="Client.UserPage">
     <Position X="8.75" Y="2" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>CIAQJAABAAACACABAHgAAhAAQIAAAAQAABAAAAAiAAg=</HashCode>
+      <HashCode>CIAQJAABAAACBCABAHgAAhAAQIAAAAQAABAAAAAiAAg=</HashCode>
       <FileName>Pages\UserPage.xaml.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -20,7 +20,7 @@
       </Path>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAgAACgAAAAAAAAEAAAAAAAEAABAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAgAADgAAAAAAAAEAAAAAAAEAABAAAAAAAAA=</HashCode>
       <FileName>Pages\SignUpPage.xaml.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -31,7 +31,7 @@
   <Class Name="Client.Pages.SignInPage">
     <Position X="5.75" Y="5.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAACACgAAAAAAAAAAAAQAAAAAAAAAQBAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAACACgAABAAAAAAAAAQAAAAAAAAAQBAAAAAAAAA=</HashCode>
       <FileName>Pages\SignInPage.xaml.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -52,8 +52,8 @@
       <Path>
         <Point X="12.75" Y="5.187" />
         <Point X="11.946" Y="5.187" />
-        <Point X="11.946" Y="8.357" />
-        <Point X="7.961" Y="8.357" />
+        <Point X="11.946" Y="8.629" />
+        <Point X="7.961" Y="8.629" />
         <Point X="7.961" Y="6.597" />
         <Point X="7.25" Y="6.597" />
       </Path>
@@ -78,7 +78,7 @@
       </Path>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AIAAAAAIAAAAAAAAABAAAAAAAAAAAAAAABAAAAABAAA=</HashCode>
+      <HashCode>AIAAAAAMAAAAAAAAABAAAAAAAAAAAAAAABAAAAABAAA=</HashCode>
       <FileName>MainWindow.xaml.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
