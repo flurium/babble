@@ -10,8 +10,8 @@ namespace Client.Services.Network.Udp
 {
     public class UdpService : ProtocolService
     {
-        private EndPoint remoteEndPoint;
         private Socket socket;
+        private EndPoint remoteEndPoint;
 
         /// <param name="port">Locac port</param>
         /// <param name="handle">Delegate to handle incomming message strings</param>
@@ -22,14 +22,8 @@ namespace Client.Services.Network.Udp
 
         public override void Send(byte[] data)
         {
-            try
-            {
-                IPEndPoint remoteIP = new(IPAddress.Parse(destination.Ip), destination.Port);
-                socket.SendTo(data, remoteIP);
-            }
-            catch (Exception ex)
-            {
-            }
+            IPEndPoint remoteIP = new(IPAddress.Parse(destination.Ip), destination.Port);
+            socket.SendTo(data, remoteIP);
         }
 
         public override void Start()
@@ -38,8 +32,8 @@ namespace Client.Services.Network.Udp
             {
                 run = true;
                 socket = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-                IPEndPoint localIp = new(IPAddress.Parse("127.0.0.1"), port);
-                socket.Bind(localIp);
+                IPEndPoint localEndPoint = new(IPAddress.Parse("127.0.0.1"), port);
+                socket.Bind(localEndPoint);
 
                 listenTask = new(Listen);
                 listenTask.Start();
@@ -67,9 +61,6 @@ namespace Client.Services.Network.Udp
                 {
                     remoteEndPoint = new IPEndPoint(IPAddress.Any, port);
                     string message = Receive();
-
-                    //var fullIp = (IPEndPoint)ip;
-
                     handle(message);
                 }
             }
@@ -88,7 +79,7 @@ namespace Client.Services.Network.Udp
             }
         }
 
-        protected override string Receive()
+        protected string Receive()
         {
             int bytes;
             byte[] buffer = new byte[bufferSize];

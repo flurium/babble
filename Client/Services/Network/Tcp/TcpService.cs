@@ -83,7 +83,7 @@ namespace Client.Services.Network.Tcp
             }
         }
 
-        protected override string Receive()
+        protected string Receive()
         {
             int bytes;
             byte[] buffer = new byte[bufferSize];

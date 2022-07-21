@@ -30,7 +30,5 @@ namespace Client.Services.Network.Base
         public void UpdateDestination(Destination destination) => this.destination = destination;
 
         protected abstract void Listen();
-
-        protected abstract string Receive();
     }
 }

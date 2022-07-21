@@ -18,23 +18,23 @@ namespace Client.Services
         public UdpHandler(int port, Store store) : base(port, store)
         {
             handlers = new()
-                {
-                    { Command.GetMessageFromContact, GetMessageFromContactHandle },
-                    { Command.GetMessageFromGroup, GetMessageFromGroupHandle },
-                    { Command.SignIn, SignInHandle },
-                    { Command.SignUp, SignUpHandle },
-                    { Command.SendInvite, SendInviteHandle },
-                    { Command.GetInvite, GetInviteHandle },
-                    { Command.GetContact, GetContactHandle },
-                    { Command.CreateGroup, CreateGroupHandle },
-                    { Command.EnterGroup, EnterGroupHandle },
-                    { Command.RemoveContact, RemoveContactHandle },
-                    { Command.RenameContact, RenameContactHandle },
-                    { Command.RenameGroup, RenameGroupHandle },
-                    { Command.GetFileMessageSize,  GetFileMessageSizeHandle },
-                    { Command.GetClientAddress, GetClientAddressHandle },
-                    { Command.Exception, ExceptionHandle }
-                };
+            {
+                { Command.GetMessageFromContact, GetMessageFromContactHandle },
+                { Command.GetMessageFromGroup, GetMessageFromGroupHandle },
+                { Command.SignIn, SignInHandle },
+                { Command.SignUp, SignUpHandle },
+                { Command.SendInvite, SendInviteHandle },
+                { Command.GetInvite, GetInviteHandle },
+                { Command.GetContact, GetContactHandle },
+                { Command.CreateGroup, CreateGroupHandle },
+                { Command.EnterGroup, EnterGroupHandle },
+                { Command.RemoveContact, RemoveContactHandle },
+                { Command.RenameContact, RenameContactHandle },
+                { Command.RenameGroup, RenameGroupHandle },
+                { Command.GetFileMessageSize,  GetFileMessageSizeHandle },
+                { Command.GetClientAddress, GetClientAddressHandle },
+                { Command.Exception, ExceptionHandle }
+            };
         }
 
         protected override ProtocolService CreateProtocolService(int port, Action<string> handle) => new UdpService(port, handle);

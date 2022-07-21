@@ -56,7 +56,7 @@
   <Class Name="Client.Services.UdpHandler">
     <Position X="12.5" Y="5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AgBABAAAIASgAgCAAAAgAQAAAABAAhJQSAAAAABAEBA=</HashCode>
+      <HashCode>AgBABAAAIASgAgCAAAAgAQAAIABAAhJQSAAAAABAEBA=</HashCode>
       <FileName>Services\Network\Udp\UdpHandler.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -107,12 +107,5 @@
       <FileName>Services\Communication\States\GroupState.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Interface Name="Client.Services.Network.Base.IProtocolService">
-    <Position X="14" Y="2.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAACAgAAAAAEAAAAAAAAAAAAAAJAAAAAAAAAA=</HashCode>
-      <FileName>Services\Network\Base\IProtocolService.cs</FileName>
-    </TypeIdentifier>
-  </Interface>
   <Font Name="Segoe UI" Size="9" />
 </ClassDiagram>

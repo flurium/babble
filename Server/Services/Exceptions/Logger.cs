@@ -2,21 +2,14 @@
 
 namespace Server.Services.Exceptions
 {
-    public interface ILogger
+    public static class Logger
     {
-        abstract void LogException(Exception ex);
-
-        abstract void LogRequest(Transaction req, Exception ex);
-    }
-
-    public class Logger : ILogger
-    {
-        public Logger()
+        static Logger()
         {
             if (!Directory.Exists("logs")) Directory.CreateDirectory("logs");
         }
 
-        public void LogRequest(Transaction req, Exception ex)
+        public static void LogTransaction(Transaction req, Exception ex)
         {
             using (StreamWriter sw = new("logs\\exceptions.log", true))
             {
@@ -27,7 +20,7 @@ namespace Server.Services.Exceptions
             }
         }
 
-        public void LogException(Exception ex)
+        public static void LogException(Exception ex)
         {
             using (StreamWriter sw = new("logs\\exceptions.log", true))
             {
