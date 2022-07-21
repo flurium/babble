@@ -23,6 +23,10 @@ namespace Client.Services.Communication.States
         }
 
         // Base functions
+        protected void Send(Transaction transaction)
+        {
+            store.udpHandler.Send(transaction.ToStrBytes(), store.destination);
+        }
 
         /// <summary>
         /// Base rename function, must be called from children.
@@ -35,7 +39,7 @@ namespace Client.Services.Communication.States
         {
             Transaction req = new() { Command = command, Data = data };
 
-            store.udpHandler.Send(req.ToStrBytes());
+            Send(req);
 
             for (int i = 0; i < collection.Count; i++)
             {
@@ -64,7 +68,7 @@ namespace Client.Services.Communication.States
             store.currentMessages.Add(message);
 
             Transaction req = new() { Command = command, Data = new { To = store.currentProp.Id, From = store.user.Id, Message = message.Text } };
-            store.udpHandler.Send(req.ToStrBytes());
+            Send(req);
         }
 
         protected void SendFileMessage(string messageStr, List<string> filePaths, ref Dictionary<int, LinkedList<Message>> dictionary, Command command)
@@ -100,7 +104,7 @@ namespace Client.Services.Communication.States
 
             // send data size
             Transaction req = new() { Command = Command.GetFileMessageSize, Data = new { To = store.currentProp.Id, Size = fileReqData.LongLength } };
-            store.udpHandler.Send(req.ToStrBytes());
+            Send(req);
 
             store.pendingSendFile = fileReqData;
         }

@@ -1,5 +1,4 @@
 ﻿using Client.Services.Communication;
-using CrossLibrary;
 using CrossLibrary.Network;
 using System;
 using System.Net;

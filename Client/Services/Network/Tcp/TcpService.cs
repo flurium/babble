@@ -18,7 +18,7 @@ namespace Client.Services.Network.Tcp
         /// <param name="ip">Local ip</param>
         /// <param name="port">Local port</param>
         /// <param name="handle">Delegate to handle incomming message strings<</param>
-        public TcpService(string ip, int port, int remotePort, Action<string> handle) : base(ip, port, remotePort, handle)
+        public TcpService(string ip, int port, Action<string> handle) : base(ip, port, handle)
         {
         }
 
@@ -29,20 +29,7 @@ namespace Client.Services.Network.Tcp
         /// </summary>
         public override void Send(byte[] data)
         {
-            TcpClient outcomeClient = new();
-            NetworkStream? outcomeStream = null;
-            try
-            {
-                // Connect to server i hope (we don't will use it)
-                outcomeClient.Connect(RemoteIpEndPoint);
-                outcomeStream = outcomeClient.GetStream();
-                outcomeStream.Write(data, 0, data.Length);
-            }
-            finally
-            {
-                if (outcomeStream != null) outcomeStream.Close();
-                outcomeClient.Close();
-            }
+            Send(data, RemoteIpEndPoint);
         }
 
         public override void Send(byte[] data, IPEndPoint ip)

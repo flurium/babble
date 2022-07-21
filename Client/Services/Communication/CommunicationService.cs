@@ -2,7 +2,6 @@
 using Client.Services.Communication.States;
 using Client.Services.Network.Base;
 using CrossLibrary;
-using CrossLibrary.Network;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -177,6 +176,9 @@ namespace Client.Services.Communication
         }
 
         //internal void SendData(Request req) => udpService.Send(req);
-        public void SendData(Transaction req) => store.udpHandler.Send(req.ToStrBytes());
+        public void SendData(Transaction req)
+        {
+            store.udpHandler.Send(req.ToStrBytes(), store.destination);
+        }
     }
 }

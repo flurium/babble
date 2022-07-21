@@ -1,6 +1,4 @@
 using Server.Services.Communication;
-using Server.Services.Network.Udp;
-using static CrossLibrary.Globals;
 
 namespace Server.Services
 {

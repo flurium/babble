@@ -27,7 +27,7 @@ namespace Client.Services
             if (!Directory.Exists(downloadFolder)) Directory.CreateDirectory(downloadFolder);
         }
 
-        protected override ProtocolService CreateProtocolService(string ip, int port, Action<string> handle) => new TcpService(ip, port, port, handle);
+        protected override ProtocolService CreateProtocolService(string ip, int port, Action<string> handle) => new TcpService(ip, port, handle);
 
         protected override void Handle(string str)
         {

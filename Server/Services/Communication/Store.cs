@@ -1,6 +1,5 @@
 ﻿using CrossLibrary;
 using Server.Services.Database;
-using Server.Services.Exceptions;
 using Server.Services.Network.Udp;
 using System.Net;
 using static CrossLibrary.Globals;

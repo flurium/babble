@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
 using static CrossLibrary.Globals;
 
 namespace CrossLibrary.Network
@@ -14,7 +10,7 @@ namespace CrossLibrary.Network
         private Socket socket;
         private EndPoint remoteEndPoint;
 
-        public UdpService(string ip, int port, int remotePort, Action<string> handle) : base(ip, port, remotePort, handle)
+        public UdpService(string ip, int port, Action<string> handle) : base(ip, port, handle)
         {
         }
 
@@ -58,7 +54,7 @@ namespace CrossLibrary.Network
             {
                 while (run)
                 {
-                    remoteEndPoint = new IPEndPoint(IPAddress.Any, remotePort);
+                    remoteEndPoint = new IPEndPoint(IPAddress.Any, 0);
                     string message = Receive();
                     handle(message);
                 }

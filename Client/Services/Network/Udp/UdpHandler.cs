@@ -1,7 +1,6 @@
 ﻿using Client.Models;
 using Client.Services.Communication;
 using Client.Services.Network.Base;
-using Client.Services.Network.Udp;
 using CrossLibrary;
 using CrossLibrary.Network;
 using Newtonsoft.Json;
@@ -39,7 +38,7 @@ namespace Client.Services
             };
         }
 
-        protected override ProtocolService CreateProtocolService(string ip, int port, Action<string> handle) => new UdpService(ip, port, port, handle);
+        protected override ProtocolService CreateProtocolService(string ip, int port, Action<string> handle) => new UdpService(ip, port, handle);
 
         protected override void Handle(string str)
         {

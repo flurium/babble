@@ -36,7 +36,7 @@ namespace Server.Services.Network.Udp
             };
         }
 
-        protected override ProtocolService CreateProtocolService(string ip, int port, Action<string> handle) => new UdpService(ip, port, 0, handle);
+        protected override ProtocolService CreateProtocolService(string ip, int port, Action<string> handle) => new UdpService(ip, port, handle);
 
         protected override void Handle(string str)
         {
