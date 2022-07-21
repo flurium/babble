@@ -1,4 +1,5 @@
 ﻿using CrossLibrary;
+using CrossLibrary.Network;
 using Newtonsoft.Json;
 using Server.Models;
 using Server.Services.Communication;
@@ -10,10 +11,10 @@ namespace Server.Services.Network.Udp
 {
     internal class UdpHandler : ProtocolHandler
     {
-        private Dictionary<Command, Action<Transaction, IPEndPoint>> handlers;
+        private Dictionary<Command, Action<Transaction>> handlers;
         private readonly Store store;
 
-        public UdpHandler(int port, Store store) : base(port)
+        public UdpHandler(string ip, int port, Store store) : base(ip, port)
         {
             this.store = store;
             handlers = new()
@@ -35,23 +36,24 @@ namespace Server.Services.Network.Udp
             };
         }
 
-        protected override ProtocolService CreateProtocolService(int port, Action<string, IPEndPoint> handle) => new UdpService(port, handle);
+        protected override ProtocolService CreateProtocolService(string ip, int port, Action<string> handle) => new UdpService(ip, port, handle);
 
-        protected override void Handle(string str, IPEndPoint endPoint)
+        protected override void Handle(string str)
         {
+            Console.WriteLine(str);
             Transaction req = JsonConvert.DeserializeObject<Transaction>(str);
             try
             {
-                handlers[req.Command](req, endPoint);
+                handlers[req.Command](req);
             }
             catch (InfoException ex)
             {
-                Send(new Transaction { Command = Command.Exception, Data = ex.Message }, endPoint);
+                Send(new Transaction { Command = Command.Exception, Data = ex.Message });
                 Logger.LogTransaction(req, ex);
             }
             catch (Exception ex)
             {
-                Send(new Transaction { Command = Command.Exception, Data = "Sorry, something went wrong." }, endPoint);
+                Send(new Transaction { Command = Command.Exception, Data = "Sorry, something went wrong." });
                 Logger.LogTransaction(req, ex);
             }
         }
@@ -63,7 +65,7 @@ namespace Server.Services.Network.Udp
         /// </summary>
         /// <param name="req">Request contains id</param>
         /// <param name="ip">UserTo IP</param>
-        private async void AcceptInviteHandle(Transaction req, IPEndPoint ip)
+        private async void AcceptInviteHandle(Transaction req)
         {
             // ip = ip of user to
             // req.Data = contact id
@@ -71,7 +73,7 @@ namespace Server.Services.Network.Udp
             Contact contact = await store.db.AcceptInviteAsync(id);
 
             // to user to
-            Send(new Transaction { Command = Command.GetContact, Data = new Prop { Id = contact.UserFromId, Name = contact.NameAtUserTo } }, ip);
+            Send(new Transaction { Command = Command.GetContact, Data = new Prop { Id = contact.UserFromId, Name = contact.NameAtUserTo } });
 
             // to user from
             if (store.clients.ContainsKey(contact.UserFromId))
@@ -90,12 +92,12 @@ namespace Server.Services.Network.Udp
         /// </summary>
         /// <param name="req">Request contains user id and new name of group</param>
         /// <param name="ip">UserTo IP</param>
-        private async void CreateGroupHandle(Transaction req, IPEndPoint ip)
+        private async void CreateGroupHandle(Transaction req)
         {
             int uid = req.Data.User;
             string name = req.Data.Group;
             Prop group = await store.db.CreateGroupAsync(uid, name);
-            Send(new Transaction { Command = Command.CreateGroup, Data = group }, ip);
+            Send(new Transaction { Command = Command.CreateGroup, Data = group });
         }
 
         /// <summary>
@@ -104,13 +106,13 @@ namespace Server.Services.Network.Udp
         /// </summary>
         /// <param name="req">Request contains user id and name of group</param>
         /// <param name="ip">UserTo IP</param>
-        private async void EnterGroupHandle(Transaction req, IPEndPoint ip)
+        private async void EnterGroupHandle(Transaction req)
         {
             int uid = req.Data.User;
             string groupName = req.Data.Group;
             Prop group = await store.db.AddUserToGroupAsync(uid, groupName);
 
-            Send(new Transaction { Command = Command.EnterGroup, Data = group }, ip);
+            Send(new Transaction { Command = Command.EnterGroup, Data = group });
         }
 
         /// <summary>
@@ -119,12 +121,12 @@ namespace Server.Services.Network.Udp
         /// </summary>
         /// <param name="req">Request contains user id and name of group</param>
         /// <param name="ip">UserTo IP</param>
-        private async void LeaveGroupHandle(Transaction req, IPEndPoint ip)
+        private async void LeaveGroupHandle(Transaction req)
         {
             int uid = req.Data.Id;
             string name = req.Data.Name;
             await store.db.RemoveUserFromGroupAsync(uid, name);
-            Send(new Transaction { Command = Command.LeaveGroup, Data = "Group is removed" }, ip);
+            Send(new Transaction { Command = Command.LeaveGroup, Data = "Group is removed" });
         }
 
         /// <summary>
@@ -132,7 +134,7 @@ namespace Server.Services.Network.Udp
         /// </summary>
         /// <param name="req">Request contains user id</param>
         /// <param name="ip">User IP</param>
-        private void DisconnectHandle(Transaction req, IPEndPoint ip)
+        private void DisconnectHandle(Transaction req)
         {
             int id = req.Data.Id;
             store.clients.Remove(id);
@@ -144,12 +146,12 @@ namespace Server.Services.Network.Udp
         /// </summary>
         /// <param name="req">Request contains two user ids</param>
         /// <param name="ip">UserTo IP</param>
-        private async void RemoveContactHandle(Transaction req, IPEndPoint ip)
+        private async void RemoveContactHandle(Transaction req)
         {
             int from = req.Data.From;
             int to = req.Data.To;
             await store.db.RemoveContact(from, to);
-            Send(new Transaction { Command = Command.RemoveContact, Data = "Contact is removed" }, ip);
+            Send(new Transaction { Command = Command.RemoveContact, Data = "Contact is removed" });
         }
 
         /// <summary>
@@ -158,13 +160,13 @@ namespace Server.Services.Network.Udp
         /// </summary>
         /// <param name="req">Request contains two user ids and new contact name</param>
         /// <param name="ip">UserTo IP</param>
-        private void RenameContactHandle(Transaction req, IPEndPoint ip)
+        private void RenameContactHandle(Transaction req)
         {
             int from = req.Data.From;
             int to = req.Data.To;
             string newName = req.Data.NewName;
             store.db.RenameContact(from, to, newName);
-            Send(new Transaction { Command = Command.RenameContact, Data = new Prop { Id = to, Name = newName } }, ip);
+            Send(new Transaction { Command = Command.RenameContact, Data = new Prop { Id = to, Name = newName } });
         }
 
         /// <summary>
@@ -173,12 +175,12 @@ namespace Server.Services.Network.Udp
         /// </summary>
         /// <param name="req">Request contains user id and new group name</param>
         /// <param name="ip">UserTo IP</param>
-        private async void RenameGroupHandle(Transaction req, IPEndPoint ip)
+        private async void RenameGroupHandle(Transaction req)
         {
             int id = req.Data.Id;
             string name = req.Data.NewName;
             await store.db.RenameGroupAsync(id, name);
-            Send(new Transaction { Command = Command.RenameGroup, Data = new Prop { Id = id, Name = name } }, ip);
+            Send(new Transaction { Command = Command.RenameGroup, Data = new Prop { Id = id, Name = name } });
         }
 
         /// <summary>
@@ -188,14 +190,14 @@ namespace Server.Services.Network.Udp
         /// </summary>
         /// <param name="req">Request contains two user ids</param>
         /// <param name="ip">UserTo IP</param>
-        private async void SendInviteHandle(Transaction req, IPEndPoint ip)
+        private async void SendInviteHandle(Transaction req)
         {
             int from = req.Data.From;
             string to = req.Data.To;
             Contact contact = await store.db.SendInviteAsync(from, to);
 
             // to who sent request
-            Send(new Transaction { Command = Command.SendInvite, Data = new { Message = "Invite was send successfully" } }, ip);
+            Send(new Transaction { Command = Command.SendInvite, Data = new { Message = "Invite was send successfully" } });
 
             // to who will get invite
             IPEndPoint toIp;
@@ -210,7 +212,7 @@ namespace Server.Services.Network.Udp
         /// </summary>
         /// <param name="req">Request contains two user ids and text message</param>
         /// <param name="ip">UserTo IP</param>
-        private void SendMessageToContactHandle(Transaction req, IPEndPoint ip)
+        private void SendMessageToContactHandle(Transaction req)
         {
             int from = req.Data.From;
             int to = req.Data.To;
@@ -243,7 +245,7 @@ namespace Server.Services.Network.Udp
         /// </summary>
         /// <param name="req">Request contains user id, group id and text message</param>
         /// <param name="ip">UserTo IP</param>
-        private void SendMessageToGroupHandle(Transaction req, IPEndPoint ip)
+        private void SendMessageToGroupHandle(Transaction req)
         {
             int from = req.Data.From;
             int group = req.Data.To;
@@ -288,7 +290,7 @@ namespace Server.Services.Network.Udp
         /// </summary>
         /// <param name="req">Request contains user name and password</param>
         /// <param name="ip">UserTo IP</param>
-        private void SignInHandle(Transaction req, IPEndPoint ip)
+        private void SignInHandle(Transaction req)
         {
             string name = req.Data.Name;
             string password = req.Data.Password;
@@ -297,18 +299,18 @@ namespace Server.Services.Network.Udp
 
             if (user == null)
             {
-                Send(new Transaction { Command = Command.SignIn, Data = new { IsOk = false, Message = "User not found" } }, ip);
+                Send(new Transaction { Command = Command.SignIn, Data = new { IsOk = false, Message = "User not found" } });
                 return;
             }
 
             if (!Hasher.Verify(password, user.Password))
             {
-                Send(new Transaction { Command = Command.SignIn, Data = new { IsOk = false, Message = "Wrong password" } }, ip);
+                Send(new Transaction { Command = Command.SignIn, Data = new { IsOk = false, Message = "Wrong password" } });
                 return;
             }
 
             // add user to connected clients
-            store.clients.Add(user.Id, ip);
+            store.clients.Add(user.Id, protocol.RemoteIpEndPoint);
 
             Transaction res = new()
             {
@@ -322,7 +324,7 @@ namespace Server.Services.Network.Udp
                     Contacts = store.db.GetContacts(user.Id)
                 }
             };
-            Send(res, ip);
+            Send(res);
 
             // send pending messages
             LinkedList<Transaction> messages;
@@ -330,7 +332,7 @@ namespace Server.Services.Network.Udp
             {
                 foreach (var message in messages)
                 {
-                    Send(message, ip);
+                    Send(message);
                 }
                 store.pending.Remove(user.Id);
             }
@@ -343,7 +345,7 @@ namespace Server.Services.Network.Udp
         /// </summary>
         /// <param name="req">Request contains new user name and password</param>
         /// <param name="ip">UserTo IP</param>
-        private void SignUpHandle(Transaction req, IPEndPoint ip)
+        private void SignUpHandle(Transaction req)
         {
             try
             {
@@ -352,7 +354,7 @@ namespace Server.Services.Network.Udp
                 User user = store.db.AddUser(name, password);
 
                 // add user to connected clients
-                store.clients.TryAdd(user.Id, ip);
+                store.clients.TryAdd(user.Id, protocol.RemoteIpEndPoint);
 
                 Send(new Transaction
                 {
@@ -363,7 +365,7 @@ namespace Server.Services.Network.Udp
                         Id = user.Id,
                         Name = user.Name
                     }
-                }, ip);
+                });
             }
             catch (Exception ex)
             {
@@ -375,7 +377,7 @@ namespace Server.Services.Network.Udp
                         IsOk = false,
                         Message = ex.Message
                     }
-                }, ip);
+                });
             }
         }
 
@@ -383,7 +385,7 @@ namespace Server.Services.Network.Udp
         /// Send data size to clientTo.
         /// Send clientTo address to clientFrom
         /// </summary>
-        private void GetFileMessageSizeHandle(Transaction req, IPEndPoint ip)
+        private void GetFileMessageSizeHandle(Transaction req)
         {
             int to = req.Data.To;
             long size = req.Data.Size;
@@ -403,7 +405,7 @@ namespace Server.Services.Network.Udp
                 {
                     Command = Command.GetClientAddress,
                     Data = new Destination { Ip = toIp.Address.ToString(), Port = toIp.Port }
-                }, ip);
+                });
             }
             else
             {

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CrossLibrary.Network
 {
-    internal abstract class ProtocolService
+    public abstract class ProtocolService
     {
         protected readonly Action<string> handle;
         protected readonly string ip;
@@ -21,6 +21,8 @@ namespace CrossLibrary.Network
             this.port = port;
             this.handle = handle;
         }
+
+        public abstract IPEndPoint RemoteIpEndPoint { get; }
 
         /// <summary>
         /// Send to current remote ip end point

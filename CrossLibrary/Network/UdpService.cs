@@ -9,13 +9,15 @@ using static CrossLibrary.Globals;
 
 namespace CrossLibrary.Network
 {
-    internal class UdpService : ProtocolService
+    public class UdpService : ProtocolService
     {
         private Socket socket;
         private EndPoint remoteEndPoint;
 
         public UdpService(string ip, int port, Action<string> handle) : base(ip, port, handle)
         { }
+
+        public override IPEndPoint RemoteIpEndPoint { get => (IPEndPoint)remoteEndPoint; }
 
         public override void Send(byte[] data)
         {

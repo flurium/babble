@@ -24,7 +24,7 @@ namespace Server.Services.Communication
 
         public Store()
         {
-            udpHandler = new(ServerDestination.Port, this);
+            udpHandler = new(ServerDestination.Ip, ServerDestination.Port, this);
         }
     }
 }
