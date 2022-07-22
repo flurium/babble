@@ -31,8 +31,9 @@ namespace Client.Services.Network
                 { Command.RemoveContact, RemoveContactHandle },
                 { Command.RenameContact, RenameContactHandle },
                 { Command.RenameGroup, RenameGroupHandle },
-                { Command.GetFileMessageSize,  GetFileMessageSizeHandle },
+                { Command.ContactFileSize,  GetFileMessageSizeHandle },
                 { Command.GetClientAddress, GetClientAddressHandle },
+                { Command.GetGroupAddress, GetGroupAddressHandle },
                 { Command.Exception, ExceptionHandle }
             };
         }
@@ -72,7 +73,22 @@ namespace Client.Services.Network
             int port = res.Data.Port;
 
             //store.tcpHandler.UpdateDestination(destination);
-            store.tcpHandler.Send(store.pendingSendFile, new(IPAddress.Parse(ip), port));
+            store.tcpHandler.Send(store.pendingFiles.Dequeue(), new(IPAddress.Parse(ip), port));
+        }
+
+        private void GetGroupAddressHandle(Transaction transaction)
+        {
+            string ip;
+            int port;
+            byte[] file = store.pendingFiles.Dequeue();
+
+            var destinations = transaction.Data.Destinations;
+            foreach (var destination in destinations)
+            {
+                ip = destination.Ip;
+                port = destination.Port;
+                store.tcpHandler.Send(file, new(IPAddress.Parse(ip), port));
+            }
         }
 
         private void AddToCollection(Prop prop, ref ObservableCollection<Prop> collection) => collection.Add(prop);

@@ -71,7 +71,7 @@ namespace Client.Services.Communication.States
             Send(req);
         }
 
-        protected void SendFileMessage(string messageStr, List<string> filePaths, ref Dictionary<int, LinkedList<Message>> dictionary, Command command)
+        protected void SendFileMessage(string messageStr, List<string> filePaths, ref Dictionary<int, LinkedList<Message>> dictionary, Command fileCommand, Command sizeCommand, int from)
         {
             Message message = new() { IsIncoming = false, Text = messageStr, Files = new() };
 
@@ -98,15 +98,15 @@ namespace Client.Services.Communication.States
             store.currentMessages.Add(message);
 
             // File request which will be sended to another client
-            Transaction fileReq = new() { Command = command, Data = new { From = store.user.Id, Message = message.Text, Files = files } };
+            Transaction fileReq = new() { Command = fileCommand, Data = new { From = from, Message = message.Text, Files = files } };
             string fileReqStr = JsonConvert.SerializeObject(fileReq);
             byte[] fileReqData = CommunicationEncoding.GetBytes(fileReqStr);
 
             // send data size
-            Transaction req = new() { Command = Command.GetFileMessageSize, Data = new { To = store.currentProp.Id, Size = fileReqData.LongLength } };
+            Transaction req = new() { Command = sizeCommand, Data = new { To = store.currentProp.Id, Size = fileReqData.LongLength, From = store.user.Id } };
             Send(req);
 
-            store.pendingSendFile = fileReqData;
+            store.pendingFiles.Enqueue(fileReqData);
         }
 
         // abstracts (will be overrided)

@@ -2,11 +2,6 @@
 using CrossLibrary.Network;
 using Newtonsoft.Json;
 using Server.Services.Communication;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Server.Services.Network
 {
@@ -20,7 +15,7 @@ namespace Server.Services.Network
             handlers = new()
             {
                 { Command.SendFileMessageToContact, FileMessageHandle },
-                { Command.SendFileMessageToGroup, SendFileMessageToGroupHandle },
+                { Command.SendFileMessageToGroup, FileMessageHandle },
             };
         }
 
@@ -41,22 +36,23 @@ namespace Server.Services.Network
 
         private void FileMessageHandle(Transaction transaction)
         {
-            int to = store.pendingClients.Dequeue();
-            if (store.pending.ContainsKey(to))
-            {
-                store.pending[to].AddLast(transaction);
-            }
-            else
-            {
-                LinkedList<Transaction> messages = new();
-                messages.AddLast(transaction);
-                store.pending.Add(to, messages);
-            }
-        }
+            var tos = store.pendingClients.Dequeue();
+            Guid guid = Guid.NewGuid();
+            store.pendingTransactions.Add(guid, new() { Count = tos.Count, Transaction = transaction });
 
-        private void SendFileMessageToGroupHandle(Transaction req)
-        {
-            throw new NotImplementedException();
+            foreach (var to in tos)
+            {
+                if (store.pending.ContainsKey(to))
+                {
+                    store.pending[to].AddLast(guid);
+                }
+                else
+                {
+                    LinkedList<Guid> guids = new();
+                    guids.AddLast(guid);
+                    store.pending.Add(to, guids);
+                }
+            }
         }
     }
 }

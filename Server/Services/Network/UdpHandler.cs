@@ -31,7 +31,8 @@ namespace Server.Services.Network
                 { Command.EnterGroup, EnterGroupHandle },
                 { Command.Disconnect, DisconnectHandle },
                 { Command.RenameGroup, RenameGroupHandle },
-                { Command.GetFileMessageSize, GetFileMessageSizeHandle },
+                { Command.ContactFileSize, ContactFileSizeHandle },
+                { Command.GroupFileSize, GroupFileSizeHandle },
             };
         }
 
@@ -245,15 +246,18 @@ namespace Server.Services.Network
             }
             else
             {
+                Guid guid = Guid.NewGuid();
+                store.pendingTransactions.Add(guid, new() { Count = 1, Transaction = transaction });
+
                 if (store.pending.ContainsKey(to))
                 {
-                    store.pending[to].AddLast(transaction);
+                    store.pending[to].AddLast(guid);
                 }
                 else
                 {
-                    LinkedList<Transaction> messages = new();
-                    messages.AddLast(transaction);
-                    store.pending.Add(to, messages);
+                    LinkedList<Guid> guids = new();
+                    guids.AddLast(guid);
+                    store.pending.Add(to, guids);
                 }
             }
         }
@@ -271,6 +275,10 @@ namespace Server.Services.Network
 
             Transaction transaction = new() { Command = Command.GetMessageFromGroup, Data = new { Id = group, Message = message } };
 
+            bool isGoToPending = false;
+            Guid guid = Guid.NewGuid();
+            PendingTransaction pendingTransaction = new() { Count = 0 };
+
             IPEndPoint toIp;
             IEnumerable<int> ids = store.db.GetGroupMembersIds(group);
             foreach (int id in ids)
@@ -283,18 +291,30 @@ namespace Server.Services.Network
                     }
                     else
                     {
+                        pendingTransaction.Count += 1;
+                        if (!isGoToPending)
+                        {
+                            pendingTransaction.Transaction = transaction;
+                            isGoToPending = true;
+                        }
+
                         if (store.pending.ContainsKey(id))
                         {
-                            store.pending[id].AddLast(transaction);
+                            store.pending[id].AddLast(guid);
                         }
                         else
                         {
-                            LinkedList<Transaction> messages = new();
-                            messages.AddLast(transaction);
-                            store.pending.Add(id, messages);
+                            LinkedList<Guid> guids = new();
+                            guids.AddLast(guid);
+                            store.pending.Add(id, guids);
                         }
                     }
                 }
+            }
+
+            if (isGoToPending)
+            {
+                store.pendingTransactions.Add(guid, pendingTransaction);
             }
         }
 
@@ -344,20 +364,32 @@ namespace Server.Services.Network
             };
             Send(res);
 
-            LinkedList<Transaction> messages;
+            LinkedList<Guid> guids;
             // send pending messages
-            if (store.pending.TryGetValue(user.Id, out messages))
+            if (store.pending.TryGetValue(user.Id, out guids))
             {
-                foreach (var message in messages)
+                foreach (var guid in guids)
                 {
+                    PendingTransaction pendingTransaction = store.pendingTransactions[guid];
+                    pendingTransaction.Count -= 1;
+
                     // GetMessageFromContact
-                    if (message.Command == Command.GetMessageFromContact)
+                    if (pendingTransaction.Transaction.Command == Command.GetMessageFromContact || pendingTransaction.Transaction.Command == Command.GetMessageFromGroup)
                     {
-                        Send(message);
+                        Send(pendingTransaction.Transaction);
                     }
-                    else if (message.Command == Command.SendFileMessageToContact)
+                    else if (pendingTransaction.Transaction.Command == Command.SendFileMessageToContact || pendingTransaction.Transaction.Command == Command.SendFileMessageToGroup)
                     {
-                        store.tcpHandler.Send(message.ToStrBytes(), protocol.RemoteIpEndPoint);
+                        store.tcpHandler.Send(pendingTransaction.Transaction.ToStrBytes(), protocol.RemoteIpEndPoint);
+                    }
+
+                    if (pendingTransaction.Count == 0)
+                    {
+                        store.pendingTransactions.Remove(guid);
+                    }
+                    else
+                    {
+                        store.pendingTransactions[guid] = pendingTransaction;
                     }
                 }
                 store.pending.Remove(user.Id);
@@ -409,20 +441,17 @@ namespace Server.Services.Network
 
         /// <summary>
         /// Send data size to clientTo.
-        /// Send clientTo address to clientFrom
+        /// Send clientTo address to clientFrom.
         /// </summary>
-        private void GetFileMessageSizeHandle(Transaction req)
+        private void FileSizeHandle(int to, long size)
         {
-            int to = req.Data.To;
-            long size = req.Data.Size;
-
             IPEndPoint toIp;
             if (store.clients.TryGetValue(to, out toIp))
             {
                 // send data size to clientTo
                 Send(new Transaction
                 {
-                    Command = Command.GetFileMessageSize,
+                    Command = Command.ContactFileSize,
                     Data = new { Size = size }
                 }, toIp);
 
@@ -436,9 +465,8 @@ namespace Server.Services.Network
             else
             {
                 // get file message to server
-
                 store.tcpHandler.UpdateBufferSize(size);
-                store.pendingClients.Enqueue(to);
+                store.pendingClients.Enqueue(new() { to });
 
                 // send server destination to clientFrom
                 Send(new Transaction
@@ -447,6 +475,65 @@ namespace Server.Services.Network
                     Data = ServerDestination
                 });
             }
+        }
+
+        private void ContactFileSizeHandle(Transaction req)
+        {
+            int to = req.Data.To;
+            long size = req.Data.Size;
+            FileSizeHandle(to, size);
+        }
+
+        private void GroupFileSizeHandle(Transaction transaction)
+        {
+            int to = transaction.Data.To;
+            long size = transaction.Data.Size;
+            int from = transaction.Data.From;
+
+            List<int> pendingGroupClients = new List<int>();
+            bool isServerIn = false;
+            LinkedList<Destination> destinations = new();
+            IPEndPoint toEndPoint;
+
+            var ids = store.db.GetGroupMembersIds(to);
+            foreach (int id in ids)
+            {
+                if (id != from)
+                {
+                    if (store.clients.TryGetValue(id, out toEndPoint))
+                    {
+                        destinations.AddLast(new Destination { Ip = toEndPoint.Address.ToString(), Port = toEndPoint.Port });
+
+                        // send data size to clientTo
+                        Send(new Transaction
+                        {
+                            Command = Command.ContactFileSize,
+                            Data = new { Size = size }
+                        }, toEndPoint);
+                    }
+                    else
+                    {
+                        if (!isServerIn)
+                        {
+                            destinations.AddLast(ServerDestination);
+                            isServerIn = true;
+                            store.tcpHandler.UpdateBufferSize(size);
+                        }
+                        pendingGroupClients.Add(id);
+                    }
+                }
+            }
+
+            if (isServerIn)
+            {
+                store.pendingClients.Enqueue(pendingGroupClients);
+            }
+
+            Send(new Transaction
+            {
+                Command = Command.GetGroupAddress,
+                Data = new { Destinations = destinations }
+            });
         }
     }
 }
