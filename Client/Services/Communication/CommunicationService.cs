@@ -1,10 +1,13 @@
 ﻿using Client.Models;
 using Client.Services.Communication.States;
 using Client.Services.Network.Base;
+using Client.Services.Network.Tcp;
+using Client.Services.Network.Udp;
 using CrossLibrary;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using System.Windows;
 using static CrossLibrary.Globals;
 
@@ -30,10 +33,10 @@ namespace Client.Services.Communication
             } while (localPort == ServerDestination.Port);
 
             // init udp service
-            IProtocolService udpHandler = new UdpHandler(localPort, store);
+            IProtocolService udpHandler = new UdpHandler("127.0.0.1", localPort, store);
 
             // init tcp service
-            IProtocolService tcpHandler = new TcpHandler(localPort, store);
+            IProtocolService tcpHandler = new TcpHandler("127.0.0.1", localPort, store);
 
             // put protocol services to store
             store.udpHandler = udpHandler;
@@ -168,13 +171,16 @@ namespace Client.Services.Communication
         {
             run = true;
             // run udp service
-            store.udpHandler.Start();
+            Task.Run(store.udpHandler.Start);
 
             // run tcp service
             store.tcpHandler.Start();
         }
 
         //internal void SendData(Request req) => udpService.Send(req);
-        public void SendData(Transaction req) => store.udpHandler.Send(req.ToStrBytes());
+        public void SendData(Transaction req)
+        {
+            store.udpHandler.Send(req.ToStrBytes(), store.destination);
+        }
     }
 }

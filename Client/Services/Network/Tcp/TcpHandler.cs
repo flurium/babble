@@ -3,20 +3,21 @@ using Client.Services.Communication;
 using Client.Services.Network.Base;
 using Client.Services.Network.Tcp;
 using CrossLibrary;
+using CrossLibrary.Network;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 
-namespace Client.Services
+namespace Client.Services.Network.Tcp
 {
     public class TcpHandler : ProtocolHandler
     {
         private Dictionary<Command, Action<Transaction>> handlers;
         private readonly string downloadFolder = string.Format("{0}\\Downloads\\babble", Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
 
-        public TcpHandler(int port, Store store) : base(port, store)
+        public TcpHandler(string ip, int port, Store store) : base(ip, port, store)
         {
             handlers = new()
             {
@@ -26,7 +27,7 @@ namespace Client.Services
             if (!Directory.Exists(downloadFolder)) Directory.CreateDirectory(downloadFolder);
         }
 
-        protected override ProtocolService CreateProtocolService(int port, Action<string> handle) => new TcpService(port, handle);
+        protected override ProtocolService CreateProtocolService(string ip, int port, Action<string> handle) => new TcpService(ip, port, handle);
 
         protected override void Handle(string str)
         {

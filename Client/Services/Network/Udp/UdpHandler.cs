@@ -1,43 +1,44 @@
 ﻿using Client.Models;
 using Client.Services.Communication;
 using Client.Services.Network.Base;
-using Client.Services.Network.Udp;
 using CrossLibrary;
+using CrossLibrary.Network;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Net;
 using System.Windows;
 
-namespace Client.Services
+namespace Client.Services.Network.Udp
 {
     public class UdpHandler : ProtocolHandler
     {
         private Dictionary<Command, Action<Transaction>> handlers;
 
-        public UdpHandler(int port, Store store) : base(port, store)
+        public UdpHandler(string ip, int port, Store store) : base(ip, port, store)
         {
             handlers = new()
-                {
-                    { Command.GetMessageFromContact, GetMessageFromContactHandle },
-                    { Command.GetMessageFromGroup, GetMessageFromGroupHandle },
-                    { Command.SignIn, SignInHandle },
-                    { Command.SignUp, SignUpHandle },
-                    { Command.SendInvite, SendInviteHandle },
-                    { Command.GetInvite, GetInviteHandle },
-                    { Command.GetContact, GetContactHandle },
-                    { Command.CreateGroup, CreateGroupHandle },
-                    { Command.EnterGroup, EnterGroupHandle },
-                    { Command.RemoveContact, RemoveContactHandle },
-                    { Command.RenameContact, RenameContactHandle },
-                    { Command.RenameGroup, RenameGroupHandle },
-                    { Command.GetFileMessageSize,  GetFileMessageSizeHandle },
-                    { Command.GetClientAddress, GetClientAddressHandle },
-                    { Command.Exception, ExceptionHandle }
-                };
+            {
+                { Command.GetMessageFromContact, GetMessageFromContactHandle },
+                { Command.GetMessageFromGroup, GetMessageFromGroupHandle },
+                { Command.SignIn, SignInHandle },
+                { Command.SignUp, SignUpHandle },
+                { Command.SendInvite, SendInviteHandle },
+                { Command.GetInvite, GetInviteHandle },
+                { Command.GetContact, GetContactHandle },
+                { Command.CreateGroup, CreateGroupHandle },
+                { Command.EnterGroup, EnterGroupHandle },
+                { Command.RemoveContact, RemoveContactHandle },
+                { Command.RenameContact, RenameContactHandle },
+                { Command.RenameGroup, RenameGroupHandle },
+                { Command.GetFileMessageSize,  GetFileMessageSizeHandle },
+                { Command.GetClientAddress, GetClientAddressHandle },
+                { Command.Exception, ExceptionHandle }
+            };
         }
 
-        protected override ProtocolService CreateProtocolService(int port, Action<string> handle) => new UdpService(port, handle);
+        protected override ProtocolService CreateProtocolService(string ip, int port, Action<string> handle) => new UdpService(ip, port, handle);
 
         protected override void Handle(string str)
         {
@@ -68,13 +69,11 @@ namespace Client.Services
 
         private void GetClientAddressHandle(Transaction res)
         {
-            Destination destination = new()
-            {
-                Ip = res.Data.Ip,
-                Port = res.Data.Port
-            };
-            store.tcpHandler.UpdateDestination(destination);
-            store.tcpHandler.Send(store.pendingSendFile);
+            string ip = res.Data.Ip;
+            int port = res.Data.Port;
+
+            //store.tcpHandler.UpdateDestination(destination);
+            store.tcpHandler.Send(store.pendingSendFile, new(IPAddress.Parse(ip), port));
         }
 
         private void AddToCollection(Prop prop, ref ObservableCollection<Prop> collection) => collection.Add(prop);

@@ -42,9 +42,14 @@ namespace CrossLibrary
         public Command Command { get; set; }
         public dynamic Data { get; set; }
 
+        public string ToJson()
+        {
+            return JsonConvert.SerializeObject(this);
+        }
+
         public byte[] ToStrBytes()
         {
-            string str = JsonConvert.SerializeObject(this);
+            string str = ToJson();
             return CommunicationEncoding.GetBytes(str);
         }
     }

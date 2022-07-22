@@ -10,8 +10,8 @@ namespace Server
             Console.Title = "Babble server";
             Console.OutputEncoding = CommunicationEncoding;
 
-            CommunicationService cs = new();
-            cs.Listen();
+            App cs = new();
+            cs.Run();
         }
     }
 }

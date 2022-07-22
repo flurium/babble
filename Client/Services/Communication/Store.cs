@@ -4,11 +4,14 @@ using CrossLibrary;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Net;
+using static CrossLibrary.Globals;
 
 namespace Client.Services.Communication
 {
     public class Store
     {
+        public IPEndPoint destination = new(IPAddress.Parse(ServerDestination.Ip), ServerDestination.Port);
         public Prop user;
         public Prop currentProp;
 
