@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace Client.Services.Network.Base
+namespace CrossLibrary.Network
 {
     public interface IProtocolService
     {

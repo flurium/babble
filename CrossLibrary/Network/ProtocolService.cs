@@ -2,7 +2,7 @@
 
 namespace CrossLibrary.Network
 {
-    public abstract class ProtocolService
+    public abstract class ProtocolService : IProtocolService
     {
         protected readonly Action<string> handle;
         protected readonly string ip;

@@ -1,6 +1,5 @@
 ﻿using Client.Models;
 using Client.Services.Communication;
-using Client.Services.Network.Base;
 using CrossLibrary;
 using CrossLibrary.Network;
 using Newtonsoft.Json;
@@ -10,9 +9,9 @@ using System.Collections.ObjectModel;
 using System.Net;
 using System.Windows;
 
-namespace Client.Services.Network.Udp
+namespace Client.Services.Network
 {
-    public class UdpHandler : ProtocolHandler
+    internal class UdpHandler : ProtocolHandler<Store>
     {
         private Dictionary<Command, Action<Transaction>> handlers;
 

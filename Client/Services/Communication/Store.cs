@@ -1,6 +1,6 @@
 ﻿using Client.Models;
-using Client.Services.Network.Base;
 using CrossLibrary;
+using CrossLibrary.Network;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -9,7 +9,7 @@ using static CrossLibrary.Globals;
 
 namespace Client.Services.Communication
 {
-    public class Store
+    internal class Store
     {
         public IPEndPoint destination = new(IPAddress.Parse(ServerDestination.Ip), ServerDestination.Port);
         public Prop user;

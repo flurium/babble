@@ -8,6 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Services\Network\Base\**" />
+    <EmbeddedResource Remove="Services\Network\Base\**" />
+    <None Remove="Services\Network\Base\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.6" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.6">
       <PrivateAssets>all</PrivateAssets>
@@ -18,10 +24,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CrossLibrary\CrossLibrary.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Services\Network\Base\" />
   </ItemGroup>
 
 </Project>

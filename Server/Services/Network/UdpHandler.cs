@@ -4,17 +4,16 @@ using Newtonsoft.Json;
 using Server.Models;
 using Server.Services.Communication;
 using Server.Services.Exceptions;
-using Server.Services.Network.Base;
 using System.Net;
+using static CrossLibrary.Globals;
 
-namespace Server.Services.Network.Udp
+namespace Server.Services.Network
 {
-    internal class UdpHandler : ProtocolHandler
+    internal class UdpHandler : ProtocolHandler<Store>
     {
         private Dictionary<Command, Action<Transaction>> handlers;
-        private readonly Store store;
 
-        public UdpHandler(string ip, int port, Store store) : base(ip, port)
+        public UdpHandler(string ip, int port, Store store) : base(ip, port, store)
         {
             this.store = store;
             handlers = new()
@@ -37,6 +36,25 @@ namespace Server.Services.Network.Udp
         }
 
         protected override ProtocolService CreateProtocolService(string ip, int port, Action<string> handle) => new UdpService(ip, port, handle);
+
+        private void Send(Transaction transaction)
+        {
+            //        // BAD: TO JSON 2 TIMES
+            //        // FIX !!!!!!!!!!!
+
+            string json = transaction.ToJson();
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine(json);
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            protocol.Send(transaction.ToStrBytes());
+        }
+
+        public void Send(Transaction transaction, IPEndPoint endPoint)
+        {
+            // BAD: TO JSON 2 TIMES
+            // FIX !!!!!!!!!!!
+            protocol.Send(transaction.ToStrBytes(), endPoint);
+        }
 
         protected override void Handle(string str)
         {
@@ -326,13 +344,21 @@ namespace Server.Services.Network.Udp
             };
             Send(res);
 
-            // send pending messages
             LinkedList<Transaction> messages;
+            // send pending messages
             if (store.pending.TryGetValue(user.Id, out messages))
             {
                 foreach (var message in messages)
                 {
-                    Send(message);
+                    // GetMessageFromContact
+                    if (message.Command == Command.GetMessageFromContact)
+                    {
+                        Send(message);
+                    }
+                    else if (message.Command == Command.SendFileMessageToContact)
+                    {
+                        store.tcpHandler.Send(message.ToStrBytes(), protocol.RemoteIpEndPoint);
+                    }
                 }
                 store.pending.Remove(user.Id);
             }
@@ -362,8 +388,8 @@ namespace Server.Services.Network.Udp
                     Data = new
                     {
                         IsOk = true,
-                        Id = user.Id,
-                        Name = user.Name
+                        user.Id,
+                        user.Name
                     }
                 });
             }
@@ -375,7 +401,7 @@ namespace Server.Services.Network.Udp
                     Data = new
                     {
                         IsOk = false,
-                        Message = ex.Message
+                        ex.Message
                     }
                 });
             }
@@ -409,6 +435,17 @@ namespace Server.Services.Network.Udp
             }
             else
             {
+                // get file message to server
+
+                store.tcpHandler.UpdateBufferSize(size);
+                store.pendingClients.Enqueue(to);
+
+                // send server destination to clientFrom
+                Send(new Transaction
+                {
+                    Command = Command.GetClientAddress,
+                    Data = ServerDestination
+                });
             }
         }
     }
