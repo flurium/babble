@@ -10,7 +10,7 @@ using System.Collections.ObjectModel;
 using System.Net;
 using System.Windows;
 
-namespace Client.Services
+namespace Client.Services.Network.Udp
 {
     public class UdpHandler : ProtocolHandler
     {

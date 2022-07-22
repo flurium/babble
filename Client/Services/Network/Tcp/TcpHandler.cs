@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 
-namespace Client.Services
+namespace Client.Services.Network.Tcp
 {
     public class TcpHandler : ProtocolHandler
     {

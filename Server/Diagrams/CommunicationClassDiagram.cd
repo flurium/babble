@@ -1,14 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Class Name="Server.Services.CommunicationService">
-    <Position X="7" Y="1" Width="2.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAI=</HashCode>
-      <FileName>Services\CommunicationService.cs</FileName>
-    </TypeIdentifier>
-  </Class>
   <Class Name="Server.Services.Database.DatabaseService">
-    <Position X="14.25" Y="1.25" Width="2.25" />
+    <Position X="13.25" Y="0.75" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAAGYACgiAAQAICEAAEAgAgAAQAAQAAgkEBAQBBAIAA=</HashCode>
       <FileName>Services\Database\DatabaseService.cs</FileName>
@@ -16,42 +9,42 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="Server.Services.Exceptions.Logger">
-    <Position X="1.25" Y="3.25" Width="1.5" />
+    <Position X="3" Y="2.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAQAAAAAAACAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAABAAAAAAAAA=</HashCode>
       <FileName>Services\Exceptions\Logger.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" />
   </Class>
   <Class Name="Server.Services.Communication.Store">
-    <Position X="7.5" Y="3.5" Width="1.5" />
+    <Position X="8" Y="2.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAEAAAAAAAQAAAiAAAAAAAgBAAAAAAAAAAAAAAAACA=</HashCode>
+      <HashCode>AAAAAAAEAAAQAAAAAAAAAAAgAAAAAAAAAAAAAAAAACA=</HashCode>
       <FileName>Services\Communication\Store.cs</FileName>
     </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="db" />
+    </ShowAsAssociation>
   </Class>
   <Class Name="Server.Services.Network.Base.ProtocolHandler">
-    <Position X="6.25" Y="6.5" Width="1.5" />
+    <Position X="5.5" Y="7.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAACAgAAAAAEAACAAAAAAAAAIAIAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAACAgAAAAAEAAAAAAAAAAQAIAIAAAAAAAAAA=</HashCode>
       <FileName>Services\Network\Base\ProtocolHandler.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
-      <Field Name="protocolService" />
-    </ShowAsAssociation>
-  </Class>
-  <Class Name="Server.Services.Network.Base.ProtocolService">
-    <Position X="9.25" Y="6.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAgAAACAoAEAAAEAAAAAAAAAAAAgRIAACAAAAAAA=</HashCode>
-      <FileName>Services\Network\Base\ProtocolService.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Field Name="store" />
+      <Field Name="protocol" />
     </ShowAsAssociation>
   </Class>
   <Class Name="Server.Services.Network.Udp.UdpHandler">
-    <Position X="4" Y="5" Width="1.5" />
+    <Position X="3" Y="5" Width="1.5" />
+    <AssociationLine Name="store" Type="Server.Services.Communication.Store" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="4.5" Y="6.094" />
+        <Point X="4.875" Y="6.094" />
+        <Point X="4.875" Y="3.562" />
+        <Point X="8" Y="3.562" />
+      </Path>
+    </AssociationLine>
     <TypeIdentifier>
       <HashCode>AABABABAAAAAAgABAAAAAQAAAAAAEgJRCAAACABAEAA=</HashCode>
       <FileName>Services\Network\Udp\UdpHandler.cs</FileName>
@@ -60,19 +53,23 @@
       <Field Name="store" />
     </ShowAsAssociation>
   </Class>
-  <Class Name="Server.Services.Network.Udp.UdpService">
-    <Position X="11.75" Y="6.5" Width="1.5" />
+  <Class Name="Server.Services.App">
+    <Position X="8" Y="1" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAACAAAEAAAEAAAAAAAAAAAAAQIAEAAAAAAAA=</HashCode>
-      <FileName>Services\Network\Udp\UdpService.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAI=</HashCode>
+      <FileName>Services\App.cs</FileName>
     </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="store" />
+    </ShowAsAssociation>
   </Class>
-  <Interface Name="Server.Services.Exceptions.ILogger">
-    <Position X="1.25" Y="1.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAQAAAAAAACAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Services\Exceptions\Logger.cs</FileName>
-    </TypeIdentifier>
-  </Interface>
+  <Class Name="CrossLibrary.Network.UdpService">
+    <Position X="10.75" Y="6.75" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="CrossLibrary.Network.ProtocolService">
+    <Position X="8.25" Y="5.75" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
   <Font Name="Segoe UI" Size="9" />
 </ClassDiagram>
