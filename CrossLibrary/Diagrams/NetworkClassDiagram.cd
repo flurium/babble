@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Comment CommentText="Start, Stop, Send, UpdateBufferSize call the same functions from protocol">
+    <Position X="4.782" Y="4.565" Height="0.642" Width="1.907" />
+  </Comment>
+  <Class Name="CrossLibrary.Network.ProtocolHandler&lt;TStore&gt;">
+    <Position X="4.75" Y="1.5" Width="2" />
+    <AssociationLine Name="protocol" Type="CrossLibrary.Network.ProtocolService" FixedFromPoint="true">
+      <Path>
+        <Point X="6.75" Y="2.188" />
+        <Point X="7.75" Y="2.188" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAgAAAAAEAAAAAAAAAAQAIBIAAAAAAAAAA=</HashCode>
+      <FileName>Network\ProtocolHandler.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="protocol" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="CrossLibrary.Network.ProtocolService">
+    <Position X="7.75" Y="1.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAgAAgAAACAoAEAAAEAAAAAAAgAAAAAQIAAiAAAAAAA=</HashCode>
+      <FileName>Network\ProtocolService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="CrossLibrary.Network.TcpService">
+    <Position X="12.5" Y="2" Width="1.5" />
+    <InheritanceLine Type="CrossLibrary.Network.ProtocolService" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="9.5" Y="1.75" />
+        <Point X="13.375" Y="1.75" />
+        <Point X="13.375" Y="2" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAEAAAEAAAAAAIgAAAAAUIAAAEAAAAAA=</HashCode>
+      <FileName>Network\TcpService.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CrossLibrary.Network.UdpService">
+    <Position X="10.25" Y="2.25" Width="1.5" />
+    <InheritanceLine Type="CrossLibrary.Network.ProtocolService" FixedToPoint="true">
+      <Path>
+        <Point X="9.5" Y="2.5" />
+        <Point X="10.25" Y="2.5" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAABACAAAEAAAEAAAAAAAgAAAAAQIAEAAAAAAAA=</HashCode>
+      <FileName>Network\UdpService.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="CrossLibrary.Network.IProtocolService">
+    <Position X="2.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAgAAAAAEAAAAAAAAAAAAAAIAAAAAAAAAA=</HashCode>
+      <FileName>Network\IProtocolService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

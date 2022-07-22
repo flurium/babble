@@ -26,12 +26,12 @@ namespace Server.Services.Communication
         public Queue<int> pendingClients = new();
 
         public IProtocolService udpHandler;
-        public TcpHandler tcpHandler;
+        public IProtocolService tcpHandler;
 
         public Store()
         {
             udpHandler = new UdpHandler(ServerDestination.Ip, ServerDestination.Port, this);
-            tcpHandler = new(ServerDestination.Ip, ServerDestination.Port, this);
+            tcpHandler = new TcpHandler(ServerDestination.Ip, ServerDestination.Port, this);
         }
     }
 }
