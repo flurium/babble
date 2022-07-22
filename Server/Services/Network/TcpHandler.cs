@@ -2,7 +2,6 @@
 using CrossLibrary.Network;
 using Newtonsoft.Json;
 using Server.Services.Communication;
-using Server.Services.Network.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,12 +10,11 @@ using System.Threading.Tasks;
 
 namespace Server.Services.Network
 {
-    internal class TcpHandler : ProtocolHandler
+    internal class TcpHandler : ProtocolHandler<Store>
     {
         private Dictionary<Command, Action<Transaction>> handlers;
-        private readonly Store store;
 
-        public TcpHandler(string ip, int port, Store store) : base(ip, port)
+        public TcpHandler(string ip, int port, Store store) : base(ip, port, store)
         {
             this.store = store;
             handlers = new()

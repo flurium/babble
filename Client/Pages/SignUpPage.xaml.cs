@@ -14,7 +14,7 @@ namespace Client.Pages
         private readonly CommunicationService cs;
         private Action<string> setTitle;
 
-        public SignUpPage(CommunicationService cs, Action<string> setTitle)
+        internal SignUpPage(CommunicationService cs, Action<string> setTitle)
         {
             InitializeComponent();
             this.cs = cs;

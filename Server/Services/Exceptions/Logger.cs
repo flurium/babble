@@ -2,7 +2,7 @@
 
 namespace Server.Services.Exceptions
 {
-    public static class Logger
+    internal static class Logger
     {
         static Logger()
         {

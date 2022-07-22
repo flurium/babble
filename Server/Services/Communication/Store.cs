@@ -1,4 +1,5 @@
 ﻿using CrossLibrary;
+using CrossLibrary.Network;
 using Server.Services.Database;
 using Server.Services.Network;
 using System.Net;
@@ -24,12 +25,12 @@ namespace Server.Services.Communication
         /// </summary>
         public Queue<int> pendingClients = new();
 
-        public UdpHandler udpHandler;
+        public IProtocolService udpHandler;
         public TcpHandler tcpHandler;
 
         public Store()
         {
-            udpHandler = new(ServerDestination.Ip, ServerDestination.Port, this);
+            udpHandler = new UdpHandler(ServerDestination.Ip, ServerDestination.Port, this);
             tcpHandler = new(ServerDestination.Ip, ServerDestination.Port, this);
         }
     }

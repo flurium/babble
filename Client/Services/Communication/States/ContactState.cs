@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Client.Services.Communication.States
 {
-    public class ContactState : State
+    internal class ContactState : State
     {
         public override void Leave(int id)
         {

@@ -4,18 +4,16 @@ using Newtonsoft.Json;
 using Server.Models;
 using Server.Services.Communication;
 using Server.Services.Exceptions;
-using Server.Services.Network.Base;
 using System.Net;
 using static CrossLibrary.Globals;
 
 namespace Server.Services.Network
 {
-    internal class UdpHandler : ProtocolHandler
+    internal class UdpHandler : ProtocolHandler<Store>
     {
         private Dictionary<Command, Action<Transaction>> handlers;
-        private readonly Store store;
 
-        public UdpHandler(string ip, int port, Store store) : base(ip, port)
+        public UdpHandler(string ip, int port, Store store) : base(ip, port, store)
         {
             this.store = store;
             handlers = new()
@@ -38,6 +36,25 @@ namespace Server.Services.Network
         }
 
         protected override ProtocolService CreateProtocolService(string ip, int port, Action<string> handle) => new UdpService(ip, port, handle);
+
+        private void Send(Transaction transaction)
+        {
+            //        // BAD: TO JSON 2 TIMES
+            //        // FIX !!!!!!!!!!!
+
+            string json = transaction.ToJson();
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine(json);
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            protocol.Send(transaction.ToStrBytes());
+        }
+
+        public void Send(Transaction transaction, IPEndPoint endPoint)
+        {
+            // BAD: TO JSON 2 TIMES
+            // FIX !!!!!!!!!!!
+            protocol.Send(transaction.ToStrBytes(), endPoint);
+        }
 
         protected override void Handle(string str)
         {
@@ -340,7 +357,7 @@ namespace Server.Services.Network
                     }
                     else if (message.Command == Command.SendFileMessageToContact)
                     {
-                        store.tcpHandler.Send(message, protocol.RemoteIpEndPoint);
+                        store.tcpHandler.Send(message.ToStrBytes(), protocol.RemoteIpEndPoint);
                     }
                 }
                 store.pending.Remove(user.Id);

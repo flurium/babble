@@ -4,7 +4,7 @@ using Server.Models;
 
 namespace Server.Services.Database
 {
-    public class DatabaseService : IUserService, IGroupService, IContactService
+    internal class DatabaseService : IUserService, IGroupService, IContactService
     {
         private readonly ContactService contactService;
         private readonly BabbleContext db;

@@ -1,9 +1,8 @@
 ﻿using Client.Models;
 using Client.Services.Communication.States;
-using Client.Services.Network.Base;
-using Client.Services.Network.Tcp;
-using Client.Services.Network.Udp;
+using Client.Services.Network;
 using CrossLibrary;
+using CrossLibrary.Network;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,7 +12,7 @@ using static CrossLibrary.Globals;
 
 namespace Client.Services.Communication
 {
-    public class CommunicationService
+    internal class CommunicationService
     {
         private State state;
 

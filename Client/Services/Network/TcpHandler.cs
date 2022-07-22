@@ -1,7 +1,5 @@
 ﻿using Client.Models;
 using Client.Services.Communication;
-using Client.Services.Network.Base;
-using Client.Services.Network.Tcp;
 using CrossLibrary;
 using CrossLibrary.Network;
 using Newtonsoft.Json;
@@ -10,9 +8,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 
-namespace Client.Services.Network.Tcp
+namespace Client.Services.Network
 {
-    internal class TcpHandler : ProtocolHandler
+    internal class TcpHandler : ProtocolHandler<Store>
     {
         private Dictionary<Command, Action<Transaction>> handlers;
         private readonly string downloadFolder = string.Format("{0}\\Downloads\\babble", Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));

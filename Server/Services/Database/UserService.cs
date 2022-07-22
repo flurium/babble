@@ -13,7 +13,7 @@ namespace Server.Services.Database
         Task RemoveUserAsync(int id);
     }
 
-    public class UserService : IUserService
+    internal class UserService : IUserService
     {
         private readonly BabbleContext db;
 

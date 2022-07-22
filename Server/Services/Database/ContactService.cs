@@ -5,7 +5,7 @@ using Server.Services.Exceptions;
 
 namespace Server.Services.Database
 {
-    public interface IContactService
+    internal interface IContactService
     {
         Task<Contact> AcceptInviteAsync(int id);
 
@@ -24,7 +24,7 @@ namespace Server.Services.Database
         Task RemoveContact(int uidFrom, int uidTo);
     }
 
-    public class ContactService : IContactService
+    internal class ContactService : IContactService
     {
         private readonly BabbleContext db;
 
