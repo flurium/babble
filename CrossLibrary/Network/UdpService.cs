@@ -74,11 +74,16 @@ namespace CrossLibrary.Network
             int bytes;
             byte[] data = new byte[bufferSize];
             StringBuilder builder = new();
-            do
-            {
-                bytes = socket.ReceiveFrom(data, ref remoteEndPoint);
-                builder.Append(CommunicationEncoding.GetString(data, 0, bytes));
-            } while (socket.Available > 0);
+
+            bytes = socket.ReceiveFrom(data, ref remoteEndPoint);
+            builder.Append(CommunicationEncoding.GetString(data, 0, bytes));
+
+            // while break program because json can't deserealize
+            //do
+            //{
+            //    bytes = socket.ReceiveFrom(data, ref remoteEndPoint);
+            //    builder.Append(CommunicationEncoding.GetString(data, 0, bytes));
+            //} while (socket.Available > 0);
 
             return builder.ToString();
         }

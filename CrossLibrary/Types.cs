@@ -3,6 +3,9 @@ using static CrossLibrary.Globals;
 
 namespace CrossLibrary
 {
+    /// <summary>
+    /// GetGroupAddress = array of adresses of clients in group
+    /// </summary>
     public enum Command
     {
         SignIn,
@@ -21,7 +24,8 @@ namespace CrossLibrary
         EnterGroup,
         Disconnect,
         SendFileMessageToContact, SendFileMessageToGroup,
-        GetFileMessageSize, GetClientAddress,
+        ContactFileSize, GroupFileSize,
+        GetClientAddress, GetGroupAddress,
         Exception
     }
 

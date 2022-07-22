@@ -21,7 +21,7 @@ namespace Client.Services.Communication.States
 
         public override void SendFileMessage(string messageStr, List<string> filePaths)
         {
-            SendFileMessage(messageStr, filePaths, ref store.contactMessages, Command.SendFileMessageToContact);
+            SendFileMessage(messageStr, filePaths, ref store.contactMessages, Command.SendFileMessageToContact, Command.ContactFileSize, store.user.Id);
         }
 
         public override void SendMessage(string messageStr)

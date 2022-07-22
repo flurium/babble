@@ -23,7 +23,7 @@ namespace Client.Services.Communication
         public Dictionary<int, LinkedList<Message>> contactMessages = new();
         public ObservableCollection<Message> currentMessages = new();
 
-        public byte[] pendingSendFile;
+        public Queue<byte[]> pendingFiles = new();
 
         // function from interface to confirm sign
         public Action<string> ConfirmSign { get; set; }

@@ -21,7 +21,7 @@ namespace Client.Services.Communication.States
 
         public override void SendFileMessage(string messageStr, List<string> filePaths)
         {
-            SendFileMessage(messageStr, filePaths, ref store.groupMessages, Command.SendFileMessageToGroup);
+            SendFileMessage(messageStr, filePaths, ref store.groupMessages, Command.SendFileMessageToGroup, Command.GroupFileSize, store.currentProp.Id);
         }
 
         public override void SendMessage(string messageStr)
