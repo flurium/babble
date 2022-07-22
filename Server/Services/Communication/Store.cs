@@ -1,6 +1,6 @@
 ﻿using CrossLibrary;
 using Server.Services.Database;
-using Server.Services.Network.Udp;
+using Server.Services.Network;
 using System.Net;
 using static CrossLibrary.Globals;
 
@@ -19,11 +19,18 @@ namespace Server.Services.Communication
         /// </summary>
         public Dictionary<int, LinkedList<Transaction>> pending = new();
 
+        /// <summary>
+        /// ЧМОСТРУКТУРА ЧМОСТРУКТУРА ЧМОСТРУКТУРА
+        /// </summary>
+        public Queue<int> pendingClients = new();
+
         public UdpHandler udpHandler;
+        public TcpHandler tcpHandler;
 
         public Store()
         {
             udpHandler = new(ServerDestination.Ip, ServerDestination.Port, this);
+            tcpHandler = new(ServerDestination.Ip, ServerDestination.Port, this);
         }
     }
 }

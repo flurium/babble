@@ -12,7 +12,7 @@ using System.Windows;
 
 namespace Client.Services.Network.Tcp
 {
-    public class TcpHandler : ProtocolHandler
+    internal class TcpHandler : ProtocolHandler
     {
         private Dictionary<Command, Action<Transaction>> handlers;
         private readonly string downloadFolder = string.Format("{0}\\Downloads\\babble", Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));

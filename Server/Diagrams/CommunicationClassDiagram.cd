@@ -29,7 +29,7 @@
     <Position X="5.5" Y="7.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAACAgAAAAAEAAAAAAAAAAQAIAIAAAAAAAAAA=</HashCode>
-      <FileName>Services\Network\Base\ProtocolHandler.cs</FileName>
+      <FileName>Services\Network\ProtocolHandler.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Field Name="protocol" />
@@ -37,11 +37,11 @@
   </Class>
   <Class Name="Server.Services.Network.Udp.UdpHandler">
     <Position X="3" Y="5" Width="1.5" />
-    <AssociationLine Name="store" Type="Server.Services.Communication.Store" FixedFromPoint="true" FixedToPoint="true">
+    <AssociationLine Name="store" Type="Server.Services.Communication.Store" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="4.5" Y="6.094" />
-        <Point X="4.875" Y="6.094" />
-        <Point X="4.875" Y="3.562" />
+        <Point X="5.915" Y="6.094" />
+        <Point X="5.915" Y="3.562" />
         <Point X="8" Y="3.562" />
       </Path>
     </AssociationLine>

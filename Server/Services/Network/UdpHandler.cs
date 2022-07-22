@@ -6,8 +6,9 @@ using Server.Services.Communication;
 using Server.Services.Exceptions;
 using Server.Services.Network.Base;
 using System.Net;
+using static CrossLibrary.Globals;
 
-namespace Server.Services.Network.Udp
+namespace Server.Services.Network
 {
     internal class UdpHandler : ProtocolHandler
     {
@@ -326,13 +327,21 @@ namespace Server.Services.Network.Udp
             };
             Send(res);
 
-            // send pending messages
             LinkedList<Transaction> messages;
+            // send pending messages
             if (store.pending.TryGetValue(user.Id, out messages))
             {
                 foreach (var message in messages)
                 {
-                    Send(message);
+                    // GetMessageFromContact
+                    if (message.Command == Command.GetMessageFromContact)
+                    {
+                        Send(message);
+                    }
+                    else if (message.Command == Command.SendFileMessageToContact)
+                    {
+                        store.tcpHandler.Send(message, protocol.RemoteIpEndPoint);
+                    }
                 }
                 store.pending.Remove(user.Id);
             }
@@ -362,8 +371,8 @@ namespace Server.Services.Network.Udp
                     Data = new
                     {
                         IsOk = true,
-                        Id = user.Id,
-                        Name = user.Name
+                        user.Id,
+                        user.Name
                     }
                 });
             }
@@ -375,7 +384,7 @@ namespace Server.Services.Network.Udp
                     Data = new
                     {
                         IsOk = false,
-                        Message = ex.Message
+                        ex.Message
                     }
                 });
             }
@@ -409,6 +418,17 @@ namespace Server.Services.Network.Udp
             }
             else
             {
+                // get file message to server
+
+                store.tcpHandler.UpdateBufferSize(size);
+                store.pendingClients.Enqueue(to);
+
+                // send server destination to clientFrom
+                Send(new Transaction
+                {
+                    Command = Command.GetClientAddress,
+                    Data = ServerDestination
+                });
             }
         }
     }

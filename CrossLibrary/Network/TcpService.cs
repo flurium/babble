@@ -6,9 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using static CrossLibrary.Globals;
 
-namespace Client.Services.Network.Tcp
+namespace CrossLibrary.Network
 {
-    internal class TcpService : ProtocolService
+    public class TcpService : ProtocolService
     {
         private Task listenTask;
         private TcpClient tcpClient;

@@ -26,7 +26,7 @@ namespace Server.Services.Network.Base
 
         protected abstract void Handle(string str);
 
-        protected void Send(Transaction transaction)
+        public void Send(Transaction transaction)
         {
             // BAD: TO JSON 2 TIMES
             // FIX !!!!!!!!!!!
@@ -38,14 +38,14 @@ namespace Server.Services.Network.Base
             protocol.Send(transaction.ToStrBytes());
         }
 
-        protected void Send(Transaction transaction, IPEndPoint endPoint)
+        public void Send(Transaction transaction, IPEndPoint endPoint)
         {
             // BAD: TO JSON 2 TIMES
             // FIX !!!!!!!!!!!
-            string json = transaction.ToJson();
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine(json);
-            Console.ForegroundColor = ConsoleColor.Cyan;
+            //string json = transaction.ToJson();
+            //Console.ForegroundColor = ConsoleColor.Yellow;
+            //Console.WriteLine(json);
+            //Console.ForegroundColor = ConsoleColor.Cyan;
 
             protocol.Send(transaction.ToStrBytes(), endPoint);
         }

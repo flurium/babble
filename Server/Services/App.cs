@@ -18,6 +18,9 @@ namespace Server.Services
 
         public void Run()
         {
+            // async task by default
+            store.tcpHandler.Start();
+
             store.udpHandler.Start();
         }
     }
