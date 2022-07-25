@@ -80,10 +80,9 @@ namespace Server.Services.Network
         /// <summary>
         /// Handler for accepting invite by user id.
         /// Send two responses
-        /// <see cref="DatabaseService.AcceptInviteAsync(int)">Appropriate method from DBService</see>
+        /// <see cref="Database.DatabaseService.AcceptInviteAsync(int)">Appropriate method from DBService</see>
         /// </summary>
         /// <param name="req">Request contains id</param>
-        /// <param name="ip">UserTo IP</param>
         private async void AcceptInviteHandle(Transaction req)
         {
             // ip = ip of user to
@@ -107,10 +106,9 @@ namespace Server.Services.Network
 
         /// <summary>
         /// Handler for creating new group by user id and name of group.
-        /// <see cref="DatabaseService.CreateGroupAsync(int, string)">Appropriate method from DBService</see>
+        /// <see cref="Database.DatabaseService.CreateGroupAsync(int, string)">Appropriate method from DBService</see>
         /// </summary>
         /// <param name="req">Request contains user id and new name of group</param>
-        /// <param name="ip">UserTo IP</param>
         private async void CreateGroupHandle(Transaction req)
         {
             int uid = req.Data.User;
@@ -121,10 +119,9 @@ namespace Server.Services.Network
 
         /// <summary>
         /// Handler for adding new user to existing group.
-        /// <see cref="DatabaseService.AddUserToGroupAsync(int, string)">Appropriate method from DBService</see>
+        /// <see cref="Database.DatabaseService.AddUserToGroupAsync(int, string)">Appropriate method from DBService</see>
         /// </summary>
         /// <param name="req">Request contains user id and name of group</param>
-        /// <param name="ip">UserTo IP</param>
         private async void EnterGroupHandle(Transaction req)
         {
             int uid = req.Data.User;
@@ -136,10 +133,9 @@ namespace Server.Services.Network
 
         /// <summary>
         /// Handler for removing user from existing group.
-        /// <see cref="DatabaseService.RemoveUserFromGroupAsync(int, string)">Appropriate method from DBService</see>
+        /// <see cref="Database.DatabaseService.RemoveUserFromGroupAsync(int, string)">Appropriate method from DBService</see>
         /// </summary>
         /// <param name="req">Request contains user id and name of group</param>
-        /// <param name="ip">UserTo IP</param>
         private async void LeaveGroupHandle(Transaction req)
         {
             int uid = req.Data.Id;
@@ -152,7 +148,6 @@ namespace Server.Services.Network
         /// Handler for disconnecting.
         /// </summary>
         /// <param name="req">Request contains user id</param>
-        /// <param name="ip">User IP</param>
         private void DisconnectHandle(Transaction req)
         {
             int id = req.Data.Id;
@@ -161,10 +156,9 @@ namespace Server.Services.Network
 
         /// <summary>
         /// Handler for removing contact from user's contact list.
-        /// <see cref="DatabaseService.RemoveContact(int, int)">Appropriate method from DBService</see>
+        /// <see cref="Database.DatabaseService.RemoveContact(int, int)">Appropriate method from DBService</see>
         /// </summary>
         /// <param name="req">Request contains two user ids</param>
-        /// <param name="ip">UserTo IP</param>
         private async void RemoveContactHandle(Transaction req)
         {
             int from = req.Data.From;
@@ -175,10 +169,9 @@ namespace Server.Services.Network
 
         /// <summary>
         /// Handler for renaming contact in user's contact list.
-        /// <see cref="DatabaseService.RenameContact(int, int, string)">Appropriate method from DBService</see>
+        /// <see cref="Database.DatabaseService.RenameContact(int, int, string)">Appropriate method from DBService</see>
         /// </summary>
         /// <param name="req">Request contains two user ids and new contact name</param>
-        /// <param name="ip">UserTo IP</param>
         private void RenameContactHandle(Transaction req)
         {
             int from = req.Data.From;
@@ -190,10 +183,9 @@ namespace Server.Services.Network
 
         /// <summary>
         /// Handler for renaming group in user's group list.
-        /// <see cref="DatabaseService.RenameGroupAsync(int, string)">Appropriate method from DBService</see>
+        /// <see cref="Database.DatabaseService.RenameGroupAsync(int, string)">Appropriate method from DBService</see>
         /// </summary>
         /// <param name="req">Request contains user id and new group name</param>
-        /// <param name="ip">UserTo IP</param>
         private async void RenameGroupHandle(Transaction req)
         {
             int id = req.Data.Id;
@@ -205,10 +197,9 @@ namespace Server.Services.Network
         /// <summary>
         /// Handler for sending invitations between users.
         /// Send two responses
-        /// <see cref="DatabaseService.SendInviteAsync(int, string)">Appropriate method from DBService</see>
+        /// <see cref="Database.DatabaseService.SendInviteAsync(int, string)">Appropriate method from DBService</see>
         /// </summary>
         /// <param name="req">Request contains two user ids</param>
-        /// <param name="ip">UserTo IP</param>
         private async void SendInviteHandle(Transaction req)
         {
             int from = req.Data.From;
@@ -230,7 +221,6 @@ namespace Server.Services.Network
         /// Handler for sending messages between users.
         /// </summary>
         /// <param name="req">Request contains two user ids and text message</param>
-        /// <param name="ip">UserTo IP</param>
         private void SendMessageToContactHandle(Transaction req)
         {
             int from = req.Data.From;
@@ -266,7 +256,6 @@ namespace Server.Services.Network
         /// Handler for sending messages from users to group.
         /// </summary>
         /// <param name="req">Request contains user id, group id and text message</param>
-        /// <param name="ip">UserTo IP</param>
         private void SendMessageToGroupHandle(Transaction req)
         {
             int from = req.Data.From;
@@ -321,13 +310,12 @@ namespace Server.Services.Network
         /// <summary>
         /// Login processing, password verifying.
         /// Sending data about contacts, groups and invites.
-        /// <see cref="DatabaseService.GetUser(string)">Appropriate method from DBService</see>
-        /// <see cref="DatabaseService.GetUserGroups(int)">Appropriate method from DBService</see>
-        /// <see cref="DatabaseService.GetInvites(int)">Appropriate method from DBService</see>
-        /// <see cref="DatabaseService.GetContacts(int)">Appropriate method from DBService</see>
+        /// <see cref="Database.DatabaseService.GetUser(string)">Appropriate method from DBService</see>
+        /// <see cref="Database.DatabaseService.GetUserGroups(int)">Appropriate method from DBService</see>
+        /// <see cref="Database.DatabaseService.GetInvites(int)">Appropriate method from DBService</see>
+        /// <see cref="Database.DatabaseService.GetContacts(int)">Appropriate method from DBService</see>
         /// </summary>
         /// <param name="req">Request contains user name and password</param>
-        /// <param name="ip">UserTo IP</param>
         private void SignInHandle(Transaction req)
         {
             string name = req.Data.Name;
@@ -399,10 +387,9 @@ namespace Server.Services.Network
         /// <summary>
         /// Processing a registration request.
         /// Creating new user.
-        /// <see cref="DatabaseService.AddUser(string, string)">Appropriate method from DBService</see>
+        /// <see cref="Database.DatabaseService.AddUser(string, string)">Appropriate method from DBService</see>
         /// </summary>
         /// <param name="req">Request contains new user name and password</param>
-        /// <param name="ip">UserTo IP</param>
         private void SignUpHandle(Transaction req)
         {
             try
