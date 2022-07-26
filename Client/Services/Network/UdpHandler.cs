@@ -229,28 +229,28 @@ namespace Client.Services.Network
                     Name = res.Data.User.Name
                 };
 
-                var resGroups = res.Data.Groups;
-                foreach (var group in resGroups)
-                {
-                    Prop groupProp = new() { Id = group.Id, Name = group.Name };
-                    store.groupMessages.Add(groupProp.Id, new());
-                    Application.Current.Dispatcher.Invoke(() => store.groups.Add(groupProp));
-                }
+                //var resGroups = res.Data.Groups;
+                //foreach (var group in resGroups)
+                //{
+                //    Prop groupProp = new() { Id = group.Id, Name = group.Name };
+                //    store.groupMessages.Add(groupProp.Id, new());
+                //    Application.Current.Dispatcher.Invoke(() => store.groups.Add(groupProp));
+                //}
 
-                var invites = res.Data.Invites;
-                foreach (var invite in invites)
-                {
-                    Prop inviteProp = new() { Id = invite.Id, Name = invite.Name };
-                    Application.Current.Dispatcher.Invoke(() => store.invites.Add(inviteProp));
-                }
+                //var invites = res.Data.Invites;
+                //foreach (var invite in invites)
+                //{
+                //    Prop inviteProp = new() { Id = invite.Id, Name = invite.Name };
+                //    Application.Current.Dispatcher.Invoke(() => store.invites.Add(inviteProp));
+                //}
 
-                var resContacts = res.Data.Contacts;
-                foreach (var contact in resContacts)
-                {
-                    Prop contactProp = new() { Id = contact.Id, Name = contact.Name };
-                    store.contactMessages.Add(contactProp.Id, new());
-                    Application.Current.Dispatcher.Invoke(() => store.contacts.Add(contactProp));
-                }
+                //var resContacts = res.Data.Contacts;
+                //foreach (var contact in resContacts)
+                //{
+                //    Prop contactProp = new() { Id = contact.Id, Name = contact.Name };
+                //    store.contactMessages.Add(contactProp.Id, new());
+                //    Application.Current.Dispatcher.Invoke(() => store.contacts.Add(contactProp));
+                //}
 
                 store.ConfirmSign(store.user.Name);
             }

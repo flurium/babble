@@ -345,12 +345,28 @@ namespace Server.Services.Network
                 {
                     IsOk = true,
                     User = new Prop { Id = user.Id, Name = user.Name },
-                    Groups = store.db.GetUserGroups(user.Id),
-                    Invites = store.db.GetInvites(user.Id),
-                    Contacts = store.db.GetContacts(user.Id)
+                    //Groups = store.db.GetUserGroups(user.Id),
+                    //Invites = store.db.GetInvites(user.Id),
+                    //Contacts = store.db.GetContacts(user.Id)
                 }
             };
             Send(res);
+
+            var groups = store.db.GetUserGroups(user.Id);
+            foreach (var group in groups)
+            {
+                Send(new Transaction { Command = Command.EnterGroup, Data = group });
+            }
+            var invites = store.db.GetInvites(user.Id);
+            foreach (var invite in invites)
+            {
+                Send(new Transaction { Command = Command.GetInvite, Data = invite });
+            }
+            var contacts = store.db.GetContacts(user.Id);
+            foreach (var contact in contacts)
+            {
+                Send(new Transaction { Command = Command.GetContact, Data = contact });
+            }
 
             LinkedList<Guid> guids;
             // send pending messages
