@@ -52,8 +52,6 @@ namespace Server.Services.Network
 
         public void Send(Transaction transaction, IPEndPoint endPoint)
         {
-            // BAD: TO JSON 2 TIMES
-            // FIX !!!!!!!!!!!
             protocol.Send(transaction.ToStrBytes(), endPoint);
         }
 
@@ -344,10 +342,7 @@ namespace Server.Services.Network
                 Data = new
                 {
                     IsOk = true,
-                    User = new Prop { Id = user.Id, Name = user.Name },
-                    //Groups = store.db.GetUserGroups(user.Id),
-                    //Invites = store.db.GetInvites(user.Id),
-                    //Contacts = store.db.GetContacts(user.Id)
+                    User = new Prop { Id = user.Id, Name = user.Name }
                 }
             };
             Send(res);
@@ -357,20 +352,21 @@ namespace Server.Services.Network
             {
                 Send(new Transaction { Command = Command.EnterGroup, Data = group });
             }
+
             var invites = store.db.GetInvites(user.Id);
             foreach (var invite in invites)
             {
                 Send(new Transaction { Command = Command.GetInvite, Data = invite });
             }
+
             var contacts = store.db.GetContacts(user.Id);
             foreach (var contact in contacts)
             {
                 Send(new Transaction { Command = Command.GetContact, Data = contact });
             }
 
-            LinkedList<Guid> guids;
             // send pending messages
-            if (store.pending.TryGetValue(user.Id, out guids))
+            if (store.pending.TryGetValue(user.Id, out LinkedList<Guid> guids))
             {
                 foreach (var guid in guids)
                 {

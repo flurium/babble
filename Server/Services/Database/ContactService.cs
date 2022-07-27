@@ -55,7 +55,7 @@ namespace Server.Services.Database
         public IEnumerable<Prop> GetContacts(int uid)
         {
             return db.Contacts
-               .Where(c => c.UserFromId == uid || c.UserToId == uid)
+               .Where(c => c.isAccepted && (c.UserFromId == uid || c.UserToId == uid))
                .Select(c => c.UserFromId == uid ?
                new Prop { Id = c.UserToId, Name = c.NameAtUserFrom }
                : new Prop { Id = c.UserFromId, Name = c.NameAtUserTo });
