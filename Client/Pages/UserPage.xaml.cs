@@ -21,7 +21,7 @@ namespace Client
         private List<string>? selectedFiles;
         private Action<string> setTitle;
 
-        public UserPage(CommunicationService cs, Action<string> setTitle)
+        internal UserPage(CommunicationService cs, Action<string> setTitle)
         {
             InitializeComponent();
             this.cs = cs;

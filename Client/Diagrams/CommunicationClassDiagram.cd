@@ -1,67 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Class Name="Client.Services.Network.Base.ProtocolHandler">
-    <Position X="11.25" Y="1.25" Width="2" />
-    <AssociationLine Name="protocolService" Type="Client.Services.Network.Base.ProtocolService" FixedToPoint="true">
-      <Path>
-        <Point X="13.25" Y="1.937" />
-        <Point X="16.25" Y="1.937" />
-      </Path>
-    </AssociationLine>
-    <AssociationLine Name="store" Type="Client.Services.Communication.Store" FixedFromPoint="true">
-      <Path>
-        <Point X="11.25" Y="1.938" />
-        <Point X="9" Y="1.938" />
-      </Path>
-    </AssociationLine>
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAACAgAAAAAEAACAAAAAAAAAIBJAAAAAAAAAA=</HashCode>
-      <FileName>Services\Network\Base\ProtocolHandler.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Field Name="protocolService" />
-      <Field Name="store" />
-    </ShowAsAssociation>
-    <Lollipop Position="0.2" />
-  </Class>
-  <Class Name="Client.Services.Network.Base.ProtocolService">
-    <Position X="16.25" Y="1.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAgAAACAoAEAAAEAAAAAAAAAAAAgQJAACBAAAAAA=</HashCode>
-      <FileName>Services\Network\Base\ProtocolService.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" />
-  </Class>
-  <Class Name="Client.Services.Network.Udp.UdpService">
-    <Position X="17.25" Y="6" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAABACAAAEAAAEAAAAAAAAAAAAAQIAEAAAAAAAA=</HashCode>
-      <FileName>Services\Network\Udp\UdpService.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Client.Services.Network.Tcp.TcpService">
-    <Position X="15.25" Y="6" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAACAAAEAAAEAAAAAAIAAAAAAUIAAAEAAAAAA=</HashCode>
-      <FileName>Services\Network\Tcp\TcpService.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Client.Services.TcpHandler">
-    <Position X="10.5" Y="5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAABAAAAAAAAABAAAAAAAAAQAAAAJAAAAAAABAAAA=</HashCode>
-      <FileName>Services\Network\Tcp\TcpHandler.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Client.Services.UdpHandler">
-    <Position X="12.5" Y="5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AgBABAAAIASgAgCAAAAgAQAAAABAAhJQSAAAAABAEBA=</HashCode>
-      <FileName>Services\Network\Udp\UdpHandler.cs</FileName>
-    </TypeIdentifier>
-  </Class>
   <Class Name="Client.Services.Communication.CommunicationService">
-    <Position X="7.25" Y="6.25" Width="2" />
+    <Position X="7.25" Y="5.75" Width="2" />
     <TypeIdentifier>
       <HashCode>BAwABkCAAIAACAABACAAAEAAAQEAgACFAAAAIAAAoAQ=</HashCode>
       <FileName>Services\Communication\CommunicationService.cs</FileName>
@@ -73,20 +13,24 @@
   <Class Name="Client.Services.Communication.Store">
     <Position X="7.5" Y="1.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>QAAAAAQMAAAAAAAEAQAAAQAAAABAAAAAAIAAAAZAAQA=</HashCode>
+      <HashCode>QAAAAAQMAAAAAAAEAQAAAQAAAABAAAAAAIAABAZAAQA=</HashCode>
       <FileName>Services\Communication\Store.cs</FileName>
     </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="tcpHandler" />
+      <Field Name="udpHandler" />
+    </ShowAsAssociation>
   </Class>
   <Class Name="Client.Services.Communication.States.State">
-    <Position X="2.75" Y="1.25" Width="2.5" />
+    <Position X="3" Y="1.25" Width="2.5" />
     <AssociationLine Name="store" Type="Client.Services.Communication.Store" FixedFromPoint="true">
       <Path>
-        <Point X="5.25" Y="1.938" />
+        <Point X="5.5" Y="1.938" />
         <Point X="7.5" Y="1.938" />
       </Path>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAEAAACAAAAAAAAEAAAABAAAAAAAAggA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAEAAAGAAAAAAAAEAAAABAAAAAAAAggA=</HashCode>
       <FileName>Services\Communication\States\State.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -94,25 +38,41 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="Client.Services.Communication.States.ContactState">
-    <Position X="2.25" Y="5" Width="1.5" />
+    <Position X="2.5" Y="5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAACAAAAAAAAEAAAAAAAAAAAAAggA=</HashCode>
       <FileName>Services\Communication\States\ContactState.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Client.Services.Communication.States.GroupState">
-    <Position X="4.25" Y="5" Width="1.5" />
+    <Position X="4.5" Y="5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAACAAAAAAAAEAAAAAAAAAAAAAggA=</HashCode>
       <FileName>Services\Communication\States\GroupState.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Interface Name="Client.Services.Network.Base.IProtocolService">
-    <Position X="14" Y="2.5" Width="1.5" />
+  <Class Name="CrossLibrary.Network.ProtocolHandler&lt;TStore&gt;">
+    <Position X="13" Y="1.25" Width="2" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Client.Services.Network.TcpHandler">
+    <Position X="13.25" Y="5.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAACAgAAAAAEAAAAAAAAAAAAAAJAAAAAAAAAA=</HashCode>
-      <FileName>Services\Network\Base\IProtocolService.cs</FileName>
+      <HashCode>AAAAABAAAAAAAAABAAAAAAAAAQAAAAJAAAAAAABAAAA=</HashCode>
+      <FileName>Services\Network\TcpHandler.cs</FileName>
     </TypeIdentifier>
+  </Class>
+  <Class Name="Client.Services.Network.UdpHandler">
+    <Position X="10.5" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgBABAAAIASgAgCAAAAgAQAAIABAAhJQSAAAAABAEBA=</HashCode>
+      <FileName>Services\Network\UdpHandler.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="CrossLibrary.Network.IProtocolService">
+    <Position X="10.5" Y="1.25" Width="1.5" />
+    <TypeIdentifier />
   </Interface>
   <Font Name="Segoe UI" Size="9" />
 </ClassDiagram>

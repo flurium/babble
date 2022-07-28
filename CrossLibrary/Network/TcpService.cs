@@ -1,32 +1,41 @@
-﻿using Client.Services.Network.Base;
-using System;
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using static CrossLibrary.Globals;
 
-namespace Client.Services.Network.Tcp
+namespace CrossLibrary.Network
 {
-    internal class TcpService : ProtocolService
+    public class TcpService : ProtocolService
     {
+        private Task listenTask;
         private TcpClient tcpClient;
         private TcpListener tcpListener;
         private NetworkStream tcpStream;
 
+        /// <param name="ip">Local ip</param>
         /// <param name="port">Local port</param>
         /// <param name="handle">Delegate to handle incomming message strings<</param>
-        public TcpService(int port, Action<string> handle) : base(port, handle) { }
+        public TcpService(string ip, int port, Action<string> handle) : base(ip, port, handle)
+        {
+        }
+
+        public override IPEndPoint RemoteIpEndPoint { get => (IPEndPoint)tcpClient.Client.RemoteEndPoint; }
 
         /// <summary>
         /// Connect to another client and send file message. Get nothing.
         /// </summary>
         public override void Send(byte[] data)
         {
+            Send(data, RemoteIpEndPoint);
+        }
+
+        public override void Send(byte[] data, IPEndPoint ip)
+        {
             TcpClient outcomeClient = new();
             NetworkStream? outcomeStream = null;
             try
             {
-                outcomeClient.Connect(destination.Ip, destination.Port);
+                outcomeClient.Connect(ip);
                 outcomeStream = outcomeClient.GetStream();
                 outcomeStream.Write(data, 0, data.Length);
             }
@@ -55,7 +64,7 @@ namespace Client.Services.Network.Tcp
         {
             try
             {
-                tcpListener = new(IPAddress.Any, port);
+                tcpListener = new(IPAddress.Any, localPort);
                 tcpListener.Start();
                 run = true;
 

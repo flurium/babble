@@ -2,14 +2,14 @@
 
 namespace Client.Models
 {
-    public struct Message
+    internal struct Message
     {
         public bool IsIncoming { get; set; }
         public string? Text { get; set; }
         public List<MessageFile>? Files { get; set; }
     }
 
-    public struct MessageFile
+    internal struct MessageFile
     {
         public static readonly List<string> ImageExtentions = new() { ".bmp", ".jpeg", ".png", ".tiff", ".gif", ".icon", ".jpg" };
         public string Path { get; set; }

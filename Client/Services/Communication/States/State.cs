@@ -13,7 +13,7 @@ namespace Client.Services.Communication.States
     /// because need access to private fields.
     /// Need access to: currentProp, contactMessages, groupMessages, contacts, groups, pendingSendFile
     /// </summary>
-    public abstract class State
+    internal abstract class State
     {
         protected Store store;
 
@@ -23,6 +23,10 @@ namespace Client.Services.Communication.States
         }
 
         // Base functions
+        protected void Send(Transaction transaction)
+        {
+            store.udpHandler.Send(transaction.ToStrBytes(), store.destination);
+        }
 
         /// <summary>
         /// Base rename function, must be called from children.
@@ -35,7 +39,7 @@ namespace Client.Services.Communication.States
         {
             Transaction req = new() { Command = command, Data = data };
 
-            store.udpHandler.Send(req.ToStrBytes());
+            Send(req);
 
             for (int i = 0; i < collection.Count; i++)
             {
@@ -64,10 +68,10 @@ namespace Client.Services.Communication.States
             store.currentMessages.Add(message);
 
             Transaction req = new() { Command = command, Data = new { To = store.currentProp.Id, From = store.user.Id, Message = message.Text } };
-            store.udpHandler.Send(req.ToStrBytes());
+            Send(req);
         }
 
-        protected void SendFileMessage(string messageStr, List<string> filePaths, ref Dictionary<int, LinkedList<Message>> dictionary, Command command)
+        protected void SendFileMessage(string messageStr, List<string> filePaths, ref Dictionary<int, LinkedList<Message>> dictionary, Command fileCommand, Command sizeCommand, int from)
         {
             Message message = new() { IsIncoming = false, Text = messageStr, Files = new() };
 
@@ -94,15 +98,15 @@ namespace Client.Services.Communication.States
             store.currentMessages.Add(message);
 
             // File request which will be sended to another client
-            Transaction fileReq = new() { Command = command, Data = new { From = store.user.Id, Message = message.Text, Files = files } };
+            Transaction fileReq = new() { Command = fileCommand, Data = new { From = from, Message = message.Text, Files = files } };
             string fileReqStr = JsonConvert.SerializeObject(fileReq);
             byte[] fileReqData = CommunicationEncoding.GetBytes(fileReqStr);
 
             // send data size
-            Transaction req = new() { Command = Command.GetFileMessageSize, Data = new { To = store.currentProp.Id, Size = fileReqData.LongLength } };
-            store.udpHandler.Send(req.ToStrBytes());
+            Transaction req = new() { Command = sizeCommand, Data = new { To = store.currentProp.Id, Size = fileReqData.LongLength, From = store.user.Id } };
+            Send(req);
 
-            store.pendingSendFile = fileReqData;
+            store.pendingFiles.Enqueue(fileReqData);
         }
 
         // abstracts (will be overrided)

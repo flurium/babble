@@ -3,12 +3,12 @@ using System.Collections.Generic;
 
 namespace Client.Services.Communication.States
 {
-    public class GroupState : State
+    internal class GroupState : State
     {
         public override void Leave(int id)
         {
             Transaction req = new() { Command = Command.LeaveGroup, Data = new { Group = id, User = store.user.Id } };
-            store.udpHandler.Send(req.ToStrBytes());
+            Send(req);
         }
 
         public override void RefreshMessages() => RefreshMessages(ref store.groupMessages);
@@ -21,7 +21,7 @@ namespace Client.Services.Communication.States
 
         public override void SendFileMessage(string messageStr, List<string> filePaths)
         {
-            SendFileMessage(messageStr, filePaths, ref store.groupMessages, Command.SendFileMessageToGroup);
+            SendFileMessage(messageStr, filePaths, ref store.groupMessages, Command.SendFileMessageToGroup, Command.GroupFileSize, store.currentProp.Id);
         }
 
         public override void SendMessage(string messageStr)

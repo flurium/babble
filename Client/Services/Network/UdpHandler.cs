@@ -1,43 +1,44 @@
 ﻿using Client.Models;
 using Client.Services.Communication;
-using Client.Services.Network.Base;
-using Client.Services.Network.Udp;
 using CrossLibrary;
+using CrossLibrary.Network;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Net;
 using System.Windows;
 
-namespace Client.Services
+namespace Client.Services.Network
 {
-    public class UdpHandler : ProtocolHandler
+    internal class UdpHandler : ProtocolHandler<Store>
     {
         private Dictionary<Command, Action<Transaction>> handlers;
 
-        public UdpHandler(int port, Store store) : base(port, store)
+        public UdpHandler(string ip, int port, Store store) : base(ip, port, store)
         {
             handlers = new()
-                {
-                    { Command.GetMessageFromContact, GetMessageFromContactHandle },
-                    { Command.GetMessageFromGroup, GetMessageFromGroupHandle },
-                    { Command.SignIn, SignInHandle },
-                    { Command.SignUp, SignUpHandle },
-                    { Command.SendInvite, SendInviteHandle },
-                    { Command.GetInvite, GetInviteHandle },
-                    { Command.GetContact, GetContactHandle },
-                    { Command.CreateGroup, CreateGroupHandle },
-                    { Command.EnterGroup, EnterGroupHandle },
-                    { Command.RemoveContact, RemoveContactHandle },
-                    { Command.RenameContact, RenameContactHandle },
-                    { Command.RenameGroup, RenameGroupHandle },
-                    { Command.GetFileMessageSize,  GetFileMessageSizeHandle },
-                    { Command.GetClientAddress, GetClientAddressHandle },
-                    { Command.Exception, ExceptionHandle }
-                };
+            {
+                { Command.GetMessageFromContact, GetMessageFromContactHandle },
+                { Command.GetMessageFromGroup, GetMessageFromGroupHandle },
+                { Command.SignIn, SignInHandle },
+                { Command.SignUp, SignUpHandle },
+                { Command.SendInvite, SendInviteHandle },
+                { Command.GetInvite, GetInviteHandle },
+                { Command.GetContact, GetContactHandle },
+                { Command.CreateGroup, CreateGroupHandle },
+                { Command.EnterGroup, EnterGroupHandle },
+                { Command.RemoveContact, RemoveContactHandle },
+                { Command.RenameContact, RenameContactHandle },
+                { Command.RenameGroup, RenameGroupHandle },
+                { Command.ContactFileSize,  GetFileMessageSizeHandle },
+                { Command.GetClientAddress, GetClientAddressHandle },
+                { Command.GetGroupAddress, GetGroupAddressHandle },
+                { Command.Exception, ExceptionHandle }
+            };
         }
 
-        protected override ProtocolService CreateProtocolService(int port, Action<string> handle) => new UdpService(port, handle);
+        protected override ProtocolService CreateProtocolService(string ip, int port, Action<string> handle) => new UdpService(ip, port, handle);
 
         protected override void Handle(string str)
         {
@@ -46,7 +47,7 @@ namespace Client.Services
                 Transaction res = JsonConvert.DeserializeObject<Transaction>(str);
                 handlers[res.Command](res);
             }
-            catch (Exception ex)
+            catch
             {
                 Application.Current.Dispatcher.Invoke(() => MessageBox.Show("Sorry, something went wrong"));
             }
@@ -68,13 +69,26 @@ namespace Client.Services
 
         private void GetClientAddressHandle(Transaction res)
         {
-            Destination destination = new()
+            string ip = res.Data.Ip;
+            int port = res.Data.Port;
+
+            //store.tcpHandler.UpdateDestination(destination);
+            store.tcpHandler.Send(store.pendingFiles.Dequeue(), new(IPAddress.Parse(ip), port));
+        }
+
+        private void GetGroupAddressHandle(Transaction transaction)
+        {
+            string ip;
+            int port;
+            byte[] file = store.pendingFiles.Dequeue();
+
+            var destinations = transaction.Data.Destinations;
+            foreach (var destination in destinations)
             {
-                Ip = res.Data.Ip,
-                Port = res.Data.Port
-            };
-            store.tcpHandler.UpdateDestination(destination);
-            store.tcpHandler.Send(store.pendingSendFile);
+                ip = destination.Ip;
+                port = destination.Port;
+                store.tcpHandler.Send(file, new(IPAddress.Parse(ip), port));
+            }
         }
 
         private void AddToCollection(Prop prop, ref ObservableCollection<Prop> collection) => collection.Add(prop);
@@ -214,29 +228,6 @@ namespace Client.Services
                     Id = res.Data.User.Id,
                     Name = res.Data.User.Name
                 };
-
-                var resGroups = res.Data.Groups;
-                foreach (var group in resGroups)
-                {
-                    Prop groupProp = new() { Id = group.Id, Name = group.Name };
-                    store.groupMessages.Add(groupProp.Id, new());
-                    Application.Current.Dispatcher.Invoke(() => store.groups.Add(groupProp));
-                }
-
-                var invites = res.Data.Invites;
-                foreach (var invite in invites)
-                {
-                    Prop inviteProp = new() { Id = invite.Id, Name = invite.Name };
-                    Application.Current.Dispatcher.Invoke(() => store.invites.Add(inviteProp));
-                }
-
-                var resContacts = res.Data.Contacts;
-                foreach (var contact in resContacts)
-                {
-                    Prop contactProp = new() { Id = contact.Id, Name = contact.Name };
-                    store.contactMessages.Add(contactProp.Id, new());
-                    Application.Current.Dispatcher.Invoke(() => store.contacts.Add(contactProp));
-                }
 
                 store.ConfirmSign(store.user.Name);
             }

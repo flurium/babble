@@ -7,7 +7,7 @@ namespace Server.Services.Database
 {
     // prefix 'u' means 'user'
 
-    public interface IGroupService
+    internal interface IGroupService
     {
         Task<Prop> CreateGroupAsync(int uid, string groupName);
 
@@ -22,7 +22,7 @@ namespace Server.Services.Database
         IEnumerable<int> GetGroupMembersIds(int id);
     }
 
-    public class GroupService : IGroupService
+    internal class GroupService : IGroupService
     {
         private readonly BabbleContext db;
 
