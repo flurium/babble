@@ -1,6 +1,6 @@
 <p align='center'>
   <img width='150' src='docs/img/IconLightApp.png'>
-  <h2 align='center'>BabbleUp</h2>
+  <h1 align='center'>BabbleUp</h1>
   <p align='center'>
     Make it possible to pay attention to the words of the interlocutor
   </p>
