@@ -5,6 +5,11 @@
     Make it possible to pay attention to the words of the interlocutor
   </p>
 </p>
-<hr>
+
+<p align='center'>
+  <a href="https://github.com/flurium/babble/issues">
+    <img alt="Issues" src="https://img.shields.io/github/issues/flurium/babble" />
+  </a>
+</p>
 
 UPD + TCP chat app written in C#. Hybrid network system is used (centralized and decentralized). Project [class diagrams](docs/diagrams/).
