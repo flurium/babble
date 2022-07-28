@@ -47,7 +47,7 @@ namespace Client.Services.Network
                 Transaction res = JsonConvert.DeserializeObject<Transaction>(str);
                 handlers[res.Command](res);
             }
-            catch (Exception ex)
+            catch
             {
                 Application.Current.Dispatcher.Invoke(() => MessageBox.Show("Sorry, something went wrong"));
             }
