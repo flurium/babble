@@ -1,6 +1,7 @@
 ﻿using Client.Models;
 using CrossLibrary;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -63,17 +64,23 @@ namespace Client.Services.Communication.States
 
         protected void SendMessage(string messageStr, ref Dictionary<int, LinkedList<Message>> dictionary, Command command)
         {
-            Message message = new() { Text = messageStr, IsIncoming = false };
+            DateTime time = DateTime.Now;
+            string timeStr = string.Format("{0}:{1}", time.Hour, time.Minute);
+
+            Message message = new() { Text = messageStr, IsIncoming = false, Time = timeStr };
             dictionary[store.currentProp.Id].AddLast(message);
             store.currentMessages.Add(message);
 
-            Transaction req = new() { Command = command, Data = new { To = store.currentProp.Id, From = store.user.Id, Message = message.Text } };
+            Transaction req = new() { Command = command, Data = new { To = store.currentProp.Id, From = store.user.Id, Message = message.Text, Time = time } };
             Send(req);
         }
 
         protected void SendFileMessage(string messageStr, List<string> filePaths, ref Dictionary<int, LinkedList<Message>> dictionary, Command fileCommand, Command sizeCommand, int from)
         {
-            Message message = new() { IsIncoming = false, Text = messageStr, Files = new() };
+            DateTime time = DateTime.Now;
+            string timeStr = string.Format("{0}:{1}", time.Hour, time.Minute);
+
+            Message message = new() { IsIncoming = false, Text = messageStr, Files = new(), Time = timeStr };
 
             LinkedList<object> files = new();
             foreach (string filePath in filePaths)
@@ -98,12 +105,12 @@ namespace Client.Services.Communication.States
             store.currentMessages.Add(message);
 
             // File request which will be sended to another client
-            Transaction fileReq = new() { Command = fileCommand, Data = new { From = from, Message = message.Text, Files = files } };
+            Transaction fileReq = new() { Command = fileCommand, Data = new { From = from, Message = message.Text, Files = files, Time = time } };
             string fileReqStr = JsonConvert.SerializeObject(fileReq);
             byte[] fileReqData = CommunicationEncoding.GetBytes(fileReqStr);
 
             // send data size
-            Transaction req = new() { Command = sizeCommand, Data = new { To = store.currentProp.Id, Size = fileReqData.LongLength, From = store.user.Id } };
+            Transaction req = new() { Command = sizeCommand, Data = new { To = store.currentProp.Id, Size = fileReqData.LongLength, From = store.user.Id, Time = time } };
             Send(req);
 
             store.pendingFiles.Enqueue(fileReqData);
