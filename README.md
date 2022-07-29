@@ -7,4 +7,6 @@
 </p>
 <hr>
 
-UPD + TCP chat app written in C#. Hybrid network system is used (centralized and decentralized). Project [class diagrams](docs/diagrams/).
+- UPD + TCP chat app written in C#.
+- Hybrid network system is used (centralized and decentralized).
+- Project [class diagrams](docs/classes.md).
