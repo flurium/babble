@@ -5,11 +5,11 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
-    <ApplicationIcon>IconLightApp.ico</ApplicationIcon>
+    <ApplicationIcon>Bubble.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="IconLightApp.ico" />
+    <Content Include="Bubble.ico" />
   </ItemGroup>
 
   <ItemGroup>
