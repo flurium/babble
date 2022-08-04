@@ -224,8 +224,9 @@ namespace Server.Services.Network
             int from = req.Data.From;
             int to = req.Data.To;
             string message = req.Data.Message;
+            DateTime time = req.Data.Time;
 
-            Transaction transaction = new() { Command = Command.GetMessageFromContact, Data = new { Id = from, Message = message } };
+            Transaction transaction = new() { Command = Command.GetMessageFromContact, Data = new { Id = from, Message = message, Time = time} };
 
             IPEndPoint toIp;
             if (store.clients.TryGetValue(to, out toIp!))
@@ -259,8 +260,9 @@ namespace Server.Services.Network
             int from = req.Data.From;
             int group = req.Data.To;
             string message = req.Data.Message;
+            DateTime time = req.Data.Time;
 
-            Transaction transaction = new() { Command = Command.GetMessageFromGroup, Data = new { Id = group, Message = message } };
+            Transaction transaction = new() { Command = Command.GetMessageFromGroup, Data = new { Id = group, Message = message, Time = time } };
 
             bool isGoToPending = false;
             Guid guid = Guid.NewGuid();
