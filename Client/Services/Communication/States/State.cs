@@ -105,7 +105,7 @@ namespace Client.Services.Communication.States
             store.currentMessages.Add(message);
 
             // File request which will be sended to another client
-            Transaction fileReq = new() { Command = fileCommand, Data = new { From = from, Message = message.Text, Files = files, Time = time } };
+            Transaction fileReq = new() { Command = fileCommand, Data = new { From = from, User = store.user.Name, Message = message.Text, Files = files, Time = time } };
             string fileReqStr = JsonConvert.SerializeObject(fileReq);
             byte[] fileReqData = CommunicationEncoding.GetBytes(fileReqStr);
 

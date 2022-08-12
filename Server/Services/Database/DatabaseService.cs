@@ -71,5 +71,7 @@ namespace Server.Services.Database
         public Task RenameGroupAsync(int id, string newName) => groupService.RenameGroupAsync(id, newName);
 
         public Task<Contact> SendInviteAsync(int uidFrom, string unameTo) => contactService.SendInviteAsync(uidFrom, unameTo);
+
+        public User? GetUser(int id) => userService.GetUser(id);
     }
 }

@@ -10,6 +10,8 @@ namespace Server.Services.Database
 
         User? GetUser(string name);
 
+        User? GetUser(int id);
+
         Task RemoveUserAsync(int id);
     }
 
@@ -30,10 +32,9 @@ namespace Server.Services.Database
             return user;
         }
 
-        public User? GetUser(string name)
-        {
-            return db.Users.FirstOrDefault(u => u.Name == name);
-        }
+        public User? GetUser(string name) => db.Users.FirstOrDefault(u => u.Name == name);
+
+        public User? GetUser(int id) => db.Users.FirstOrDefault(u => u.Id == id);
 
         public async Task RemoveUserAsync(int id)
         {

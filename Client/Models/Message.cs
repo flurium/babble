@@ -8,6 +8,7 @@ namespace Client.Models
         public string? Text { get; set; }
         public List<MessageFile>? Files { get; set; }
         public string Time { get; set; }
+        public string? User { get; set; }
     }
 
     internal struct MessageFile

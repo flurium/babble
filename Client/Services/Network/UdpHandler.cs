@@ -165,7 +165,8 @@ namespace Client.Services.Network
             int id = res.Data.Id;
             string text = res.Data.Message;
             DateTime time = res.Data.Time;
-            Message message = new() { Text = text, IsIncoming = true, Time = time.ToLocalTime().ToShortTimeString() };
+            string? user = res.Data.User;
+            Message message = new() { Text = text, IsIncoming = true, Time = time.ToLocalTime().ToShortTimeString(), User = user };
 
             foreach (var propMessage in dictionary)
             {

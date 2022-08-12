@@ -262,7 +262,17 @@ namespace Server.Services.Network
             string message = req.Data.Message;
             DateTime time = req.Data.Time;
 
-            Transaction transaction = new() { Command = Command.GetMessageFromGroup, Data = new { Id = group, Message = message, Time = time } };
+            Transaction transaction = new()
+            {
+                Command = Command.GetMessageFromGroup,
+                Data = new
+                {
+                    Id = group,
+                    Message = message,
+                    Time = time,
+                    User = store.db.GetUser(from)?.Name
+                }
+            };
 
             bool isGoToPending = false;
             Guid guid = Guid.NewGuid();

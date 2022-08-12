@@ -48,8 +48,10 @@ namespace Client.Services.Network
                 IsIncoming = true,
                 Text = req.Data.Message,
                 Files = new(),
-                Time = time.ToLocalTime().ToShortTimeString()
+                Time = time.ToLocalTime().ToShortTimeString(),
+                User = req.Data.User
             };
+
             int from = req.Data.From;
 
             var files = req.Data.Files;
