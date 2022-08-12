@@ -65,7 +65,7 @@ namespace Client.Services.Communication.States
         protected void SendMessage(string messageStr, ref Dictionary<int, LinkedList<Message>> dictionary, Command command)
         {
             DateTime time = DateTime.Now;
-            string timeStr = string.Format("{0}:{1}", time.Hour, time.Minute);
+            string timeStr = time.ToLocalTime().ToShortTimeString();
 
             Message message = new() { Text = messageStr, IsIncoming = false, Time = timeStr };
             dictionary[store.currentProp.Id].AddLast(message);

@@ -200,10 +200,12 @@
                                     <RowDefinition />
                                     <RowDefinition />
                                     <RowDefinition />
+                                    <RowDefinition />
                                 </Grid.RowDefinitions>
 
-                                <TextBlock Text="{Binding Text}" Padding="10" Grid.Row="0" Foreground="Black" TextWrapping="Wrap" />
-                                <ItemsControl  x:Name="Files" ItemsSource="{Binding Files}"  Grid.Row="1">
+                                <TextBlock Text="{Binding Time}" Grid.Row="0" Background="White" FontSize="10"  Foreground="Black" />
+                                <TextBlock Text="{Binding Text}" Padding="10" Grid.Row="1" Foreground="Black" TextWrapping="Wrap" />
+                                <ItemsControl  x:Name="Files" ItemsSource="{Binding Files}"  Grid.Row="2">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <Image Source="{Binding Path}" />
@@ -215,7 +217,7 @@
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
-                                <Button x:Name="ShowInFolderBtn" Click="ShowInFolderBtn_Click" Grid.Row="2">Show in folder</Button>
+                                <Button x:Name="ShowInFolderBtn" Click="ShowInFolderBtn_Click" Grid.Row="3">Show in folder</Button>
                             </Grid>
                             <DataTemplate.Triggers>
                                 <DataTrigger Binding="{Binding Files}" Value="{x:Null}">

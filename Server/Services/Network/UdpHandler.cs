@@ -226,7 +226,7 @@ namespace Server.Services.Network
             string message = req.Data.Message;
             DateTime time = req.Data.Time;
 
-            Transaction transaction = new() { Command = Command.GetMessageFromContact, Data = new { Id = from, Message = message, Time = time} };
+            Transaction transaction = new() { Command = Command.GetMessageFromContact, Data = new { Id = from, Message = message, Time = time } };
 
             IPEndPoint toIp;
             if (store.clients.TryGetValue(to, out toIp!))
