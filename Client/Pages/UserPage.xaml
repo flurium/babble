@@ -203,7 +203,7 @@
                                     <RowDefinition />
                                 </Grid.RowDefinitions>
 
-                                <TextBlock Text="{Binding Time}" Grid.Row="0" Background="White" FontSize="10"  Foreground="Black" />
+                                <TextBlock Text="{Binding Time}" Grid.Row="0" Background="White" FontSize="11"  Foreground="Black" />
                                 <TextBlock Text="{Binding Text}" Padding="10" Grid.Row="1" Foreground="Black" TextWrapping="Wrap" />
                                 <ItemsControl  x:Name="Files" ItemsSource="{Binding Files}"  Grid.Row="2">
                                     <ItemsControl.ItemTemplate>

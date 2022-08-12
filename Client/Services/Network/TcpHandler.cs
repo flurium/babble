@@ -42,11 +42,13 @@ namespace Client.Services.Network
 
         private void SendFileMessageHandle(Transaction req, ref Dictionary<int, LinkedList<Message>> dictionary)
         {
+            DateTime time = req.Data.Time;
             Message message = new()
             {
                 IsIncoming = true,
                 Text = req.Data.Message,
-                Files = new()
+                Files = new(),
+                Time = time.ToLocalTime().ToShortTimeString()
             };
             int from = req.Data.From;
 

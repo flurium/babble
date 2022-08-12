@@ -78,7 +78,7 @@ namespace Client.Services.Communication.States
         protected void SendFileMessage(string messageStr, List<string> filePaths, ref Dictionary<int, LinkedList<Message>> dictionary, Command fileCommand, Command sizeCommand, int from)
         {
             DateTime time = DateTime.Now;
-            string timeStr = string.Format("{0}:{1}", time.Hour, time.Minute);
+            string timeStr = time.ToLocalTime().ToShortTimeString();
 
             Message message = new() { IsIncoming = false, Text = messageStr, Files = new(), Time = timeStr };
 
