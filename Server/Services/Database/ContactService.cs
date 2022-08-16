@@ -9,6 +9,8 @@ namespace Server.Services.Database
     {
         Task<Contact> AcceptInviteAsync(int id);
 
+        Task DenyInvite(int id);
+
         Contact GetContact(int uidFrom, int uidTo);
 
         IEnumerable<Prop> GetContacts(int uid);
@@ -41,6 +43,14 @@ namespace Server.Services.Database
             contact.NameAtUserTo = contact.UserFrom.Name;
             await db.SaveChangesAsync();
             return contact;
+        }
+
+        public async Task DenyInvite(int id)
+        {
+            Contact? contact = db.Contacts.Find(id);
+            if (contact == null) throw new InfoException("Contact isn't found");
+            db.Contacts.Remove(contact);
+            await db.SaveChangesAsync();
         }
 
         public Contact GetContact(int uidFrom, int uidTo)

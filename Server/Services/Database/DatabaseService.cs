@@ -27,13 +27,7 @@ namespace Server.Services.Database
 
         public GroupService GroupService { get; set; }
 
-        public BabbleContext context
-        {
-            get => default;
-            set
-            {
-            }
-        }
+        public BabbleContext Context { get; set; }
 
         public Task<Contact> AcceptInviteAsync(int id) => contactService.AcceptInviteAsync(id);
 
@@ -73,5 +67,7 @@ namespace Server.Services.Database
         public Task<Contact> SendInviteAsync(int uidFrom, string unameTo) => contactService.SendInviteAsync(uidFrom, unameTo);
 
         public User? GetUser(int id) => userService.GetUser(id);
+
+        public Task DenyInvite(int id) => contactService.DenyInvite(id);
     }
 }
