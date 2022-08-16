@@ -14,6 +14,7 @@ namespace Client.Models
     internal struct MessageFile
     {
         public static readonly List<string> ImageExtentions = new() { ".bmp", ".jpeg", ".png", ".tiff", ".gif", ".icon", ".jpg" };
+        public string Name { get; set; }
         public string Path { get; set; }
         public bool IsImage { get; set; }
     }

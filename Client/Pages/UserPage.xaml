@@ -208,10 +208,20 @@
                                 <ItemsControl  x:Name="Files" ItemsSource="{Binding Files}"  Grid.Row="2">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
-                                            <Image Source="{Binding Path}" />
+                                            <Grid>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition />
+                                                    <RowDefinition />
+                                                </Grid.RowDefinitions>
+                                                <Image x:Name="Img" Source="{Binding Path}" Grid.Row="0" />
+                                                <TextBlock x:Name="FileName" Text="{Binding Name}" Grid.Row="1" Padding="10 0 10 2" Foreground="Black" />
+                                            </Grid>
                                             <DataTemplate.Triggers>
                                                 <DataTrigger Binding="{Binding IsImage}" Value="False">
-                                                    <Setter Property="Visibility"  Value="Collapsed" />
+                                                    <Setter TargetName="Img" Property="Visibility" Value="Collapsed" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsImage}" Value="True">
+                                                    <Setter TargetName="FileName" Property="Visibility" Value="Collapsed" />
                                                 </DataTrigger>
                                             </DataTemplate.Triggers>
                                         </DataTemplate>

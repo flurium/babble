@@ -71,7 +71,12 @@ namespace Client.Services.Network
                 byte[] data = file.Bytes;
                 File.WriteAllBytes(downloadPath, data);
 
-                message.Files.Add(new MessageFile { IsImage = file.IsImage, Path = downloadPath });
+                message.Files.Add(new MessageFile
+                {
+                    IsImage = file.IsImage,
+                    Path = downloadPath,
+                    Name = $"{name}{extention}"
+                });
             }
 
             foreach (var propMessage in dictionary)

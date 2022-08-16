@@ -87,17 +87,18 @@ namespace Client.Services.Communication.States
             {
                 string extention = Path.GetExtension(filePath).ToLower();
                 bool isImage = MessageFile.ImageExtentions.Contains(extention);
+                string fileName = Path.GetFileNameWithoutExtension(filePath);
 
                 byte[] data = File.ReadAllBytes(filePath);
                 files.AddLast(new
                 {
                     IsImage = isImage,
                     Bytes = data,
-                    Name = Path.GetFileNameWithoutExtension(filePath),
+                    Name = fileName,
                     Extention = extention
                 });
 
-                message.Files.Add(new MessageFile { IsImage = isImage, Path = filePath });
+                message.Files.Add(new MessageFile { IsImage = isImage, Path = filePath, Name = $"{fileName}{extention}" });
             }
 
             // add to ui
