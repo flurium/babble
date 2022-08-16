@@ -12,5 +12,5 @@
 ## Database
 ![](DatabaseClassDiagram.png)
 
-## Interfase
+## Interface
 ![](InterfaceClassDiagram.png)
