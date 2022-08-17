@@ -58,8 +58,6 @@ namespace Server.Services.Database
 
         public Task RemoveUserAsync(int id) => userService.RemoveUserAsync(id);
 
-        public Task RemoveUserFromGroupAsync(int uid, string groupName) => groupService.RemoveUserFromGroupAsync(uid, groupName);
-
         public Task RenameContact(int uidFrom, int uidTo, string newName) => contactService.RenameContact(uidFrom, uidTo, newName);
 
         public Task RenameGroupAsync(int id, string newName) => groupService.RenameGroupAsync(id, newName);
@@ -69,5 +67,7 @@ namespace Server.Services.Database
         public User? GetUser(int id) => userService.GetUser(id);
 
         public Task DenyInvite(int id) => contactService.DenyInvite(id);
+
+        public Task RemoveUserFromGroupAsync(int group, int user) => groupService.RemoveUserFromGroupAsync(group, user);
     }
 }

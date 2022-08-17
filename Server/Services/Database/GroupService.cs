@@ -15,7 +15,7 @@ namespace Server.Services.Database
 
         IEnumerable<Prop> GetUserGroups(int uid);
 
-        Task RemoveUserFromGroupAsync(int uid, string groupName);
+        Task RemoveUserFromGroupAsync(int group, int user);
 
         Task RenameGroupAsync(int id, string newName);
 
@@ -70,12 +70,12 @@ namespace Server.Services.Database
         }
 
         // TODO: add throw exeptions
-        public async Task RemoveUserFromGroupAsync(int uid, string groupName)
+        public async Task RemoveUserFromGroupAsync(int groupId, int userId)
         {
-            Group? group = db.Groups.FirstOrDefault(g => g.Name == groupName);
+            Group? group = db.Groups.Find(groupId);
             if (group != null)
             {
-                UserGroup? userGroup = db.UserGroups.FirstOrDefault(ug => ug.GroupId == group.Id && ug.UserId == uid);
+                UserGroup? userGroup = db.UserGroups.FirstOrDefault(ug => ug.GroupId == group.Id && ug.UserId == userId);
                 if (userGroup != null)
                 {
                     db.UserGroups.Remove(userGroup);

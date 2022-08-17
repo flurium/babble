@@ -136,10 +136,10 @@ namespace Server.Services.Network
         /// <param name="req">Request contains user id and name of group</param>
         private async void LeaveGroupHandle(Transaction req)
         {
-            int uid = req.Data.Id;
-            string name = req.Data.Name;
-            await store.db.RemoveUserFromGroupAsync(uid, name);
-            Send(new Transaction { Command = Command.LeaveGroup, Data = "Group is removed" });
+            int group = req.Data.To;
+            int user = req.Data.From;
+            await store.db.RemoveUserFromGroupAsync(group, user);
+            Send(new Transaction { Command = Command.LeaveGroup, Data = new { Id = group } });
         }
 
         /// <summary>
@@ -162,7 +162,7 @@ namespace Server.Services.Network
             int from = req.Data.From;
             int to = req.Data.To;
             await store.db.RemoveContact(from, to);
-            Send(new Transaction { Command = Command.RemoveContact, Data = "Contact is removed" });
+            Send(new Transaction { Command = Command.RemoveContact, Data = new { Id = to } });
         }
 
         /// <summary>

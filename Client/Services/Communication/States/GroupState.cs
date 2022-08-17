@@ -5,11 +5,7 @@ namespace Client.Services.Communication.States
 {
     internal class GroupState : State
     {
-        public override void Leave(int id)
-        {
-            Transaction req = new() { Command = Command.LeaveGroup, Data = new { Group = id, User = store.user.Id } };
-            Send(req);
-        }
+        public override void Leave() => Leave(Command.LeaveGroup);
 
         public override void RefreshMessages() => RefreshMessages(ref store.groupMessages);
 

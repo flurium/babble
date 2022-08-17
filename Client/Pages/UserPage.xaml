@@ -71,7 +71,6 @@
             <Button Grid.Column="2" Grid.Row="0" Click="GoToInvites_Click">Invites</Button>
 
             <TabControl x:Name="ListSection"  Padding="0" BorderThickness="0" Grid.Row="1" Grid.ColumnSpan="3">
-
                 <TabItem Visibility="Collapsed">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -136,26 +135,6 @@
                         </ListBox.ItemTemplate>
                     </ListBox>
                 </TabItem>
-
-                <TabItem Visibility="Collapsed">
-                    <Grid Grid.Column="0" Name="ChatOption">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="40" />
-                            <RowDefinition Height="40" />
-                            <RowDefinition Height="40" />
-                            <RowDefinition />
-                            <RowDefinition Height="40" />
-                            <RowDefinition Height="40" />
-                        </Grid.RowDefinitions>
-
-                        <Label Grid.Row="0">Input new name:</Label>
-                        <TextBox x:Name="ReNameInput" Style="{StaticResource Input}" Grid.Row="1" />
-                        <Button Content="Rename" x:Name="RenameChat" Grid.Row="2" />
-
-                        <Button Content="Return" x:Name="Return"  Grid.Row="4" Click="Return_Click" />
-                        <Button Content="Delete" x:Name="DeleteChat"  Grid.Row="5" Click="DeleteChat_Click" />
-                    </Grid>
-                </TabItem>
             </TabControl>
         </Grid>
 
@@ -166,6 +145,7 @@
                     <ColumnDefinition />
                     <ColumnDefinition Width="60" />
                     <ColumnDefinition Width="50" />
+                    <ColumnDefinition Width="50" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="40" />
@@ -173,13 +153,14 @@
                     <RowDefinition Height="auto" />
                     <RowDefinition Height="40" />
                 </Grid.RowDefinitions>
-                <Label Grid.ColumnSpan="3" Name="ChatName" MouseDoubleClick="ChatName_MouseDoubleClick"></Label>
-                <!--<Label Name="interlocutor" Grid.Column="0" Grid.Row="0" Content="interlocutor" />-->
 
-                <Button x:Name="OpenSettingsBtn" Grid.Column="2" Click="OpenSettingsBtn_Click" IsEnabled="False">Settings</Button>
-                <Button Grid.Column="3" Grid.Row="0" x:Name="Exit" Click="Exit_Click">Exit</Button>
+                <TextBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" x:Name="ChatName" Style="{StaticResource Input}" IsReadOnly="True"></TextBox>
 
-                <ListBox Grid.Row="1" Grid.ColumnSpan="4" x:Name="MessageList" ScrollViewer.CanContentScroll="False" ItemsSource="{Binding CurrentMessages}" ScrollViewer.ScrollChanged="MessageList_ScrollChanged" ScrollViewer.VerticalScrollBarVisibility="Auto"  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <Button x:Name="RenameBtn" Grid.Column="2" Click="RenameBtn_Click" IsEnabled="False">Rename</Button>
+                <Button x:Name="LeaveBtn" Grid.Column="3" Click="LeaveBtn_Click" IsEnabled="False">Leave</Button>
+                <Button Grid.Column="4" Grid.Row="0" x:Name="Exit" Click="Exit_Click">Exit</Button>
+
+                <ListBox Grid.Row="1" Grid.ColumnSpan="5" x:Name="MessageList" ScrollViewer.CanContentScroll="False" ItemsSource="{Binding CurrentMessages}" ScrollViewer.ScrollChanged="MessageList_ScrollChanged" ScrollViewer.VerticalScrollBarVisibility="Auto"  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                     <ListBox.ItemContainerStyle>
                         <Style TargetType="ListBoxItem">
                             <Setter Property="Margin" Value="100,5,5,0" />
@@ -247,8 +228,8 @@
                 <Button x:Name="UnselectFilesBtn" Click="UnselectFilesBtn_Click" Grid.Row="2" Grid.Column="3" Visibility="Collapsed" >Unselect</Button>
 
                 <Button Grid.Column="0" Grid.Row="3" Click="FileBth_Click">File</Button>
-                <TextBox KeyDown="MessageSend_KeyDown" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="3" x:Name="MessageWrite" IsEnabled="False" Style="{StaticResource Input}"></TextBox>
-                <Button Grid.Column="3" Grid.Row="3" x:Name="MessageSend" Click="MessageSend_Click">Send</Button>
+                <TextBox KeyDown="MessageSend_KeyDown" Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="3" x:Name="MessageWrite" IsEnabled="False" Style="{StaticResource Input}"></TextBox>
+                <Button Grid.Column="4" Grid.Row="3" x:Name="MessageSend" Click="MessageSend_Click">Send</Button>
             </Grid>
         </Border>
     </Grid>

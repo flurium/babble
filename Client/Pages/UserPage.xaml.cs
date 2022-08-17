@@ -38,19 +38,23 @@ namespace Client
                 cs.SetState(new ContactState());
                 cs.CurrentProp = contact;
 
-                OpenSettingsBtn.IsEnabled = true;
+                RenameBtn.IsEnabled = true;
+                LeaveBtn.IsEnabled = true;
                 MessageWrite.Focus();
-                ChatName.Content = contact.Name;
+                ChatName.Text = contact.Name;
                 MessageWrite.IsEnabled = true;
             }
         }
 
         private void ClearInputs()
         {
-            ChatName.Content = "";
+            ChatName.Text = "";
             InviteContact.Text = "";
             GroupInput.Text = "";
+            selectedFiles?.Clear();
             MessageWrite.Text = "";
+            RenameBtn.IsEnabled = false;
+            LeaveBtn.IsEnabled = false;
         }
 
         private void Exit_Click(object sender, RoutedEventArgs e)
@@ -85,9 +89,10 @@ namespace Client
                 cs.SetState(new GroupState());
                 cs.CurrentProp = group;
 
-                OpenSettingsBtn.IsEnabled = true;
+                RenameBtn.IsEnabled = true;
+                LeaveBtn.IsEnabled = true;
                 MessageWrite.Focus();
-                ChatName.Content = group.Name;
+                ChatName.Text = group.Name;
                 MessageWrite.IsEnabled = true;
             }
         }
@@ -116,8 +121,24 @@ namespace Client
 
         private void RenameBtn_Click(object sender, RoutedEventArgs e)
         {
-            string newName = ReNameInput.Text.Trim();
-            if (newName != "") cs.Rename(newName); ChatName.Content = newName;
+            ChatName.IsReadOnly = !ChatName.IsReadOnly;
+
+            if (ChatName.IsReadOnly)
+            {
+                RenameBtn.Content = "Rename";
+                ChatName.FontSize = 12;
+
+                // confirm rename
+                string newName = ChatName.Text.Trim();
+                if (newName != "") cs.Rename(newName);
+            }
+            else
+            {
+                RenameBtn.Content = "Confirm";
+                ChatName.FontSize = 14;
+                ChatName.Focus();
+                ChatName.CaretIndex = ChatName.Text.Length;
+            }
         }
 
         private void SendMessage()
@@ -138,6 +159,8 @@ namespace Client
             {
                 cs.SendInvite(inviteContact);
                 InviteContact.Text = "";
+                selectedFiles?.Clear();
+                SelectedFilesText.Text = "";
             }
         }
 
@@ -202,23 +225,9 @@ namespace Client
             UnselectFilesBtn.Visibility = Visibility.Collapsed;
         }
 
-        private void ChatName_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void LeaveBtn_Click(object sender, RoutedEventArgs e)
         {
-            ChatOption.Visibility = Visibility.Visible;
-        }
-
-        private void Return_Click(object sender, RoutedEventArgs e)
-        {
-            ChatOption.Visibility = Visibility.Hidden;
-        }
-
-        private void DeleteChat_Click(object sender, RoutedEventArgs e)
-        {
-        }
-
-        private void OpenSettingsBtn_Click(object sender, RoutedEventArgs e)
-        {
-            ListSection.SelectedIndex = 3;
+            cs.Leave();
         }
     }
 }

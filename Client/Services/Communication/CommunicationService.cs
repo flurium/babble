@@ -90,7 +90,7 @@ namespace Client.Services.Communication
             run = false;
         }
 
-        public void Leave(int id) => state.Leave(id);
+        public void Leave() => state.Leave();
 
         public void EnterGroup(string groupName)
         {

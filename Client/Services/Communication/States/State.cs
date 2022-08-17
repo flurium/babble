@@ -117,6 +117,11 @@ namespace Client.Services.Communication.States
             store.pendingFiles.Enqueue(fileReqData);
         }
 
+        protected void Leave(Command command)
+        {
+            Send(new() { Command = command, Data = new { To = store.currentProp.Id, From = store.user.Id } });
+        }
+
         // abstracts (will be overrided)
 
         public abstract void Rename(string newName);
@@ -124,7 +129,7 @@ namespace Client.Services.Communication.States
         /// <summary>
         /// Leave group or remove contact
         /// </summary>
-        public abstract void Leave(int id);
+        public abstract void Leave();
 
         public abstract void SendMessage(string messageStr);
 
