@@ -1,4 +1,5 @@
-﻿using Client.Services.Communication;
+﻿
+using Client.Services.Communication;
 using Client.Services.Communication.States;
 using CrossLibrary;
 using Microsoft.Win32;
@@ -27,6 +28,7 @@ namespace Client
             this.cs = cs;
             this.setTitle = setTitle;
             DataContext = cs;
+            UsersPages.SelectedIndex = 2;
         }
 
         private void ContactsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -68,13 +70,9 @@ namespace Client
             GroupsList.SelectedIndex = -1;
         }
 
-        private void GoToGroups_Click(object sender, RoutedEventArgs e)
-        {
-            ListSection.SelectedIndex = 1;
-            ContactsList.SelectedIndex = -1;
-        }
+        private void GoToGroups_Click(object sender, RoutedEventArgs e) => UsersPages.SelectedIndex = 0;
 
-        private void GoToInvites_Click(object sender, RoutedEventArgs e) => ListSection.SelectedIndex = 2;
+        private void GoToInvites_Click(object sender, RoutedEventArgs e) => UsersPages.SelectedIndex = 1;
 
         private void GroupsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -131,6 +129,7 @@ namespace Client
             }
         }
 
+        Димка, [15.08.2022 12:09]
         private void SendInviteBtn_Click(object sender, RoutedEventArgs e)
         {
             string inviteContact = InviteContact.Text.Trim();
@@ -219,6 +218,27 @@ namespace Client
         private void OpenSettingsBtn_Click(object sender, RoutedEventArgs e)
         {
             ListSection.SelectedIndex = 3;
+        }
+
+        private void Invite_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Invite_Click_1(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void CreateGroupBtn_Click_1(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+
+        private void Back_Click(object sender, RoutedEventArgs e)
+        {
+            UsersPages.SelectedIndex = 2;
         }
     }
 }
