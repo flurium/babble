@@ -15,6 +15,7 @@ namespace CrossLibrary
         SendInvite,
         GetInvite,
         AcceptInvite,
+        RejectInvite,
         GetContact,
         RenameContact,
         RemoveContact,
