@@ -127,9 +127,11 @@
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition />
                                         <ColumnDefinition Width="auto" />
+                                        <ColumnDefinition Width="auto" />
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="15,0,15,0" />
-                                    <Button Tag="{Binding Id}" Click="AcceptInviteBtn_Click" Grid.Column="1">Accept</Button>
+                                    <Button Tag="{Binding Id}" Click="RejectInviteBtn_Click" Grid.Column="1">Reject</Button>
+                                    <Button Tag="{Binding Id}" Click="AcceptInviteBtn_Click" Grid.Column="2">Accept</Button>
                                 </Grid>
                             </DataTemplate>
                         </ListBox.ItemTemplate>

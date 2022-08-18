@@ -181,6 +181,13 @@ namespace Client
             cs.AcceptInvite(id);
         }
 
+        private void RejectInviteBtn_Click(object sender, RoutedEventArgs e)
+        {
+            int id = (int)((Button)sender).Tag;
+
+            cs.RejectInvite(id);
+        }
+
         private void CreateGroupBtn_Click(object sender, RoutedEventArgs e)
         {
             string group = GroupInput.Text.Trim();

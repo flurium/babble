@@ -24,6 +24,7 @@ namespace Server.Services.Network
                 { Command.SendMessageToGroup, SendMessageToGroupHandle },
                 { Command.SendInvite, SendInviteHandle },
                 { Command.AcceptInvite, AcceptInviteHandle },
+                { Command.RejectInvite, RejectInviteHandle },
                 { Command.RenameContact, RenameContactHandle },
                 { Command.RemoveContact, RemoveContactHandle },
                 { Command.CreateGroup, CreateGroupHandle },
@@ -100,6 +101,19 @@ namespace Server.Services.Network
                   store.clients[contact.UserFromId]
                 );
             }
+        }
+
+        /// <summary>
+        /// Handler for rejecting invite by user id.
+        /// <see cref="Database.DatabaseService.DenyInvite(int)">Appropriate method from DBService</see>
+        /// </summary>
+        /// <param name="req">Request contains id</param>
+        private async void RejectInviteHandle(Transaction req)
+        {
+            // ip = ip of user to
+            // req.Data = contact id
+            int id = req.Data.Id;
+            await store.db.DenyInvite(id);
         }
 
         /// <summary>
