@@ -116,6 +116,8 @@ namespace Server.Services.Database
             User? userTo = db.Users.FirstOrDefault(u => u.Name == unameTo);
             if (userTo == null) throw new InfoException("User Not Found"); // user, who should accept invite, doesn't exist
 
+            if (userFrom.Id == userTo.Id) throw new InfoException("You can't send invite to yourself");
+
             if (db.Contacts.Any(c => c.UserFromId == userFrom.Id && c.UserToId == userTo.Id || c.UserFromId == userTo.Id && c.UserToId == userFrom.Id))
                 throw new InfoException("Invite Already Exist");
 
