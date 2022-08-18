@@ -118,8 +118,10 @@ namespace Server.Services.Database
 
             if (userFrom.Id == userTo.Id) throw new InfoException("You can't send invite to yourself");
 
-            if (db.Contacts.Any(c => c.UserFromId == userFrom.Id && c.UserToId == userTo.Id || c.UserFromId == userTo.Id && c.UserToId == userFrom.Id))
+            if (db.Contacts.Any(c => (c.UserFromId == userFrom.Id && c.UserToId == userTo.Id) || (c.UserFromId == userTo.Id && c.UserToId == userFrom.Id)))
+            {
                 throw new InfoException("Invite Already Exist");
+            }
 
             var contact = db.Contacts.Add(new Contact { UserFrom = userFrom, UserTo = userTo, isAccepted = false });
 
