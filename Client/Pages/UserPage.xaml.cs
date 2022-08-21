@@ -49,7 +49,6 @@ namespace Client
         private void ClearInputs()
         {
             ChatName.Text = "";
-            //InviteContact.Text = "";
             GroupInput.Text = "";
             selectedFiles?.Clear();
             MessageWrite.Text = "";
@@ -167,7 +166,6 @@ namespace Client
         //        SelectedFilesText.Text = "";
         //    }
         //}
-
         private void EnterGroupBtn_Click(object sender, RoutedEventArgs e)
         {
             string group = GroupInput.Text.Trim();
