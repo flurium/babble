@@ -8,74 +8,107 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Title="ConfirmPage">
     <Page.Resources>
+        <Style TargetType="Label">
+            <Setter Property="Background" Value="#f4f4f6" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="Width" Value="250" />
+            <Setter Property="Height" Value="40" />
+        </Style>
         <Style x:Key="Base" TargetType="Control">
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Width" Value="250" />
             <Setter Property="Height" Value="40" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
             <Setter Property="Padding" Value="15,0,15,0" />
-            <Setter Property="Margin" Value="0,0,0,10" />
         </Style>
         <Style x:Key="Input" TargetType="Control" BasedOn="{StaticResource Base}">
             <Setter Property="Background" Value="#f4f4f6" />
         </Style>
         <Style TargetType="Button" BasedOn="{StaticResource Base}">
             <Setter Property="Background" Value="#0bbffa" />
-            <Setter Property="Margin" Value="0,5,0,10" />
+        </Style>
+        <Style TargetType="ListBox">
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+        <Style TargetType="ListBoxItem">
+            <Setter Property="Height" Value="50" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border Name="Border" BorderThickness="0,0,0,1" BorderBrush="#f4f4f6">
+                            <ContentPresenter />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="#f4f4f6" />
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="#fcd1df" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
     </Page.Resources>
 
     <Grid Background="White">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
 
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition></ColumnDefinition>
-                    <ColumnDefinition></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-                <Grid Grid.Column="0">
-                    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="1*"/>
-                        <RowDefinition Height="1*"/>
-                        <RowDefinition Height="1*"/>
-                        <RowDefinition Height="1*"/>
-                        <RowDefinition Height="1*"/>
-                        <RowDefinition Height="1*"/>
-                        <RowDefinition Height="1*"/>
-                        <RowDefinition Height="1*"/>
-                        <RowDefinition Height="1*"/>
-                      </Grid.RowDefinitions>
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
 
-                        <TextBox x:Name="InviteContact" Style="{StaticResource Input}" Margin="0,5,0,5" Grid.Column="1" Grid.Row="1"  Padding="10,5,10,5"/>
+            <Button Name="Back" Click="Back_Click" Grid.Row="0">Back</Button>
 
-                        <Button Content="make new Invite" x:Name="Invite" Grid.Column="1" Grid.Row="4" Click="Invite_Click"  Padding="10,5,10,5" />
+            <Grid Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition Height="30" />
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
 
-                    <TextBox x:Name="GroupName" Style="{StaticResource Input}" Margin="0,5,0,5" Grid.Column="1" Grid.Row="6"  Padding="10,5,10,5"/>
+                <TextBox x:Name="InviteContact" Style="{StaticResource Input}" Grid.Row="0" />
+                <Button x:Name="Invite" Grid.Row="1" Click="Invite_Click">Send invite</Button>
 
-                    <Button Content="make new Group" x:Name="GroupMakeButton" Grid.Column="1" Grid.Row="7" Click="GroupMake_Click"  Padding="10,5,10,5" />
-                </Grid>
-                </Grid>
-                <Grid Grid.Column="1">
-                    <ListBox x:Name="InvitesList" Background="WhiteSmoke" ItemsSource="{Binding Invites}" Margin="0,0,0,0">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition />
-                                        <ColumnDefinition Width="auto" />
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="15,0,15,0" />
-                                    <Button Tag="{Binding Id}" Click="Button_Click" Grid.Column="1">Accept</Button>
-                                    
-                                    
-                                </Grid>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </Grid>
-                <Button Content="back " Name="Back" Margin="10,10,10,10" Padding="10,5,10,5" VerticalAlignment="Top" HorizontalAlignment="Left" Click="Back_Click">
-
-                </Button>
+                <TextBox x:Name="GroupName" Style="{StaticResource Input}" Grid.Row="3" />
+                <Button x:Name="GroupMakeButton" Grid.Row="4" Click="GroupMake_Click">Create new Group</Button>
             </Grid>
+        </Grid>
+
+        <Border Grid.Column="1"  BorderBrush="#abadb8" BorderThickness="1,0,0,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+
+                <Label Grid.Row="0">Invites</Label>
+
+                <ListBox x:Name="InvitesList" ItemsSource="{Binding Invites}" Grid.Row="1">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="15,0,15,0" />
+                                <Button Tag="{Binding Id}" Click="Button_Click" Grid.Column="1">Accept</Button>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
+        </Border>
     </Grid>
 </Page>
