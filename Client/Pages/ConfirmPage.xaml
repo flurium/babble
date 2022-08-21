@@ -75,13 +75,15 @@
                     <RowDefinition Height="30" />
                     <RowDefinition />
                     <RowDefinition />
+                    <RowDefinition />
                 </Grid.RowDefinitions>
 
-                <TextBox x:Name="InviteContact" Style="{StaticResource Input}" Grid.Row="0" />
-                <Button x:Name="Invite" Grid.Row="1" Click="Invite_Click">Send invite</Button>
+                <TextBox x:Name="InviteInput" Style="{StaticResource Input}" Grid.Row="0" />
+                <Button Grid.Row="1" Click="SendInvite_Click">Send invite</Button>
 
-                <TextBox x:Name="GroupName" Style="{StaticResource Input}" Grid.Row="3" />
-                <Button x:Name="GroupMakeButton" Grid.Row="4" Click="GroupMake_Click">Create new Group</Button>
+                <TextBox x:Name="GroupInput" Style="{StaticResource Input}" Grid.Row="3" />
+                <Button Grid.Row="4" Click="CreateGroup_Click">Create new Group</Button>
+                <Button Grid.Row="5" Click="EnterGroup_Click">Enter group</Button>
             </Grid>
         </Grid>
 
@@ -101,9 +103,12 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition />
                                     <ColumnDefinition Width="auto" />
+                                    <ColumnDefinition Width="auto" />
                                 </Grid.ColumnDefinitions>
+
                                 <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="15,0,15,0" />
-                                <Button Tag="{Binding Id}" Click="Button_Click" Grid.Column="1">Accept</Button>
+                                <Button Tag="{Binding Id}" Click="AcceptInvite_Click" Grid.Column="1">Accept</Button>
+                                <Button Tag="{Binding Id}" Click="RejectInvite_Click" Grid.Column="2">Reject</Button>
                             </Grid>
                         </DataTemplate>
                     </ListBox.ItemTemplate>

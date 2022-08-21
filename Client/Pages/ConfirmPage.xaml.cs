@@ -6,9 +6,12 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Windows;
+
 using System.Windows.Controls;
+
 using System.Windows.Input;
 using System.Windows.Navigation;
+
 namespace Client.Pages
 {
     /// <summary>
@@ -16,7 +19,6 @@ namespace Client.Pages
     /// </summary>
     public partial class ConfirmPage : Page
     {
-
         private readonly CommunicationService cs;
 
         internal ConfirmPage(CommunicationService cs, Action<string> setTitle)
@@ -25,24 +27,52 @@ namespace Client.Pages
             this.cs = cs;
         }
 
-        private void Back_Click(object sender, System.Windows.RoutedEventArgs e)
+        private void Back_Click(object sender, RoutedEventArgs e)
         {
             NavigationService.GoBack();
             NavigationService.RemoveBackEntry();
         }
 
-        private void Button_Click(object sender, System.Windows.RoutedEventArgs e)
+        private void AcceptInvite_Click(object sender, RoutedEventArgs e)
         {
-
+            int id = (int)((Button)sender).Tag;
+            cs.AcceptInvite(id);
         }
 
-        private void GroupMake_Click(object sender, System.Windows.RoutedEventArgs e)
+        private void CreateGroup_Click(object sender, RoutedEventArgs e)
         {
-
+            string group = GroupInput.Text.Trim();
+            if (group != "")
+            {
+                cs.CreateGroup(group);
+                GroupInput.Text = "";
+            }
         }
-        private void Invite_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
 
+        private void SendInvite_Click(object sender, RoutedEventArgs e)
+        {
+            string inviteContact = InviteInput.Text.Trim();
+            if (inviteContact != "")
+            {
+                cs.SendInvite(inviteContact);
+                InviteInput.Text = "";
+            }
+        }
+
+        private void RejectInvite_Click(object sender, RoutedEventArgs e)
+        {
+            int id = (int)((Button)sender).Tag;
+            cs.RejectInvite(id);
+        }
+
+        private void EnterGroup_Click(object sender, RoutedEventArgs e)
+        {
+            string group = GroupInput.Text.Trim();
+            if (group != "")
+            {
+                cs.EnterGroup(group);
+                GroupInput.Text = "";
+            }
         }
     }
 }

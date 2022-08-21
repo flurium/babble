@@ -111,9 +111,6 @@
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>
-                        <TextBox x:Name="GroupInput" Style="{StaticResource Input}" Grid.Row="1" Grid.Column="0"></TextBox>
-                        <Button Click="CreateGroupBtn_Click"  FontSize="12" Grid.Column="1" Grid.Row="1">Create</Button>
-                        <Button x:Name="EnterGroupBtn" Click="EnterGroupBtn_Click"  FontSize="12" Grid.Column="2" Grid.Row="1">Enter</Button>
                     </Grid>
                 </TabItem>
             </TabControl>

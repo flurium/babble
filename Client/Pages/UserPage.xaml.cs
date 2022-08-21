@@ -49,7 +49,6 @@ namespace Client
         private void ClearInputs()
         {
             ChatName.Text = "";
-            GroupInput.Text = "";
             selectedFiles?.Clear();
             MessageWrite.Text = "";
             RenameBtn.IsEnabled = false;
@@ -152,50 +151,6 @@ namespace Client
                 cs.SendMessage(message, selectedFiles);
                 MessageWrite.Text = "";
                 MessageWrite.Focus();
-            }
-        }
-
-        //private void SendInviteBtn_Click(object sender, RoutedEventArgs e)
-        //{
-        //    string inviteContact = InviteContact.Text.Trim();
-        //    if (inviteContact != "")
-        //    {
-        //        cs.SendInvite(inviteContact);
-        //        InviteContact.Text = "";
-        //        selectedFiles?.Clear();
-        //        SelectedFilesText.Text = "";
-        //    }
-        //}
-        private void EnterGroupBtn_Click(object sender, RoutedEventArgs e)
-        {
-            string group = GroupInput.Text.Trim();
-            if (group != "")
-            {
-                cs.EnterGroup(group);
-                GroupInput.Text = "";
-            }
-        }
-
-        private void AcceptInviteBtn_Click(object sender, RoutedEventArgs e)
-        {
-            int id = (int)((Button)sender).Tag;
-
-            cs.AcceptInvite(id);
-        }
-
-        private void RejectInviteBtn_Click(object sender, RoutedEventArgs e)
-        {
-            int id = (int)((Button)sender).Tag;
-
-            cs.RejectInvite(id);
-        }
-
-        private void CreateGroupBtn_Click(object sender, RoutedEventArgs e)
-        {
-            string group = GroupInput.Text.Trim();
-            if (group != "")
-            {
-                cs.CreateGroup(group);
             }
         }
 
