@@ -25,11 +25,12 @@ namespace Client.Pages
         {
             InitializeComponent();
             this.cs = cs;
+            DataContext = cs;
         }
 
         private void Back_Click(object sender, RoutedEventArgs e)
         {
-            NavigationService.GoBack();
+            NavigationService.Navigate(MainWindow.userChat);
             NavigationService.RemoveBackEntry();
         }
 

@@ -57,7 +57,7 @@ namespace Client
 
         private void Exit_Click(object sender, RoutedEventArgs e)
         {
-            NavigationService.GoBack();
+            NavigationService.Navigate(MainWindow.signIn);
             NavigationService.RemoveBackEntry();
             cs.Disconnect();
             ClearInputs();

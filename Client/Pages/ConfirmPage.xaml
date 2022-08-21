@@ -17,16 +17,24 @@
         </Style>
         <Style x:Key="Base" TargetType="Control">
             <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="Width" Value="250" />
-            <Setter Property="Height" Value="40" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
             <Setter Property="Padding" Value="15,0,15,0" />
         </Style>
         <Style x:Key="Input" TargetType="Control" BasedOn="{StaticResource Base}">
+            <Setter Property="Width" Value="250" />
+            <Setter Property="Height" Value="40" />
             <Setter Property="Background" Value="#f4f4f6" />
         </Style>
         <Style TargetType="Button" BasedOn="{StaticResource Base}">
+            <Setter Property="Width" Value="250" />
+            <Setter Property="Height" Value="40" />
+            <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Background" Value="#0bbffa" />
+        </Style>
+        <Style x:Key="ConcreteBtn" TargetType="Button" BasedOn="{StaticResource Base}">
+            <Setter Property="Background" Value="#0bbffa" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Height" Value="40" />
         </Style>
         <Style TargetType="ListBox">
             <Setter Property="BorderThickness" Value="0" />
@@ -40,14 +48,6 @@
                         <Border Name="Border" BorderThickness="0,0,0,1" BorderBrush="#f4f4f6">
                             <ContentPresenter />
                         </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Border" Property="Background" Value="#f4f4f6" />
-                            </Trigger>
-                            <Trigger Property="IsSelected" Value="True">
-                                <Setter TargetName="Border" Property="Background" Value="#fcd1df" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -107,8 +107,8 @@
                                 </Grid.ColumnDefinitions>
 
                                 <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="15,0,15,0" />
-                                <Button Tag="{Binding Id}" Click="AcceptInvite_Click" Grid.Column="1">Accept</Button>
-                                <Button Tag="{Binding Id}" Click="RejectInvite_Click" Grid.Column="2">Reject</Button>
+                                <Button Tag="{Binding Id}" Style="{StaticResource ConcreteBtn}" Click="AcceptInvite_Click" Grid.Column="1">Accept</Button>
+                                <Button Tag="{Binding Id}" Style="{StaticResource ConcreteBtn}" Click="RejectInvite_Click" Grid.Column="2">Reject</Button>
                             </Grid>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
