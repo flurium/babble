@@ -27,21 +27,55 @@
 
     <Grid Background="White">
 
-        <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
-            <Grid.RowDefinitions>
-                <RowDefinition />
-                <RowDefinition />
-                <RowDefinition />
-                <RowDefinition />
-                <RowDefinition />
-                <RowDefinition />
-            </Grid.RowDefinitions>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
+                      </Grid.RowDefinitions>
 
-            <Label  Content="Name"  Grid.Column="1" Grid.Row="0" />
+                        <TextBox x:Name="InviteContact" Style="{StaticResource Input}" Margin="0,5,0,5" Grid.Column="1" Grid.Row="1"  Padding="10,5,10,5"/>
 
-            <TextBox x:Name="NameInput" Style="{StaticResource Input}" Grid.Column="1" Grid.Row="1" />
-            <Label  Content="Password"  Grid.Column="1" Grid.Row="2" />
-            <PasswordBox x:Name="PasswordInput" Style="{StaticResource Input}" Grid.Column="1" Grid.Row="3" />
-        </Grid>
+                        <Button Content="make new Invite" x:Name="Invite" Grid.Column="1" Grid.Row="4" Click="Invite_Click"  Padding="10,5,10,5" />
+
+                    <TextBox x:Name="GroupName" Style="{StaticResource Input}" Margin="0,5,0,5" Grid.Column="1" Grid.Row="6"  Padding="10,5,10,5"/>
+
+                    <Button Content="make new Group" x:Name="GroupMakeButton" Grid.Column="1" Grid.Row="7" Click="GroupMake_Click"  Padding="10,5,10,5" />
+                </Grid>
+                </Grid>
+                <Grid Grid.Column="1">
+                    <ListBox x:Name="InvitesList" Background="WhiteSmoke" ItemsSource="{Binding Invites}" Margin="0,0,0,0">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="15,0,15,0" />
+                                    <Button Tag="{Binding Id}" Click="Button_Click" Grid.Column="1">Accept</Button>
+                                    
+                                    
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
+                <Button Content="back " Name="Back" Margin="10,10,10,10" Padding="10,5,10,5" VerticalAlignment="Top" HorizontalAlignment="Left" Click="Back_Click">
+
+                </Button>
+            </Grid>
     </Grid>
 </Page>

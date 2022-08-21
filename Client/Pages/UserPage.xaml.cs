@@ -78,7 +78,10 @@ namespace Client
             ContactsList.SelectedIndex = -1;
         }
 
-        private void GoToInvites_Click(object sender, RoutedEventArgs e) => ListSection.SelectedIndex = 2;
+        private void GoToInvites_Click(object sender, RoutedEventArgs e) {
+            NavigationService.Navigate(MainWindow.confirm);
+            NavigationService.RemoveBackEntry();
+        }
 
         private void GroupsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {

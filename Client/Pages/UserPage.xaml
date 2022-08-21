@@ -4,7 +4,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       mc:Ignorable="d"
-      Title="UserPage">
+      Title="UserPage" d:DesignHeight="193.638">
 
     <Page.Resources>
         <Style TargetType="Label">
@@ -89,8 +89,6 @@
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>
-                        <TextBox x:Name="InviteContact" Style="{StaticResource Input}" Grid.Row="1" Grid.Column="0"></TextBox>
-                        <Button x:Name="SendInviteBtn" Click="SendInviteBtn_Click" FontSize="16" Grid.Column="1" Grid.Row="1">Invite</Button>
                     </Grid>
                 </TabItem>
 
@@ -119,24 +117,7 @@
                     </Grid>
                 </TabItem>
 
-                <TabItem Visibility="Collapsed">
-                    <ListBox x:Name="InvitesList" ItemsSource="{Binding Invites}" Margin="0,-3,-2,0">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition />
-                                        <ColumnDefinition Width="auto" />
-                                        <ColumnDefinition Width="auto" />
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="15,0,15,0" />
-                                    <Button Tag="{Binding Id}" Click="RejectInviteBtn_Click" Grid.Column="1">Reject</Button>
-                                    <Button Tag="{Binding Id}" Click="AcceptInviteBtn_Click" Grid.Column="2">Accept</Button>
-                                </Grid>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </TabItem>
+               
             </TabControl>
         </Grid>
 
