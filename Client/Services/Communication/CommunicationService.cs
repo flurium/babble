@@ -70,6 +70,21 @@ namespace Client.Services.Communication
             }
         }
 
+        public void RejectInvite(int id)
+        {
+            Transaction req = new() { Command = Command.RejectInvite, Data = new { Id = id } };
+            SendData(req);
+
+            foreach (var invite in Invites)
+            {
+                if (invite.Id == id)
+                {
+                    Invites.Remove(invite);
+                    return;
+                }
+            }
+        }
+
         public void CreateGroup(string groupName)
         {
             Transaction req = new() { Command = Command.CreateGroup, Data = new { Group = groupName, User = store.user.Id } };
@@ -90,7 +105,7 @@ namespace Client.Services.Communication
             run = false;
         }
 
-        public void Leave(int id) => state.Leave(id);
+        public void Leave() => state.Leave();
 
         public void EnterGroup(string groupName)
         {

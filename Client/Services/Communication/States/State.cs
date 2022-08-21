@@ -65,7 +65,7 @@ namespace Client.Services.Communication.States
         protected void SendMessage(string messageStr, ref Dictionary<int, LinkedList<Message>> dictionary, Command command)
         {
             DateTime time = DateTime.Now;
-            string timeStr = string.Format("{0}:{1}", time.Hour, time.Minute);
+            string timeStr = time.ToLocalTime().ToShortTimeString();
 
             Message message = new() { Text = messageStr, IsIncoming = false, Time = timeStr };
             dictionary[store.currentProp.Id].AddLast(message);
@@ -78,7 +78,7 @@ namespace Client.Services.Communication.States
         protected void SendFileMessage(string messageStr, List<string> filePaths, ref Dictionary<int, LinkedList<Message>> dictionary, Command fileCommand, Command sizeCommand, int from)
         {
             DateTime time = DateTime.Now;
-            string timeStr = string.Format("{0}:{1}", time.Hour, time.Minute);
+            string timeStr = time.ToLocalTime().ToShortTimeString();
 
             Message message = new() { IsIncoming = false, Text = messageStr, Files = new(), Time = timeStr };
 
@@ -87,17 +87,18 @@ namespace Client.Services.Communication.States
             {
                 string extention = Path.GetExtension(filePath).ToLower();
                 bool isImage = MessageFile.ImageExtentions.Contains(extention);
+                string fileName = Path.GetFileNameWithoutExtension(filePath);
 
                 byte[] data = File.ReadAllBytes(filePath);
                 files.AddLast(new
                 {
                     IsImage = isImage,
                     Bytes = data,
-                    Name = Path.GetFileNameWithoutExtension(filePath),
+                    Name = fileName,
                     Extention = extention
                 });
 
-                message.Files.Add(new MessageFile { IsImage = isImage, Path = filePath });
+                message.Files.Add(new MessageFile { IsImage = isImage, Path = filePath, Name = $"{fileName}{extention}" });
             }
 
             // add to ui
@@ -105,7 +106,7 @@ namespace Client.Services.Communication.States
             store.currentMessages.Add(message);
 
             // File request which will be sended to another client
-            Transaction fileReq = new() { Command = fileCommand, Data = new { From = from, Message = message.Text, Files = files, Time = time } };
+            Transaction fileReq = new() { Command = fileCommand, Data = new { From = from, User = store.user.Name, Message = message.Text, Files = files, Time = time } };
             string fileReqStr = JsonConvert.SerializeObject(fileReq);
             byte[] fileReqData = CommunicationEncoding.GetBytes(fileReqStr);
 
@@ -116,6 +117,11 @@ namespace Client.Services.Communication.States
             store.pendingFiles.Enqueue(fileReqData);
         }
 
+        protected void Leave(Command command)
+        {
+            Send(new() { Command = command, Data = new { To = store.currentProp.Id, From = store.user.Id } });
+        }
+
         // abstracts (will be overrided)
 
         public abstract void Rename(string newName);
@@ -123,7 +129,7 @@ namespace Client.Services.Communication.States
         /// <summary>
         /// Leave group or remove contact
         /// </summary>
-        public abstract void Leave(int id);
+        public abstract void Leave();
 
         public abstract void SendMessage(string messageStr);
 

@@ -5,11 +5,7 @@ namespace Client.Services.Communication.States
 {
     internal class ContactState : State
     {
-        public override void Leave(int id)
-        {
-            Transaction req = new() { Command = Command.RemoveContact, Data = { To = id, From = store.user.Id } };
-            Send(req);
-        }
+        public override void Leave() => Leave(Command.RemoveContact);
 
         public override void RefreshMessages() => RefreshMessages(ref store.contactMessages);
 

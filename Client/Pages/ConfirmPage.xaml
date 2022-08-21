@@ -8,40 +8,112 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Title="ConfirmPage">
     <Page.Resources>
-        <Style x:Key="Base" TargetType="Control">
-            <Setter Property="BorderThickness" Value="0" />
+        <Style TargetType="Label">
+            <Setter Property="Background" Value="#f4f4f6" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
             <Setter Property="Width" Value="250" />
             <Setter Property="Height" Value="40" />
+        </Style>
+        <Style x:Key="Base" TargetType="Control">
+            <Setter Property="BorderThickness" Value="0" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
             <Setter Property="Padding" Value="15,0,15,0" />
-            <Setter Property="Margin" Value="0,0,0,10" />
         </Style>
         <Style x:Key="Input" TargetType="Control" BasedOn="{StaticResource Base}">
+            <Setter Property="Width" Value="250" />
+            <Setter Property="Height" Value="40" />
             <Setter Property="Background" Value="#f4f4f6" />
         </Style>
         <Style TargetType="Button" BasedOn="{StaticResource Base}">
+            <Setter Property="Width" Value="250" />
+            <Setter Property="Height" Value="40" />
+            <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Background" Value="#0bbffa" />
-            <Setter Property="Margin" Value="0,5,0,10" />
+        </Style>
+        <Style x:Key="ConcreteBtn" TargetType="Button" BasedOn="{StaticResource Base}">
+            <Setter Property="Background" Value="#0bbffa" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Height" Value="40" />
+        </Style>
+        <Style TargetType="ListBox">
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+        <Style TargetType="ListBoxItem">
+            <Setter Property="Height" Value="50" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border Name="Border" BorderThickness="0,0,0,1" BorderBrush="#f4f4f6">
+                            <ContentPresenter />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
     </Page.Resources>
 
     <Grid Background="White">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
 
-        <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Grid Grid.Column="0">
             <Grid.RowDefinitions>
-                <RowDefinition />
-                <RowDefinition />
-                <RowDefinition />
-                <RowDefinition />
-                <RowDefinition />
+                <RowDefinition Height="auto" />
                 <RowDefinition />
             </Grid.RowDefinitions>
 
-            <Label  Content="Name"  Grid.Column="1" Grid.Row="0" />
+            <Button Name="Back" Click="Back_Click" Grid.Row="0">Back</Button>
 
-            <TextBox x:Name="NameInput" Style="{StaticResource Input}" Grid.Column="1" Grid.Row="1" />
-            <Label  Content="Password"  Grid.Column="1" Grid.Row="2" />
-            <PasswordBox x:Name="PasswordInput" Style="{StaticResource Input}" Grid.Column="1" Grid.Row="3" />
+            <Grid Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition Height="30" />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+
+                <TextBox x:Name="InviteInput" Style="{StaticResource Input}" Grid.Row="0" />
+                <Button Grid.Row="1" Click="SendInvite_Click">Send invite</Button>
+
+                <TextBox x:Name="GroupInput" Style="{StaticResource Input}" Grid.Row="3" />
+                <Button Grid.Row="4" Click="CreateGroup_Click">Create new Group</Button>
+                <Button Grid.Row="5" Click="EnterGroup_Click">Enter group</Button>
+            </Grid>
         </Grid>
+
+        <Border Grid.Column="1"  BorderBrush="#abadb8" BorderThickness="1,0,0,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+
+                <Label Grid.Row="0">Invites</Label>
+
+                <ListBox x:Name="InvitesList" ItemsSource="{Binding Invites}" Grid.Row="1">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="auto" />
+                                    <ColumnDefinition Width="auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="15,0,15,0" />
+                                <Button Tag="{Binding Id}" Style="{StaticResource ConcreteBtn}" Click="AcceptInvite_Click" Grid.Column="1">Accept</Button>
+                                <Button Tag="{Binding Id}" Style="{StaticResource ConcreteBtn}" Click="RejectInvite_Click" Grid.Column="2">Reject</Button>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
+        </Border>
     </Grid>
 </Page>

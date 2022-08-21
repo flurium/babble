@@ -42,12 +42,16 @@ namespace Client.Services.Network
 
         private void SendFileMessageHandle(Transaction req, ref Dictionary<int, LinkedList<Message>> dictionary)
         {
+            DateTime time = req.Data.Time;
             Message message = new()
             {
                 IsIncoming = true,
                 Text = req.Data.Message,
-                Files = new()
+                Files = new(),
+                Time = time.ToLocalTime().ToShortTimeString(),
+                User = req.Data.User
             };
+
             int from = req.Data.From;
 
             var files = req.Data.Files;
@@ -67,7 +71,12 @@ namespace Client.Services.Network
                 byte[] data = file.Bytes;
                 File.WriteAllBytes(downloadPath, data);
 
-                message.Files.Add(new MessageFile { IsImage = file.IsImage, Path = downloadPath });
+                message.Files.Add(new MessageFile
+                {
+                    IsImage = file.IsImage,
+                    Path = downloadPath,
+                    Name = $"{name}{extention}"
+                });
             }
 
             foreach (var propMessage in dictionary)

@@ -34,7 +34,8 @@ namespace Client.Services.Network
                 { Command.ContactFileSize,  GetFileMessageSizeHandle },
                 { Command.GetClientAddress, GetClientAddressHandle },
                 { Command.GetGroupAddress, GetGroupAddressHandle },
-                { Command.Exception, ExceptionHandle }
+                { Command.Exception, ExceptionHandle },
+                { Command.LeaveGroup, LeaveGroupHandle }
             };
         }
 
@@ -59,6 +60,20 @@ namespace Client.Services.Network
         {
             string message = (string)tran.Data;
             Application.Current.Dispatcher.Invoke(() => MessageBox.Show(message));
+        }
+
+        private void LeaveGroupHandle(Transaction transaction)
+        {
+            int id = transaction.Data.Id;
+            foreach (var group in store.groups)
+            {
+                if (group.Id == id)
+                {
+                    Application.Current.Dispatcher.Invoke(() => store.groups.Remove(group));
+                    store.groupMessages.Remove(id);
+                    break;
+                }
+            }
         }
 
         private void GetFileMessageSizeHandle(Transaction res)
@@ -122,22 +137,16 @@ namespace Client.Services.Network
         /// <param name="res"></param>
         private void RemoveContactHandle(Transaction res)
         {
-            Prop contact = new()
+            int id = res.Data.Id;
+            foreach (var contact in store.contacts)
             {
-                Id = res.Data.Id
-            };
-
-            foreach (var cont in store.contacts)
-            {
-                if (cont.Id == contact.Id)
+                if (contact.Id == id)
                 {
-                    store.contacts.Remove(cont);
-                    store.contactMessages.Remove(cont.Id);
+                    Application.Current.Dispatcher.Invoke(() => store.contacts.Remove(contact));
+                    store.contactMessages.Remove(contact.Id);
                     break;
                 }
             }
-
-            Application.Current.Dispatcher.Invoke(() => store.contacts.Add(contact));
         }
 
         /// <summary>
@@ -164,7 +173,9 @@ namespace Client.Services.Network
         {
             int id = res.Data.Id;
             string text = res.Data.Message;
-            Message message = new() { Text = text, IsIncoming = true };
+            DateTime time = res.Data.Time;
+            string? user = res.Data.User;
+            Message message = new() { Text = text, IsIncoming = true, Time = time.ToLocalTime().ToShortTimeString(), User = user };
 
             foreach (var propMessage in dictionary)
             {

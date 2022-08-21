@@ -13,6 +13,8 @@ namespace Server.Services.Network
     {
         private Dictionary<Command, Action<Transaction>> handlers;
 
+        private Dictionary<Command, Func<Transaction, Task>> asyncHandlers;
+
         public UdpHandler(string ip, int port, Store store) : base(ip, port, store)
         {
             this.store = store;
@@ -22,17 +24,22 @@ namespace Server.Services.Network
                 { Command.SignUp, SignUpHandle },
                 { Command.SendMessageToContact, SendMessageToContactHandle },
                 { Command.SendMessageToGroup, SendMessageToGroupHandle },
+                { Command.RenameContact, RenameContactHandle },
+                { Command.Disconnect, DisconnectHandle },
+                { Command.ContactFileSize, ContactFileSizeHandle },
+                { Command.GroupFileSize, GroupFileSizeHandle },
+            };
+
+            asyncHandlers = new()
+            {
                 { Command.SendInvite, SendInviteHandle },
                 { Command.AcceptInvite, AcceptInviteHandle },
-                { Command.RenameContact, RenameContactHandle },
+                { Command.RejectInvite, RejectInviteHandle },
                 { Command.RemoveContact, RemoveContactHandle },
                 { Command.CreateGroup, CreateGroupHandle },
                 { Command.LeaveGroup, LeaveGroupHandle },
                 { Command.EnterGroup, EnterGroupHandle },
-                { Command.Disconnect, DisconnectHandle },
                 { Command.RenameGroup, RenameGroupHandle },
-                { Command.ContactFileSize, ContactFileSizeHandle },
-                { Command.GroupFileSize, GroupFileSizeHandle },
             };
         }
 
@@ -55,13 +62,20 @@ namespace Server.Services.Network
             protocol.Send(transaction.ToStrBytes(), endPoint);
         }
 
-        protected override void Handle(string str)
+        protected override async void Handle(string str)
         {
             Console.WriteLine(str);
             Transaction req = JsonConvert.DeserializeObject<Transaction>(str);
             try
             {
-                handlers[req.Command](req);
+                if (handlers.ContainsKey(req.Command))
+                {
+                    handlers[req.Command](req);
+                }
+                else
+                {
+                    await asyncHandlers[req.Command](req);
+                }
             }
             catch (InfoException ex)
             {
@@ -81,7 +95,7 @@ namespace Server.Services.Network
         /// <see cref="Database.DatabaseService.AcceptInviteAsync(int)">Appropriate method from DBService</see>
         /// </summary>
         /// <param name="req">Request contains id</param>
-        private async void AcceptInviteHandle(Transaction req)
+        private async Task AcceptInviteHandle(Transaction req)
         {
             // ip = ip of user to
             // req.Data = contact id
@@ -103,11 +117,24 @@ namespace Server.Services.Network
         }
 
         /// <summary>
+        /// Handler for rejecting invite by user id.
+        /// <see cref="Database.DatabaseService.DenyInvite(int)">Appropriate method from DBService</see>
+        /// </summary>
+        /// <param name="req">Request contains id</param>
+        private async Task RejectInviteHandle(Transaction req)
+        {
+            // ip = ip of user to
+            // req.Data = contact id
+            int id = req.Data.Id;
+            await store.db.DenyInvite(id);
+        }
+
+        /// <summary>
         /// Handler for creating new group by user id and name of group.
         /// <see cref="Database.DatabaseService.CreateGroupAsync(int, string)">Appropriate method from DBService</see>
         /// </summary>
         /// <param name="req">Request contains user id and new name of group</param>
-        private async void CreateGroupHandle(Transaction req)
+        private async Task CreateGroupHandle(Transaction req)
         {
             int uid = req.Data.User;
             string name = req.Data.Group;
@@ -120,7 +147,7 @@ namespace Server.Services.Network
         /// <see cref="Database.DatabaseService.AddUserToGroupAsync(int, string)">Appropriate method from DBService</see>
         /// </summary>
         /// <param name="req">Request contains user id and name of group</param>
-        private async void EnterGroupHandle(Transaction req)
+        private async Task EnterGroupHandle(Transaction req)
         {
             int uid = req.Data.User;
             string groupName = req.Data.Group;
@@ -134,12 +161,12 @@ namespace Server.Services.Network
         /// <see cref="Database.DatabaseService.RemoveUserFromGroupAsync(int, string)">Appropriate method from DBService</see>
         /// </summary>
         /// <param name="req">Request contains user id and name of group</param>
-        private async void LeaveGroupHandle(Transaction req)
+        private async Task LeaveGroupHandle(Transaction req)
         {
-            int uid = req.Data.Id;
-            string name = req.Data.Name;
-            await store.db.RemoveUserFromGroupAsync(uid, name);
-            Send(new Transaction { Command = Command.LeaveGroup, Data = "Group is removed" });
+            int group = req.Data.To;
+            int user = req.Data.From;
+            await store.db.RemoveUserFromGroupAsync(group, user);
+            Send(new Transaction { Command = Command.LeaveGroup, Data = new { Id = group } });
         }
 
         /// <summary>
@@ -157,12 +184,12 @@ namespace Server.Services.Network
         /// <see cref="Database.DatabaseService.RemoveContact(int, int)">Appropriate method from DBService</see>
         /// </summary>
         /// <param name="req">Request contains two user ids</param>
-        private async void RemoveContactHandle(Transaction req)
+        private async Task RemoveContactHandle(Transaction req)
         {
             int from = req.Data.From;
             int to = req.Data.To;
             await store.db.RemoveContact(from, to);
-            Send(new Transaction { Command = Command.RemoveContact, Data = "Contact is removed" });
+            Send(new Transaction { Command = Command.RemoveContact, Data = new { Id = to } });
         }
 
         /// <summary>
@@ -184,7 +211,7 @@ namespace Server.Services.Network
         /// <see cref="Database.DatabaseService.RenameGroupAsync(int, string)">Appropriate method from DBService</see>
         /// </summary>
         /// <param name="req">Request contains user id and new group name</param>
-        private async void RenameGroupHandle(Transaction req)
+        private async Task RenameGroupHandle(Transaction req)
         {
             int id = req.Data.Id;
             string name = req.Data.NewName;
@@ -198,7 +225,7 @@ namespace Server.Services.Network
         /// <see cref="Database.DatabaseService.SendInviteAsync(int, string)">Appropriate method from DBService</see>
         /// </summary>
         /// <param name="req">Request contains two user ids</param>
-        private async void SendInviteHandle(Transaction req)
+        private async Task SendInviteHandle(Transaction req)
         {
             int from = req.Data.From;
             string to = req.Data.To;
@@ -224,8 +251,19 @@ namespace Server.Services.Network
             int from = req.Data.From;
             int to = req.Data.To;
             string message = req.Data.Message;
+            DateTime time = req.Data.Time;
 
-            Transaction transaction = new() { Command = Command.GetMessageFromContact, Data = new { Id = from, Message = message } };
+            Transaction transaction = new()
+            {
+                Command = Command.GetMessageFromContact,
+                Data = new
+                {
+                    Id = from,
+                    Message = message,
+                    Time = time,
+                    User = store.db.GetUser(from)?.Name
+                }
+            };
 
             IPEndPoint toIp;
             if (store.clients.TryGetValue(to, out toIp!))
@@ -259,8 +297,19 @@ namespace Server.Services.Network
             int from = req.Data.From;
             int group = req.Data.To;
             string message = req.Data.Message;
+            DateTime time = req.Data.Time;
 
-            Transaction transaction = new() { Command = Command.GetMessageFromGroup, Data = new { Id = group, Message = message } };
+            Transaction transaction = new()
+            {
+                Command = Command.GetMessageFromGroup,
+                Data = new
+                {
+                    Id = group,
+                    Message = message,
+                    Time = time,
+                    User = store.db.GetUser(from)?.Name
+                }
+            };
 
             bool isGoToPending = false;
             Guid guid = Guid.NewGuid();

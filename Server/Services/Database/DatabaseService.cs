@@ -27,13 +27,7 @@ namespace Server.Services.Database
 
         public GroupService GroupService { get; set; }
 
-        public BabbleContext context
-        {
-            get => default;
-            set
-            {
-            }
-        }
+        public BabbleContext Context { get; set; }
 
         public Task<Contact> AcceptInviteAsync(int id) => contactService.AcceptInviteAsync(id);
 
@@ -64,12 +58,16 @@ namespace Server.Services.Database
 
         public Task RemoveUserAsync(int id) => userService.RemoveUserAsync(id);
 
-        public Task RemoveUserFromGroupAsync(int uid, string groupName) => groupService.RemoveUserFromGroupAsync(uid, groupName);
-
         public Task RenameContact(int uidFrom, int uidTo, string newName) => contactService.RenameContact(uidFrom, uidTo, newName);
 
         public Task RenameGroupAsync(int id, string newName) => groupService.RenameGroupAsync(id, newName);
 
         public Task<Contact> SendInviteAsync(int uidFrom, string unameTo) => contactService.SendInviteAsync(uidFrom, unameTo);
+
+        public User? GetUser(int id) => userService.GetUser(id);
+
+        public Task DenyInvite(int id) => contactService.DenyInvite(id);
+
+        public Task RemoveUserFromGroupAsync(int group, int user) => groupService.RemoveUserFromGroupAsync(group, user);
     }
 }

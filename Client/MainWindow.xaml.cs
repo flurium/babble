@@ -12,6 +12,7 @@ namespace Client
         public static SignInPage signIn;
         public static SignUpPage signUp;
         public static UserPage userChat;
+        public static ConfirmPage confirm;
         private readonly CommunicationService cs = new();
 
         public MainWindow()
@@ -21,7 +22,7 @@ namespace Client
             userChat = new UserPage(cs, SetTitle);
             signIn = new SignInPage(cs, SetTitle);
             signUp = new SignUpPage(cs, SetTitle);
-
+            confirm = new ConfirmPage(cs, SetTitle);
             MainFrame.Content = signIn;
         }
 
