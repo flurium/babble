@@ -27,7 +27,8 @@ namespace Client.Pages
 
         private void Back_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-
+            NavigationService.GoBack();
+            NavigationService.RemoveBackEntry();
         }
 
         private void Button_Click(object sender, System.Windows.RoutedEventArgs e)

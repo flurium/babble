@@ -49,7 +49,7 @@ namespace Client
         private void ClearInputs()
         {
             ChatName.Text = "";
-            InviteContact.Text = "";
+         
             GroupInput.Text = "";
             selectedFiles?.Clear();
             MessageWrite.Text = "";
@@ -155,17 +155,6 @@ namespace Client
             }
         }
 
-        private void SendInviteBtn_Click(object sender, RoutedEventArgs e)
-        {
-            string inviteContact = InviteContact.Text.Trim();
-            if (inviteContact != "")
-            {
-                cs.SendInvite(inviteContact);
-                InviteContact.Text = "";
-                selectedFiles?.Clear();
-                SelectedFilesText.Text = "";
-            }
-        }
 
         private void EnterGroupBtn_Click(object sender, RoutedEventArgs e)
         {

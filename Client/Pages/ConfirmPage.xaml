@@ -40,19 +40,16 @@
                         <RowDefinition Height="1*"/>
                         <RowDefinition Height="1*"/>
                         <RowDefinition Height="1*"/>
-                        <RowDefinition Height="1*"/>
-                        <RowDefinition Height="1*"/>
-                        <RowDefinition Height="1*"/>
-                        <RowDefinition Height="1*"/>
+                       
                       </Grid.RowDefinitions>
 
                         <TextBox x:Name="InviteContact" Style="{StaticResource Input}" Margin="0,5,0,5" Grid.Column="1" Grid.Row="1"  Padding="10,5,10,5"/>
 
-                        <Button Content="make new Invite" x:Name="Invite" Grid.Column="1" Grid.Row="4" Click="Invite_Click"  Padding="10,5,10,5" />
+                        <Button Content="make new Invite" x:Name="Invite" Grid.Column="1" Grid.Row="2" Click="Invite_Click"  Padding="10,5,10,5" />
 
-                    <TextBox x:Name="GroupName" Style="{StaticResource Input}" Margin="0,5,0,5" Grid.Column="1" Grid.Row="6"  Padding="10,5,10,5"/>
+                    <TextBox x:Name="GroupName" Style="{StaticResource Input}" Margin="0,5,0,5" Grid.Column="1" Grid.Row="3"  Padding="10,5,10,5"/>
 
-                    <Button Content="make new Group" x:Name="GroupMakeButton" Grid.Column="1" Grid.Row="7" Click="GroupMake_Click"  Padding="10,5,10,5" />
+                    <Button Content="make new Group" x:Name="GroupMakeButton" Grid.Column="1" Grid.Row="7" Click="GroupMake_Click"/>
                 </Grid>
                 </Grid>
                 <Grid Grid.Column="1">
