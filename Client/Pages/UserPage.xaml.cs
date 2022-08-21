@@ -49,7 +49,7 @@ namespace Client
         private void ClearInputs()
         {
             ChatName.Text = "";
-            InviteContact.Text = "";
+            //InviteContact.Text = "";
             GroupInput.Text = "";
             selectedFiles?.Clear();
             MessageWrite.Text = "";
@@ -78,7 +78,8 @@ namespace Client
             ContactsList.SelectedIndex = -1;
         }
 
-        private void GoToInvites_Click(object sender, RoutedEventArgs e) {
+        private void GoToInvites_Click(object sender, RoutedEventArgs e)
+        {
             NavigationService.Navigate(MainWindow.confirm);
             NavigationService.RemoveBackEntry();
         }
@@ -155,17 +156,17 @@ namespace Client
             }
         }
 
-        private void SendInviteBtn_Click(object sender, RoutedEventArgs e)
-        {
-            string inviteContact = InviteContact.Text.Trim();
-            if (inviteContact != "")
-            {
-                cs.SendInvite(inviteContact);
-                InviteContact.Text = "";
-                selectedFiles?.Clear();
-                SelectedFilesText.Text = "";
-            }
-        }
+        //private void SendInviteBtn_Click(object sender, RoutedEventArgs e)
+        //{
+        //    string inviteContact = InviteContact.Text.Trim();
+        //    if (inviteContact != "")
+        //    {
+        //        cs.SendInvite(inviteContact);
+        //        InviteContact.Text = "";
+        //        selectedFiles?.Clear();
+        //        SelectedFilesText.Text = "";
+        //    }
+        //}
 
         private void EnterGroupBtn_Click(object sender, RoutedEventArgs e)
         {
