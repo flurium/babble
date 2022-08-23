@@ -1,15 +1,7 @@
-﻿using System.Windows.Controls;
-using Client.Services.Communication;
-using Client.Services.Communication.States;
-using CrossLibrary;
-using Microsoft.Win32;
+﻿using Client.Services.Communication;
 using System;
-using System.Collections.Generic;
 using System.Windows;
-
 using System.Windows.Controls;
-
-using System.Windows.Input;
 using System.Windows.Navigation;
 
 namespace Client.Pages

@@ -143,7 +143,8 @@
                         <Style TargetType="ListBoxItem">
                             <Setter Property="Margin" Value="100,5,5,0" />
                             <Setter Property="HorizontalContentAlignment" Value="Right" />
-                            <Setter Property="IsEnabled" Value="False" />
+                            <Setter Property="BorderThickness" Value="0" />
+                            <Setter Property="Padding" Value="0" />
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding IsIncoming}" Value="true">
                                     <Setter Property="Margin" Value="5,5,100,0" />
@@ -186,13 +187,16 @@
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
-                                <Button x:Name="ShowInFolderBtn" Click="ShowInFolderBtn_Click" Grid.Row="3">Show in folder</Button>
+                                <Button x:Name="ShowInFolderBtn" Click="ShowInFolderBtn_Click" IsEnabled="True" Grid.Row="3">Show in folder</Button>
                                 <TextBlock Text="{Binding Time}" Grid.Row="4" Background="White" FontSize="11" Foreground="Black" />
                             </Grid>
                             <DataTemplate.Triggers>
                                 <DataTrigger Binding="{Binding Files}" Value="{x:Null}">
                                     <Setter TargetName="ShowInFolderBtn" Property="Visibility" Value="Collapsed" />
                                     <Setter TargetName="Files" Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsIncoming}" Value="False">
+                                    <Setter TargetName="ShowInFolderBtn" Property="Visibility" Value="Collapsed" />
                                 </DataTrigger>
                                 <DataTrigger Binding="{Binding User}" Value="{x:Null}">
                                     <Setter TargetName="User" Property="Visibility" Value="Collapsed" />
@@ -202,8 +206,8 @@
                     </ListBox.ItemTemplate>
                 </ListBox>
 
-                <TextBlock x:Name="SelectedFilesText" Grid.Row="2" Grid.ColumnSpan="3" Visibility="Collapsed" />
-                <Button x:Name="UnselectFilesBtn" Click="UnselectFilesBtn_Click" Grid.Row="2" Grid.Column="3" Visibility="Collapsed" >Unselect</Button>
+                <TextBlock x:Name="SelectedFilesText" Grid.Row="2" Grid.ColumnSpan="4" Visibility="Collapsed" />
+                <Button x:Name="UnselectFilesBtn" Click="UnselectFilesBtn_Click" Grid.Row="2" Grid.Column="4" Visibility="Collapsed" >Unselect</Button>
 
                 <Button Grid.Column="0" Grid.Row="3" Click="FileBth_Click">File</Button>
                 <TextBox KeyDown="MessageSend_KeyDown" Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="3" x:Name="MessageWrite" IsEnabled="False" Style="{StaticResource Input}"></TextBox>

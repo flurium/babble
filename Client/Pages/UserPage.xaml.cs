@@ -8,6 +8,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Navigation;
+using System.IO;
+using System.Diagnostics;
 
 namespace Client
 {
@@ -178,7 +180,17 @@ namespace Client
 
         private void ShowInFolderBtn_Click(object sender, RoutedEventArgs e)
         {
-            //(Button)sender;
+            string downloadFolder = string.Format("{0}\\Downloads\\babble", Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
+            if (Directory.Exists(downloadFolder))
+            {
+                ProcessStartInfo startInfo = new()
+                {
+                    Arguments = downloadFolder,
+                    FileName = "explorer.exe"
+                };
+
+                Process.Start(startInfo);
+            }
         }
 
         private void UnselectFilesBtn_Click(object sender, RoutedEventArgs e)
