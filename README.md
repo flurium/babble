@@ -13,8 +13,14 @@
   <img alt="License" src="https://img.shields.io/github/license/flurium/babble?style=flat-square" />
 </p>
 
-- UPD + TCP chat app written in C#.
+## Desktop chat: BabbleUp
+
+GitHub repo: [flurium/babble](https://github.com/flurium/babble)
+
+### Technologies:
+- C#
+- WPF
+- Clean UDP and TCP networking
+- Entity Framework Core
 - Hybrid network system is used (centralized and decentralized).
 - Project [DIAGRAMS](docs/diagrams).
-
-YEAH
