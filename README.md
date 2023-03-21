@@ -25,3 +25,7 @@ GitHub repo: [flurium/babble](https://github.com/flurium/babble)
 - Clean UDP and TCP networking
 - Hybrid network system is used (centralized and decentralized).
 - Entity Framework Core
+
+### Patterns: 
+- State
+- Proxy combined with Factory.
