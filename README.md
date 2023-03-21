@@ -15,12 +15,13 @@
 
 ## Desktop chat: BabbleUp
 
+Date: Jun 23, 2022 - Aug 23, 2022
+
 GitHub repo: [flurium/babble](https://github.com/flurium/babble)
 
 ### Technologies:
 - C#
 - WPF
 - Clean UDP and TCP networking
-- Entity Framework Core
 - Hybrid network system is used (centralized and decentralized).
-- Project [DIAGRAMS](docs/diagrams).
+- Entity Framework Core
